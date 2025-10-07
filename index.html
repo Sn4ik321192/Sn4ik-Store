@@ -8,13 +8,12 @@
 </head>
 <body>
   <header>
-    <h1>🍏 Sn4ik-Store</h1>
+    <h1>🍏 A-Store</h1>
     <input type="text" id="searchInput" placeholder="Поиск..." oninput="filterProducts()" />
     <button id="cartBtn" onclick="toggleCart()">🛒 Корзина (<span id="cartCount">0</span>)</button>
   </header>
 
   <div class="controls">
-    <!-- Кастомное стеклянное меню сортировки -->
     <div class="custom-select">
       <div class="select-selected">Сортировка ▼</div>
       <div class="select-items select-hide">
@@ -41,6 +40,7 @@
       <p>Итого: <span id="totalPrice">0</span> ₽</p>
       <div class="cart-buttons">
         <button class="btn" onclick="clearCart()">🗑 Очистить</button>
+        <button class="btn btn-order" onclick="placeOrder()">💳 Оформить заказ</button>
         <button class="btn" onclick="toggleCart()">Закрыть</button>
       </div>
     </div>
@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <!-- Инфо-окно -->
+  <!-- Информация о товаре -->
   <div id="infoOverlay" class="overlay" onclick="overlayClick(event)">
     <div class="info-panel" onclick="event.stopPropagation()">
       <h3 id="infoTitle"></h3>
