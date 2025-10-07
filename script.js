@@ -7,6 +7,7 @@ let products = [
   { name: "iPad Pro M4", price: 149990, img: "https://redstore.by/wp-content/uploads/2024/05/Apple-iPad-Pro-M4-2024-silver-11.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
   { name: "Apple Watch Ultra 2", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/bfb8e7b2-fe18-418c-93ad-311c34356135.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
   { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] }
+  { name: "iPhone 14 Pro Max", price: 60000, img: "https://www.pngplay.com/wp-content/uploads/15/iPhone-14-Pro-Max-Transparent-Background.png", },
 ];
 
 let cart = [];
@@ -194,6 +195,7 @@ function overlayClick(e) {
 
 /* === Автоинициализация === */
 renderProducts();
+
 
 
 
