@@ -2,6 +2,7 @@ let admin = false;
 const ADMIN_PASSWORD = "Alex2307";
 
 let products = [
+  { name: "IPhone 16 Pro", price: 120000, img: "file:///C:/Users/sasab/OneDrive/Desktop/iPhone-16-Pro-Max-Latest-Apple-Smartphone-jpg-removebg-preview.png", },
   { name: "MacBook Air M3", price: 159990, img: "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mba_13_m3_2024_hero.png", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
   { name: "iPad Pro M4", price: 149990, img: "https://redstore.by/wp-content/uploads/2024/05/Apple-iPad-Pro-M4-2024-silver-11.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
   { name: "Apple Watch Ultra 2", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/bfb8e7b2-fe18-418c-93ad-311c34356135.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
@@ -193,6 +194,7 @@ function overlayClick(e) {
 
 /* === Автоинициализация === */
 renderProducts();
+
 
 
 
