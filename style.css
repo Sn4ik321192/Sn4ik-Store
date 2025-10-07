@@ -1,0 +1,246 @@
+/* ======= Общий стиль ======= */
+body {
+  font-family: "Poppins", sans-serif;
+  background: radial-gradient(circle at top left, #0a0a0f, #12121a);
+  color: #eaeaea;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px 30px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+h1 {
+  font-weight: 600;
+}
+
+input[type="text"] {
+  padding: 8px 15px;
+  border-radius: 20px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+  transition: 0.3s;
+  width: 200px;
+}
+
+input[type="text"]:focus {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#cartBtn, .controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  color: #fff;
+  transition: all 0.4s ease;
+}
+
+#cartBtn:hover, .controls button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+/* ======= Контейнер управления ======= */
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+}
+
+/* ======= Кастомное стеклянное меню ======= */
+.custom-select {
+  position: relative;
+  width: 180px;
+  font-family: "Poppins", sans-serif;
+}
+
+.select-selected {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+  transition: 0.3s;
+  text-align: center;
+}
+
+.select-selected:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+  transform: scale(1.03);
+}
+
+.select-items {
+  position: absolute;
+  background: rgba(30, 30, 40, 0.98);
+  border-radius: 20px;
+  top: 110%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+  overflow: hidden;
+  animation: fadeIn 0.25s ease;
+}
+
+.select-items div {
+  padding: 12px 15px;
+  cursor: pointer;
+  color: #eaeaea;
+  transition: 0.3s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.select-items div:hover {
+  background: rgba(0, 123, 255, 0.4);
+  color: #fff;
+  transform: scale(1.02);
+}
+
+.select-hide { display: none; }
+
+.select-selected.active {
+  background: rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 123, 255, 0.5);
+}
+
+/* ======= Анимация ======= */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======= Сетка товаров ======= */
+#productList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 25px;
+  padding: 30px;
+}
+
+.product {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 30px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  transition: transform 0.4s, box-shadow 0.4s;
+  position: relative;
+}
+
+.product:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 35px rgba(0, 120, 255, 0.3);
+}
+
+.product img {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.product h3 { margin: 10px 0 5px; }
+
+.product p {
+  margin: 0;
+  font-weight: 500;
+  color: #9cd0ff;
+}
+
+/* ======= Кнопки ======= */
+.product button {
+  margin-top: 10px;
+  background: rgba(0, 123, 255, 0.2);
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.4s;
+}
+
+.product button:hover {
+  background: rgba(0, 123, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: rgba(255, 50, 50, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-btn:hover { background: rgba(255, 50, 50, 0.8); }
+
+/* ======= Общие панели ======= */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  animation: fadeIn 0.4s ease;
+}
+
+.cart-panel, .add-panel, .info-panel {
+  background: rgba(30, 30, 40, 0.95);
+  border-radius: 25px;
+  padding: 25px;
+  width: 320px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 120, 255, 0.2);
+}
+
+/* ======= Пагинация ======= */
+#pagination {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin: 3px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.page-btn:hover { background: rgba(0, 123, 255, 0.4); }
+.page-btn.active { background: rgba(0, 123, 255, 0.7); transform: scale(1.05); }
