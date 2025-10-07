@@ -12,9 +12,8 @@ let products = [
 let cart = [];
 let currentPage = 1;
 const itemsPerPage = 6;
-let currentProductIndex = null;
 
-/* === Пагинация и вывод === */
+/* === Вывод товаров и пагинация === */
 function renderProducts() {
   const list = document.getElementById("productList");
   list.innerHTML = "";
@@ -55,13 +54,11 @@ function toggleCart() {
   o.style.display = o.style.display === "flex" ? "none" : "flex";
   renderCart();
 }
-
 function addToCart(i) {
   cart.push(products[i]);
   document.getElementById("cartCount").textContent = cart.length;
   renderCart();
 }
-
 function renderCart() {
   const ul = document.getElementById("cartItems");
   ul.innerHTML = "";
@@ -74,46 +71,44 @@ function renderCart() {
   });
   document.getElementById("totalPrice").textContent = total.toLocaleString();
 }
-
-function clearCart() {
-  cart = [];
-  document.getElementById("cartCount").textContent = 0;
-  renderCart();
+function clearCart() { cart = []; document.getElementById("cartCount").textContent = 0; renderCart(); }
+function placeOrder() {
+  if (cart.length === 0) return alert("Корзина пуста 😅");
+  let summary = cart.map(p => `• ${p.name} — ${p.price.toLocaleString()} ₽`).join("\n");
+  let total = cart.reduce((s, p) => s + p.price, 0).toLocaleString();
+  const conf = confirm(`Ваш заказ:\n\n${summary}\n\nИтого: ${total} ₽\n\nПодтвердить заказ?`);
+  if (conf) {
+    alert("✅ Заказ оформлен! Спасибо за покупку в A-Store 🍏");
+    cart = []; document.getElementById("cartCount").textContent = 0; renderCart(); toggleCart();
+  }
 }
 
-/* === Инфо и характеристики === */
-function showInfo(index) {
-  currentProductIndex = index;
-  const p = products[index];
+/* === Информация о товаре === */
+function showInfo(i) {
+  currentProductIndex = i;
+  const p = products[i];
   document.getElementById("infoOverlay").style.display = "flex";
-  document.getElementById("infoTitle").textContent = p.name;
-  document.getElementById("infoImg").src = p.img;
-  document.getElementById("infoPrice").textContent = p.price.toLocaleString() + " ₽";
-  const ul = document.getElementById("infoSpecs");
-  ul.innerHTML = "";
+  infoTitle.textContent = p.name;
+  infoImg.src = p.img;
+  infoPrice.textContent = p.price.toLocaleString() + " ₽";
+  infoSpecs.innerHTML = "";
   p.specs.forEach(s => {
     const li = document.createElement("li");
-    li.textContent = s;
-    ul.appendChild(li);
+    li.textContent = s; infoSpecs.appendChild(li);
   });
-  if (admin) {
-    document.getElementById("adminEdit").style.display = "block";
-    document.getElementById("editSpecs").value = p.specs.join(", ");
-  } else {
-    document.getElementById("adminEdit").style.display = "none";
-  }
+  if (admin) { adminEdit.style.display = "block"; editSpecs.value = p.specs.join(", "); }
+  else adminEdit.style.display = "none";
 }
-function closeInfo() { document.getElementById("infoOverlay").style.display = "none"; }
+function closeInfo() { infoOverlay.style.display = "none"; }
 function saveSpecs() {
-  const text = document.getElementById("editSpecs").value.trim();
-  if (text) {
-    products[currentProductIndex].specs = text.split(",").map(s => s.trim());
-    showInfo(currentProductIndex);
-    alert("Характеристики обновлены ✅");
-  }
+  const txt = editSpecs.value.trim();
+  if (!txt) return;
+  products[currentProductIndex].specs = txt.split(",").map(s => s.trim());
+  showInfo(currentProductIndex);
+  alert("Характеристики обновлены ✅");
 }
 
-/* === Добавление товара === */
+/* === Добавление и удаление === */
 function openAddProduct() {
   const o = document.getElementById("addOverlay");
   o.style.display = o.style.display === "flex" ? "none" : "flex";
@@ -123,8 +118,7 @@ function addProduct() {
   const specs = newSpecs.value.split(",").map(s => s.trim());
   if (!name || !price || !img) return alert("Заполни все поля!");
   products.push({ name, price, img, specs });
-  renderProducts();
-  openAddProduct();
+  renderProducts(); openAddProduct();
 }
 function deleteProduct(i) {
   if (!admin) return;
@@ -133,80 +127,72 @@ function deleteProduct(i) {
 
 /* === Фильтр и сортировка === */
 function filterProducts() {
-  const q = document.getElementById("searchInput").value.toLowerCase();
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  products
-    .filter(p => p.name.toLowerCase().includes(q))
-    .forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <img src="${p.img}" alt="${p.name}" onclick="showInfo(${i})">
-        <h3>${p.name}</h3>
-        <p>${p.price.toLocaleString()} ₽</p>
-        <button onclick="addToCart(${i})">Добавить</button>
-        ${admin ? `<button class='delete-btn' onclick='deleteProduct(${i})'>✕</button>` : ""}
-      `;
-      list.appendChild(div);
-    });
+  const q = searchInput.value.toLowerCase();
+  document.getElementById("productList").innerHTML = "";
+  products.filter(p => p.name.toLowerCase().includes(q)).forEach((p, i) => {
+    const d = document.createElement("div");
+    d.className = "product";
+    d.innerHTML = `<img src="${p.img}" alt="${p.name}" onclick="showInfo(${i})">
+      <h3>${p.name}</h3><p>${p.price.toLocaleString()} ₽</p>
+      <button onclick="addToCart(${i})">Добавить</button>`;
+    productList.appendChild(d);
+  });
 }
 
-/* === Кастомная сортировка (меню) === */
-function sortBy(val) {
-  if (val === "priceAsc") products.sort((a,b)=>a.price-b.price);
-  else if (val === "priceDesc") products.sort((a,b)=>b.price-a.price);
-  else if (val === "name") products.sort((a,b)=>a.name.localeCompare(b.name));
-  renderProducts();
-  document.querySelector(".select-selected").textContent = 
-    document.querySelector(`.select-items div[onclick="sortBy('${val}')"]`).textContent + " ▼";
-}
-
-// открытие / закрытие меню сортировки
-document.addEventListener("click", function(e) {
-  const selected = document.querySelector(".select-selected");
-  const items = document.querySelector(".select-items");
-  if (selected.contains(e.target)) {
-    items.classList.toggle("select-hide");
-    selected.classList.toggle("active");
-  } else {
-    items.classList.add("select-hide");
-    selected.classList.remove("active");
-  }
+/* === Кастомное меню
+document.querySelector('.select-selected').addEventListener('click', function () {
+  this.nextElementSibling.classList.toggle('select-hide');
 });
+function sortBy(type) {
+  const items = document.querySelector('.select-items');
+  items.classList.add('select-hide');
+  document.querySelector('.select-selected').textContent =
+    type === 'default' ? 'Сортировка ▼' :
+    type === 'priceAsc' ? 'Цена ↑' :
+    type === 'priceDesc' ? 'Цена ↓' :
+    'По названию';
+  
+  if (type === 'priceAsc') products.sort((a, b) => a.price - b.price);
+  else if (type === 'priceDesc') products.sort((a, b) => b.price - a.price);
+  else if (type === 'name') products.sort((a, b) => a.name.localeCompare(b.name));
+  renderProducts();
+}
 
 /* === Авторизация администратора === */
 function adminLogin() {
   const pass = prompt("Введите пароль администратора:");
   if (pass === ADMIN_PASSWORD) {
     admin = true;
+    alert("✅ Вход выполнен. Админ-режим активен.");
     document.getElementById("addBtn").style.display = "inline-block";
     document.getElementById("logoutBtn").style.display = "inline-block";
-    document.getElementById("adminLoginBtn").style.display = "none";
-    renderProducts();
-    alert("Вход выполнен ✅");
-  } else alert("Неверный пароль!");
+    document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "block");
+  } else {
+    alert("❌ Неверный пароль!");
+  }
 }
-
 function logoutAdmin() {
   admin = false;
+  alert("🚪 Вы вышли из админ-режима.");
   document.getElementById("addBtn").style.display = "none";
   document.getElementById("logoutBtn").style.display = "none";
-  alert("Вы вышли из аккаунта администратора.");
-  renderProducts();
+  document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "none");
 }
 
-/* === Оверлеи и горячие клавиши === */
+/* === Горячая клавиша Alt + A для входа === */
+document.addEventListener("keydown", e => {
+  if (e.altKey && e.code === "KeyA") {
+    const btn = document.getElementById("adminLoginBtn");
+    btn.style.display = btn.style.display === "none" ? "inline-block" : "none";
+  }
+});
+
+/* === Закрытие оверлеев кликом вне окна === */
 function overlayClick(e) {
   if (e.target.classList.contains("overlay")) e.target.style.display = "none";
 }
 
-// скрытый вход Alt + A
-document.addEventListener("keydown", e => {
-  if ((e.altKey && e.key.toLowerCase() === "a") || (e.altKey && e.shiftKey && e.key.toLowerCase() === "a")) {
-    document.getElementById("adminLoginBtn").style.display = "inline-block";
-    alert("Появилась кнопка входа администратора 🔐");
-  }
-});
+/* === Автоинициализация === */
+renderProducts();
 
 
