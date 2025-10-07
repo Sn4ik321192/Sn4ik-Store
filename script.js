@@ -9,37 +9,16 @@ let products = [
   { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] }
 ];
 
-let admin = false;
-const ADMIN_PASSWORD = "Alex2307";
-let currentProductIndex = null;
+let cart = [];
 let currentPage = 1;
 const itemsPerPage = 6;
 
-// === Сохранение и загрузка товаров ===
-let products = [
-  { name: "iPhone 15 Pro", price: 119990, img: "https://www.apple.com/v/iphone-15-pro/h/images/overview/hero_endframe__e0ajd2ayxqq2_large.jpg", specs: ["Дисплей 6.1\"", "A17 Pro", "256 ГБ", "48 МП"] },
-  { name: "MacBook Air M3", price: 159990, img: "https://www.apple.com/v/macbook-air-m2/h/images/overview/hero_endframe__ea0qze85eyi6_large.jpg", specs: ["13.6\"", "M3", "8 ГБ RAM", "SSD 256 ГБ"] },
-  { name: "iPad Pro M4", price: 149990, img: "https://www.apple.com/v/ipad-pro/h/images/overview/hero__ecv967jz1y0y_large.jpg", specs: ["13\"", "M4", "120 Гц", "Face ID"] },
-  { name: "Apple Watch Ultra 2", price: 74990, img: "https://www.apple.com/v/watch-ultra-2/h/images/overview/hero_endframe__e6khcva4hkeq_large.jpg", specs: ["49 мм", "Титан", "WR100", "Сенсоры здоровья"] },
-  { name: "AirPods Pro 2", price: 29990, img: "https://www.apple.com/v/airpods-pro/h/images/overview/hero__gnbk5g59t0qe_large.jpg", specs: ["Активное шумоподавление", "Звук H2", "Bluetooth 5.3"] }
-];
-
-// === Проверяем, есть ли сохранённые товары ===
-const saved = localStorage.getItem("products");
-if (saved) {
-  products = JSON.parse(saved);
-}
-
-let cart = [];
-
-/* === Рендер товаров и пагинация === */
+/* === Вывод товаров и пагинация === */
 function renderProducts() {
   const list = document.getElementById("productList");
   list.innerHTML = "";
-
   const start = (currentPage - 1) * itemsPerPage;
   const pageProducts = products.slice(start, start + itemsPerPage);
-
   pageProducts.forEach((p, i) => {
     const div = document.createElement("div");
     div.className = "product";
@@ -48,17 +27,13 @@ function renderProducts() {
       <h3>${p.name}</h3>
       <p>${p.price.toLocaleString()} ₽</p>
       <button onclick="addToCart(${start + i})">Добавить</button>
-      <button class="delete-btn" onclick="deleteProduct(${start + i})">✕</button>
-    `;
+      <button class="delete-btn" onclick="deleteProduct(${start + i})">✕</button>`;
     list.appendChild(div);
   });
-
   if (admin) document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "block");
-
   renderPagination();
 }
 
-/* === Пагинация === */
 function renderPagination() {
   const total = Math.ceil(products.length / itemsPerPage);
   const pg = document.getElementById("pagination");
@@ -96,11 +71,7 @@ function renderCart() {
   });
   document.getElementById("totalPrice").textContent = total.toLocaleString();
 }
-function clearCart() {
-  cart = [];
-  document.getElementById("cartCount").textContent = 0;
-  renderCart();
-}
+function clearCart() { cart = []; document.getElementById("cartCount").textContent = 0; renderCart(); }
 function placeOrder() {
   if (cart.length === 0) return alert("Корзина пуста 😅");
   let summary = cart.map(p => `• ${p.name} — ${p.price.toLocaleString()} ₽`).join("\n");
@@ -108,10 +79,7 @@ function placeOrder() {
   const conf = confirm(`Ваш заказ:\n\n${summary}\n\nИтого: ${total} ₽\n\nПодтвердить заказ?`);
   if (conf) {
     alert("✅ Заказ оформлен! Спасибо за покупку в A-Store 🍏");
-    cart = [];
-    document.getElementById("cartCount").textContent = 0;
-    renderCart();
-    toggleCart();
+    cart = []; document.getElementById("cartCount").textContent = 0; renderCart(); toggleCart();
   }
 }
 
@@ -126,53 +94,35 @@ function showInfo(i) {
   infoSpecs.innerHTML = "";
   p.specs.forEach(s => {
     const li = document.createElement("li");
-    li.textContent = s;
-    infoSpecs.appendChild(li);
+    li.textContent = s; infoSpecs.appendChild(li);
   });
-  if (admin) {
-    adminEdit.style.display = "block";
-    editSpecs.value = p.specs.join(", ");
-  } else {
-    adminEdit.style.display = "none";
-  }
+  if (admin) { adminEdit.style.display = "block"; editSpecs.value = p.specs.join(", "); }
+  else adminEdit.style.display = "none";
 }
-function closeInfo() {
-  infoOverlay.style.display = "none";
-}
+function closeInfo() { infoOverlay.style.display = "none"; }
 function saveSpecs() {
   const txt = editSpecs.value.trim();
   if (!txt) return;
   products[currentProductIndex].specs = txt.split(",").map(s => s.trim());
-  localStorage.setItem("products", JSON.stringify(products)); // 💾 сохраняем изменения
   showInfo(currentProductIndex);
   alert("Характеристики обновлены ✅");
 }
 
-/* === Добавление и удаление товаров === */
+/* === Добавление и удаление === */
 function openAddProduct() {
   const o = document.getElementById("addOverlay");
   o.style.display = o.style.display === "flex" ? "none" : "flex";
 }
 function addProduct() {
-  const name = newName.value;
-  const price = +newPrice.value;
-  const img = newImg.value;
+  const name = newName.value, price = +newPrice.value, img = newImg.value;
   const specs = newSpecs.value.split(",").map(s => s.trim());
   if (!name || !price || !img) return alert("Заполни все поля!");
-
   products.push({ name, price, img, specs });
-  localStorage.setItem("products", JSON.stringify(products)); // 💾 сохраняем новый товар
-
-  renderProducts();
-  openAddProduct();
+  renderProducts(); openAddProduct();
 }
 function deleteProduct(i) {
   if (!admin) return;
-  if (confirm("Удалить товар?")) {
-    products.splice(i, 1);
-    localStorage.setItem("products", JSON.stringify(products)); // 💾 сохраняем после удаления
-    renderProducts();
-  }
+  if (confirm("Удалить товар?")) { products.splice(i, 1); renderProducts(); }
 }
 
 /* === Фильтр и сортировка === */
@@ -201,7 +151,7 @@ function sortBy(type) {
     type === 'priceAsc' ? 'Цена ↑' :
     type === 'priceDesc' ? 'Цена ↓' :
     'По названию';
-
+  
   if (type === 'priceAsc') products.sort((a, b) => a.price - b.price);
   else if (type === 'priceDesc') products.sort((a, b) => b.price - a.price);
   else if (type === 'name') products.sort((a, b) => a.name.localeCompare(b.name));
@@ -244,6 +194,7 @@ function overlayClick(e) {
 
 /* === Автоинициализация === */
 renderProducts();
+
 
 
 
