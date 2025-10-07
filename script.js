@@ -9,31 +9,14 @@ let products = [
   { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] }
 ];
 
-/* ===========================
-   🍏 A-Store JavaScript
-   =========================== */
-
-let admin = false;
-const ADMIN_PASSWORD = "Alex2307";
-const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
-const TELEGRAM_CHAT_ID = "6509764945";
-
-let products = [
-  { name: "iPhone 15 Pro", price: 119990, img: "https://www.apple.com/v/iphone-15-pro/h/images/overview/hero_endframe__e0ajd2ayxqq2_large.jpg", specs: ["Дисплей 6.1\"", "A17 Pro", "256 ГБ", "48 МП"] },
-  { name: "MacBook Air M3", price: 159990, img: "https://www.apple.com/v/macbook-air-m2/h/images/overview/hero_endframe__ea0qze85eyi6_large.jpg", specs: ["13.6\"", "M3", "8 ГБ RAM", "SSD 256 ГБ"] },
-  { name: "iPad Pro M4", price: 149990, img: "https://www.apple.com/v/ipad-pro/h/images/overview/hero__ecv967jz1y0y_large.jpg", specs: ["13\"", "M4", "120 Гц", "Face ID"] },
-  { name: "Apple Watch Ultra 2", price: 74990, img: "https://www.apple.com/v/watch-ultra-2/h/images/overview/hero_endframe__e6khcva4hkeq_large.jpg", specs: ["49 мм", "Титан", "WR100", "Сенсоры здоровья"] },
-  { name: "AirPods Pro 2", price: 29990, img: "https://www.apple.com/v/airpods-pro/h/images/overview/hero__gnbk5g59t0qe_large.jpg", specs: ["Активное шумоподавление", "Звук H2", "Bluetooth 5.3"] }
-];
-
-// === Загрузка сохранённых товаров ===
+// === Загружаем сохранённые товары из localStorage ===
 const saved = localStorage.getItem("products");
 if (saved) {
   try {
     products = JSON.parse(saved);
     if (!Array.isArray(products)) throw new Error("Invalid data");
   } catch (err) {
-    console.warn("Ошибка при чтении localStorage:", err);
+    console.warn("Ошибка чтения localStorage:", err);
     localStorage.removeItem("products");
   }
 }
@@ -42,7 +25,7 @@ let cart = [];
 let currentPage = 1;
 const itemsPerPage = 6;
 
-/* === Отрисовка товаров === */
+/* === Отображение товаров === */
 function renderProducts() {
   const list = document.getElementById("productList");
   list.innerHTML = "";
@@ -114,7 +97,7 @@ function clearCart() {
   renderCart();
 }
 
-/* === Оформление заказа === */
+/* === Оформление заказа с Telegram уведомлением === */
 function placeOrder() {
   if (cart.length === 0) return alert("Корзина пуста 😅");
 
@@ -129,19 +112,25 @@ function placeOrder() {
 
   const message = `🛍 Новый заказ в A-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
 
-  // === Отправка в Telegram ===
-  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+  // === Отправка уведомления в Telegram ===
+  fetch("https://api.telegram.org/bot8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE/sendMessage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
-  }).then(r => r.json()).then(data => {
+    body: JSON.stringify({ chat_id: "6509764945", text: message })
+  })
+  .then(res => res.json())
+  .then(data => {
     if (data.ok) {
       alert("✅ Заказ оформлен! Мы скоро свяжемся с вами.");
     } else {
-      alert("⚠️ Ошибка отправки уведомления, но заказ оформлен локально.");
-      console.error(data);
+      console.error("Ошибка отправки:", data);
+      alert("⚠️ Ошибка при отправке уведомления.");
     }
-  }).catch(err => console.error("Ошибка Telegram:", err));
+  })
+  .catch(err => {
+    console.error("Ошибка Telegram:", err);
+    alert("⚠️ Ошибка соединения с Telegram.");
+  });
 
   cart = [];
   document.getElementById("cartCount").textContent = 0;
@@ -250,7 +239,7 @@ function sortBy(type) {
   renderProducts();
 }
 
-/* === Админ вход === */
+/* === Авторизация администратора === */
 function adminLogin() {
   const pass = prompt("Введите пароль администратора:");
   if (pass === ADMIN_PASSWORD) {
@@ -283,7 +272,7 @@ function overlayClick(e) {
   if (e.target.classList.contains("overlay")) e.target.style.display = "none";
 }
 
-/* === Запуск === */
+/* === Старт === */
 renderProducts();
 
 
