@@ -31,35 +31,36 @@ let products = [
   { name: "AirPods 4", price: 29990, img: "https://cdn-ultra.esempla.com/storage/webp/3eded361-a4d0-467b-972d-2262912d0dea.webp", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] },
 ];
 
-// Загрузка сохранённых товаров
-try{
+// --- Загрузка сохранённых данных
+try {
   const saved = JSON.parse(localStorage.getItem("products"));
   if (Array.isArray(saved) && saved.length) products = saved;
-}catch(e){ localStorage.removeItem("products"); }
+} catch {
+  localStorage.removeItem("products");
+}
 
 // --- Утилиты
 const fmt = n => n.toLocaleString("ru-RU");
-const $ = (id) => document.getElementById(id);
+function $(id) { return document.getElementById(id); }
 
-
-// --- Рендер
-function getFiltered(){
+// --- Фильтрация, сортировка и отображение
+function getFiltered() {
   let list = products.slice();
   if (query) list = list.filter(p => p.name.toLowerCase().includes(query));
-  if (sortMode === "priceAsc") list.sort((a,b)=>a.price-b.price);
-  if (sortMode === "priceDesc") list.sort((a,b)=>b.price-a.price);
-  if (sortMode === "name") list.sort((a,b)=>a.name.localeCompare(b.name,"ru"));
+  if (sortMode === "priceAsc") list.sort((a, b) => a.price - b.price);
+  if (sortMode === "priceDesc") list.sort((a, b) => b.price - a.price);
+  if (sortMode === "name") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
   return list;
 }
 
-function render(){
+function render() {
   const list = $("productList");
   list.innerHTML = "";
   const items = getFiltered();
   const totalPages = Math.max(1, Math.ceil(items.length / perPage));
   if (currentPage > totalPages) currentPage = totalPages;
-  const start = (currentPage-1)*perPage;
-  const pageItems = items.slice(start, start+perPage);
+  const start = (currentPage - 1) * perPage;
+  const pageItems = items.slice(start, start + perPage);
 
   pageItems.forEach((p, i) => {
     const idx = products.indexOf(p);
@@ -75,33 +76,32 @@ function render(){
     list.appendChild(card);
   });
 
-  // показать крестики в админ-режиме
   document.querySelectorAll(".delete-btn").forEach(b => b.style.display = admin ? "inline-flex" : "none");
-
   renderPagination(totalPages);
-}
-function renderPagination(total){
-  const box = $("pagination");
-  box.innerHTML = "";
-  for(let i=1;i<=total;i++){
-    const b = document.createElement("button");
-    b.className = "page-btn"+(i===currentPage?" active":"");
-    b.textContent = i;
-    b.onclick = ()=>{ currentPage=i; render(); };
-    box.appendChild(b);
-  }
 }
 render();
 
-/* --- Поиск --- */
-function filterProducts(){
+function renderPagination(total) {
+  const box = $("pagination");
+  box.innerHTML = "";
+  for (let i = 1; i <= total; i++) {
+    const b = document.createElement("button");
+    b.className = "page-btn" + (i === currentPage ? " active" : "");
+    b.textContent = i;
+    b.onclick = () => { currentPage = i; render(); };
+    box.appendChild(b);
+  }
+}
+
+// --- Поиск
+function filterProducts() {
   query = $("searchInput").value.trim().toLowerCase();
   currentPage = 1;
   render();
 }
 
-/* --- Сортировка (кастомный dropdown) --- */
-(function initSort(){
+// --- Сортировка
+(function initSort() {
   const dd = $("sortDropdown");
   const btn = $("sortBtn");
   const menu = $("sortMenu");
@@ -109,141 +109,144 @@ function filterProducts(){
     e.stopPropagation();
     dd.classList.toggle("open");
   });
-  menu.querySelectorAll("button").forEach(b=>{
-    b.addEventListener("click", ()=>{
+  menu.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
       sortMode = b.dataset.sort;
       btn.textContent =
-        sortMode==="priceAsc" ? "Цена ↑" :
-        sortMode==="priceDesc" ? "Цена ↓" :
-        sortMode==="name" ? "По названию" : "Сортировка ▾";
+        sortMode === "priceAsc" ? "Цена ↑" :
+        sortMode === "priceDesc" ? "Цена ↓" :
+        sortMode === "name" ? "По названию" : "Сортировка ▾";
       dd.classList.remove("open");
       render();
     });
   });
-  document.addEventListener("click", e => dd.classList.remove("open"));
+  document.addEventListener("click", () => dd.classList.remove("open"));
 })();
 
-/* --- Корзина --- */
-function toggleCart(){
+// --- Корзина
+function toggleCart() {
   const o = $("cartOverlay");
-  o.style.display = o.style.display==="flex" ? "none" : "flex";
+  o.style.display = o.style.display === "flex" ? "none" : "flex";
   renderCart();
 }
-function addToCart(i){
+function addToCart(i) {
   cart.push(products[i]);
   $("cartCount").textContent = cart.length;
   renderCart();
 }
-function renderCart(){
+function renderCart() {
   const ul = $("cartItems");
-  ul.innerHTML="";
+  ul.innerHTML = "";
   let total = 0;
-  cart.forEach(p=>{
-    total+=p.price;
+  cart.forEach(p => {
+    total += p.price;
     const li = document.createElement("li");
     li.textContent = `${p.name} — ${fmt(p.price)} ₽`;
     ul.appendChild(li);
   });
   $("totalPrice").textContent = fmt(total);
 }
-function clearCart(){
+function clearCart() {
   cart = [];
   $("cartCount").textContent = 0;
   renderCart();
 }
 
-/* --- Оформление заказа (модалка) --- */
-function placeOrder(){
-  if(!cart.length) return alert("Корзина пуста 😅");
+// --- Оформление заказа
+function placeOrder() {
+  if (!cart.length) return alert("Корзина пуста 😅");
   $("orderOverlay").style.display = "flex";
 }
-function closeOrder(){ $("orderOverlay").style.display = "none"; }
-
-function sendOrder(){
+function closeOrder() {
+  $("orderOverlay").style.display = "none";
+}
+function sendOrder() {
   const name = $("orderName").value.trim();
   const phone = $("orderPhone").value.trim();
   const comment = $("orderComment").value.trim();
-  if(!name || !phone) return alert("Введите имя и номер телефона!");
+  if (!name || !phone) return alert("Введите имя и номер телефона!");
 
-  const summary = cart.map(p=>`• ${p.name} — ${fmt(p.price)} ₽`).join("\n");
-  const total = fmt(cart.reduce((s,p)=>s+p.price,0));
-  const message = `🛍 Новый заказ в Sn4ik-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n💬 Комментарий: ${comment||"—"}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
+  const summary = cart.map(p => `• ${p.name} — ${fmt(p.price)} ₽`).join("\n");
+  const total = fmt(cart.reduce((s, p) => s + p.price, 0));
+  const message = `🛍 Новый заказ в Sn4ik-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n💬 Комментарий: ${comment || "—"}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
 
-  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
   })
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.ok){
-      closeOrder();
-      showSuccessAnimation();
-      playSuccessSound();
-      clearCart();
-      toggleCart(); // закрыть корзину
-    }else alert("⚠️ Ошибка отправки сообщения.");
-  })
-  .catch(()=> alert("⚠️ Ошибка соединения с Telegram"));
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) {
+        closeOrder();
+        showSuccessAnimation();
+        playSuccessSound();
+        clearCart();
+        toggleCart();
+      } else alert("⚠️ Ошибка отправки в Telegram.");
+    })
+    .catch(() => alert("⚠️ Ошибка соединения с Telegram"));
 }
 
-/* --- Успех + звук --- */
-function showSuccessAnimation(){
+// --- Анимация App Store + звук + вибрация
+function showSuccessAnimation() {
   const o = document.createElement("div");
   o.className = "success-overlay";
   o.innerHTML = `
     <div class="success-checkmark">
-      <svg viewBox="0 0 52 52">
-        <circle cx="26" cy="26" r="25"></circle>
-        <path d="M14 27l7 7 16-16"></path>
+      <svg viewBox="0 0 120 120">
+        <circle cx="60" cy="60" r="50" />
+        <path d="M40 65l15 15 25-35" />
       </svg>
       <p>Покупка завершена</p>
     </div>`;
   document.body.appendChild(o);
-  setTimeout(()=>{ o.classList.add("fade-out"); setTimeout(()=>o.remove(),600); }, 1600);
-}
-function playSuccessSound(){
-  const a = new Audio("https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3");
-  a.volume = 0.45; a.play().catch(()=>{});
+  playSuccessSound();
+
+  setTimeout(() => {
+    o.classList.add("fade-out");
+    setTimeout(() => o.remove(), 800);
+  }, 2000);
 }
 
-/* --- Карточка товара (инфо) --- */
-let currentIdx = null;
-function showInfo(i){
-  currentIdx = i;
-  const p = products[i];
-  $("infoImg").src = p.img;
-  $("infoTitle").textContent = p.name;
-  $("infoPrice").textContent = fmt(p.price) + " ₽";
-  const ul = $("infoSpecs");
-  ul.innerHTML = "";
-  p.specs.forEach(s=>{ const li=document.createElement("li"); li.textContent=s; ul.appendChild(li); });
-  $("adminEdit").style.display = admin ? "block" : "none";
-  $("editSpecs").value = p.specs.join(", ");
-  $("infoOverlay").style.display = "flex";
-}
-function closeInfo(){ $("infoOverlay").style.display = "none"; }
-function saveSpecs(){
-  const txt = $("editSpecs").value.trim();
-  if(!txt) return;
-  products[currentIdx].specs = txt.split(",").map(x=>x.trim()).filter(Boolean);
-  localStorage.setItem("products", JSON.stringify(products));
-  showInfo(currentIdx);
-  alert("✅ Характеристики обновлены!");
+function playSuccessSound() {
+  const audio = new Audio("file:///C:/Users/sasab/OneDrive/Desktop/Sn4ik-Store-main/sounds/success.mp3.mp3"); // лёгкий App Store-style звук
+  audio.volume = 0.45;
+  audio.play().catch(() => {});
+  if (navigator.vibrate) navigator.vibrate([40, 30, 40]); // глубокий мягкий эффект iPhone
 }
 
-/* --- Добавление/удаление товаров --- */
-function openAddProduct(){
-  if(!admin) return alert("Только админ может добавлять товары!");
+// --- Админ
+function adminLogin() {
+  const pass = prompt("Введите пароль администратора:");
+  if (pass === ADMIN_PASSWORD) {
+    admin = true;
+    alert("✅ Админ-режим активен");
+    $("addBtn").style.display = "inline-block";
+    $("logoutBtn").style.display = "inline-block";
+    document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "inline-flex");
+  } else alert("❌ Неверный пароль");
+}
+function logoutAdmin() {
+  admin = false;
+  alert("🚪 Вы вышли из админ-режима");
+  $("addBtn").style.display = "none";
+  $("logoutBtn").style.display = "none";
+  document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "none");
+}
+
+// --- Добавление/удаление
+function openAddProduct() {
+  if (!admin) return alert("Только админ может добавлять товары!");
   const o = $("addOverlay");
-  o.style.display = o.style.display==="flex" ? "none" : "flex";
+  o.style.display = o.style.display === "flex" ? "none" : "flex";
 }
-function addProduct(){
+function addProduct() {
   const name = $("newName").value.trim();
   const price = +$("newPrice").value;
   const img = $("newImg").value.trim();
-  const specs = $("newSpecs").value.split(",").map(x=>x.trim()).filter(Boolean);
-  if(!name || !price || !img) return alert("Заполните все поля!");
+  const specs = $("newSpecs").value.split(",").map(x => x.trim()).filter(Boolean);
+  if (!name || !price || !img) return alert("Заполните все поля!");
 
   products.push({ name, price, img, specs });
   localStorage.setItem("products", JSON.stringify(products));
@@ -251,55 +254,37 @@ function addProduct(){
   openAddProduct();
   render();
 }
-function deleteProduct(i){
-  if(!admin) return;
-  if(confirm("Удалить товар?")){
-    products.splice(i,1);
+function deleteProduct(i) {
+  if (!admin) return;
+  if (confirm("Удалить товар?")) {
+    products.splice(i, 1);
     localStorage.setItem("products", JSON.stringify(products));
     render();
   }
 }
 
-/* --- Админ вход/выход --- */
-function adminLogin(){
-  const pass = prompt("Введите пароль администратора:");
-  if(pass === ADMIN_PASSWORD){
-    admin = true;
-    alert("✅ Админ-режим активен");
-    $("addBtn").style.display = "inline-block";
-    $("logoutBtn").style.display = "inline-block";
-    document.querySelectorAll(".delete-btn").forEach(b=>b.style.display="inline-flex");
-  }else{
-    alert("❌ Неверный пароль");
-  }
-}
-function logoutAdmin(){
-  admin = false;
-  alert("🚪 Вы вышли из админ-режима");
-  $("addBtn").style.display = "none";
-  $("logoutBtn").style.display = "none";
-  document.querySelectorAll(".delete-btn").forEach(b=>b.style.display="none");
-}
-
-/* --- Alt + A: показать/скрыть кнопку "Войти как админ" --- */
-document.addEventListener("keydown", (e)=>{
-  if(e.altKey && e.code === "KeyA"){
+// --- Alt + A (вход в админку)
+document.addEventListener("keydown", e => {
+  if (e.altKey && e.code === "KeyA") {
     const b = $("adminLoginBtn");
-    if(getComputedStyle(b).display === "none"){
+    if (getComputedStyle(b).display === "none") {
       b.style.display = "inline-block";
-      setTimeout(()=> b.classList.add("show"), 10);
-    }else{
+      setTimeout(() => b.classList.add("show"), 10);
+    } else {
       b.classList.remove("show");
-      setTimeout(()=> b.style.display = "none", 300);
+      setTimeout(() => (b.style.display = "none"), 300);
     }
   }
 });
 
-/* --- Общие хэндлеры --- */
-function overlayClick(ev){ if(ev.target.classList.contains("overlay")) ev.target.style.display="none"; }
+// --- Оверлеи
+function overlayClick(ev) {
+  if (ev.target.classList.contains("overlay")) ev.target.style.display = "none";
+}
 
-/* стартовый рендер */
+// --- Запуск
 render();
+
 
 
 
