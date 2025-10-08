@@ -111,6 +111,20 @@
     </div>
   </div>
 
+ <!-- Информация о товаре -->
+<div id="infoOverlay" class="overlay" onclick="overlayClick(event)">
+  <div class="panel info-panel" onclick="event.stopPropagation()">
+    <img id="infoImg" alt="Фото товара"/>
+    <h2 id="infoTitle"></h2>
+    <p id="infoPrice" class="price"></p>
+    <ul id="infoSpecs"></ul>
+    <div class="row">
+      <button class="btn btn-primary" id="addToCartFromInfo">🧺 В корзину</button>
+      <button class="btn btn-glass" onclick="closeInfo()">✖ Закрыть</button>
+    </div>
+  </div>
+</div>
+
   <script src="script.js"></script>
 </body>
 </html>
