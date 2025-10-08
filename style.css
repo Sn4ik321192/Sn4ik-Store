@@ -11,18 +11,31 @@
   --muted: #9cc7ff;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
+
 html, body {
   height: 100%;
   margin: 0;
   font-family: "Poppins", sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
+
 body {
   color: var(--text);
   background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
   overflow-x: hidden;
+}
+
+/* ======= ФИКС ДЛЯ iPHONE: предотвращение увеличения ======= */
+input, textarea, select, button {
+  font-size: 16px; /* Safari zoom fix */
+  -webkit-text-size-adjust: 100%;
+}
+
+@supports (-webkit-touch-callout: none) {
+  input, textarea, select, button {
+    font-size: 16px !important;
+  }
 }
 
 /* ======= ХЕДЕР ======= */
@@ -104,7 +117,7 @@ body {
   padding: 22px;
 }
 
-/* ======= DROPDOWN (исправленный) ======= */
+/* ======= DROPDOWN ======= */
 .dropdown {
   position: relative;
   z-index: 50;
@@ -250,81 +263,33 @@ body {
 }
 .panel textarea { min-height: 70px; resize: none; }
 .row { display: flex; gap: 10px; margin-top: 6px; }
-.cart-buttons { display: flex; gap: 10px; margin-top: 10px; }
-
-/* ======= ПАНЕЛЬ ИНФОРМАЦИИ ======= */
-.info-panel img {
-  width: 220px;
-  margin: 8px auto 10px;
-  display: block;
-  border-radius: 18px;
-  box-shadow: 0 18px 40px rgba(28, 121, 255, 0.18);
-}
-#infoSpecs { max-height: 180px; overflow: auto; padding-left: 18px; }
-#infoSpecs li { margin: 6px 0; }
-
-/* ======= АНИМАЦИЯ УСПЕШНОЙ ПОКУПКИ (App Store style) ======= */
-.success-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+.cart-buttons {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  z-index: 999;
-  animation: fadeIn 0.4s ease;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
 }
 
-.success-checkmark {
+.cart-buttons .btn {
+  flex: 1;
+  min-width: 100px;
   text-align: center;
-  transform: scale(0.9);
-  opacity: 0;
-  animation: successPop 0.6s forwards ease-out;
+  font-size: 15px;
+  padding: 12px 0;
+  border-radius: 18px;
+  transition: 0.25s ease;
 }
 
-.success-checkmark svg {
-  width: 150px;
-  height: 150px;
-  overflow: visible; /* фикс обрезания круга */
-  stroke: #00ffb3;
-  stroke-width: 3.2;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 16px #00ffb3) drop-shadow(0 0 32px #00ffb3);
+.cart-buttons .btn-close {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
-
-.success-checkmark circle {
-  stroke-dasharray: 315;
-  stroke-dashoffset: 315;
-  animation: drawCircleSmooth 0.9s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+.cart-buttons .btn-close:hover {
+  background: rgba(255, 255, 255, 0.22);
 }
-
-.success-checkmark path {
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: drawCheckSmooth 0.5s ease forwards 0.5s;
-}
-
-.success-checkmark p {
-  margin-top: 10px;
-  color: #b9ffd8;
-  font-weight: 600;
-  font-size: 18px;
-  opacity: 0;
-  animation: textFade 0.8s ease forwards 0.9s;
-}
-
-/* ======= КЛЮЧЕВЫЕ КАДРЫ ======= */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes successPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes drawCircleSmooth { from { stroke-dashoffset: 315; } to { stroke-dashoffset: 0; } }
-@keyframes drawCheckSmooth { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
-@keyframes textFade { to { opacity: 1; } }
-
-/* ======= АДМИН КНОПКА ======= */
-.admin-toggle { opacity: 0; transition: opacity 0.35s; }
-.admin-toggle.show { display: inline-block !important; opacity: 1; }
 
 /* ======= АДАПТИВ ======= */
 @media (max-width: 560px) {
