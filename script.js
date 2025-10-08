@@ -210,7 +210,7 @@ function showSuccessAnimation() {
 }
 
 function playSuccessSound() {
-  const audio = new Audio("file:///C:/Users/sasab/OneDrive/Desktop/Sn4ik-Store-main/sounds/success.mp3.mp3"); // лёгкий App Store-style звук
+  const audio = new Audio("file:///C:/Users/sasab/Downloads/1642068871_1641201879pmntsccs.mp3"); // лёгкий App Store-style звук
   audio.volume = 0.45;
   audio.play().catch(() => {});
   if (navigator.vibrate) navigator.vibrate([40, 30, 40]); // глубокий мягкий эффект iPhone
@@ -284,6 +284,7 @@ function overlayClick(ev) {
 
 // --- Запуск
 render();
+
 
 
 
