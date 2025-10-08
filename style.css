@@ -72,16 +72,7 @@ body {
 .btn-glass { background: var(--glass); }
 .btn-pill { border-radius: 999px; padding: 12px 26px; }
 
-/* ======= КОНТРОЛЫ ======= */
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  padding: 22px;
-}
 
-/* ======= СЕТКА ======= */
 /* ======= СЕТКА ТОВАРОВ ======= */
 .grid {
   display: grid;
@@ -987,7 +978,6 @@ button:active::after {
 .card:nth-child(5) { animation-delay: 0.25s; }
 .card:nth-child(6) { animation-delay: 0.3s; }
 
-
 .search-wrap input {
   height: 36px; /* <-- вот это регулирует высоту */
   padding: 4px 14px; /* меньше отступы — тоже делает тоньше */
@@ -1002,20 +992,7 @@ button:active::after {
   }
 }
 
-/* 🔹 Уменьшаем расстояние между поиском и сортировкой */
-.controls {
-  margin-top: 6px !important; /* делаем ближе к поиску */
-  padding-top: 0 !important;
-}
 
-/* На телефоне ещё меньше отступ */
-@media (max-width: 768px) {
-  .controls {
-    margin-top: 2px !important;
-    padding-top: 0 !important;
-    gap: 6px !important;
-  }
-}
 /* === 📱 Кнопка корзины с кружком-счётчиком === */
 @media (max-width: 768px) {
   #cartBtn {
@@ -1067,29 +1044,45 @@ button:active::after {
     100% { transform: scale(1); }
   }
 }
-/* 🔹 Уменьшаем отступ между поиском и сортировкой (особенно на телефоне) */
-.controls {
-  margin-top: 4px !important;
-  padding-top: 0 !important;
+
+/* === 📏 Расположение поиска и сортировки — одно под другим === */
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* теперь поиск и сортировка в колонку */
+  gap: 4px; /* минимальное расстояние между ними */
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-/* Для мобильных — делаем ещё компактнее */
+/* Контейнер сортировки идёт сразу под поиском */
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* 📱 Для мобильных — всё по центру и компактно */
 @media (max-width: 768px) {
   .search-wrap {
-    margin-bottom: 4px !important; /* уменьшает промежуток */
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 0;
   }
 
   .controls {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    gap: 4px !important; /* уменьшает вертикальный интервал между элементами */
+    flex-direction: column;
+    margin-top: 0;
+    gap: 4px;
   }
 
   #sortDropdown {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    width: 90%;
+    text-align: center;
+    margin: 0 auto;
   }
 }
-
-
 
