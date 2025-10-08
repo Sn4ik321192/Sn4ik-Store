@@ -409,4 +409,54 @@ input, textarea, select, button {
   transition: 0.3s ease;
 }
 
+/* ======= ОКНО ИНФОРМАЦИИ О ТОВАРЕ ======= */
+.info-panel {
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  background: linear-gradient(180deg, #171923, #0d0f16);
+  border-radius: 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(28, 121, 255, 0.25);
+  transform: scale(0.8);
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.info-panel.pop-in {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.info-panel img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.info-panel h2 {
+  margin: 6px 0;
+  font-size: 22px;
+  color: #fff;
+}
+
+.info-panel .price {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.info-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 18px;
+  text-align: left;
+}
+
+.info-panel ul li {
+  margin: 4px 0;
+  color: #b0c7ff;
+  font-size: 15px;
+}
+
 
