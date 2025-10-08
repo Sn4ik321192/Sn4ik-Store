@@ -936,3 +936,35 @@ button:active::after {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* === Поле поиска — универсальный стиль === */
+.search-wrap input {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 16px;
+  outline: none;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* === 📱 На телефонах уменьшаем высоту === */
+@media (max-width: 768px) {
+  .search-wrap input {
+    padding: 6px 12px;     /* ↓↓↓ делает поле ниже */
+    font-size: 14px;
+    border-radius: 18px;   /* чуть меньше закругление */
+  }
+}
+
+@media (max-width: 480px) {
+  .search-wrap input {
+    padding: 5px 10px;     /* ещё тоньше на маленьких экранах */
+    font-size: 13px;
+    border-radius: 16px;
+  }
+}
+
