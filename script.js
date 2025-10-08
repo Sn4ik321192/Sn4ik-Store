@@ -9,7 +9,7 @@ let products = [
   { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] }
 ];
 
-// === Загружаем сохранённые товары из localStorage ===
+/* === Загружаем сохранённые товары === */
 const saved = localStorage.getItem("products");
 if (saved) {
   try {
@@ -97,7 +97,7 @@ function clearCart() {
   renderCart();
 }
 
-/* === Оформление заказа с Telegram уведомлением === */
+/* === Оформление заказа (Telegram + анимация) === */
 function placeOrder() {
   if (cart.length === 0) return alert("Корзина пуста 😅");
 
@@ -112,7 +112,6 @@ function placeOrder() {
 
   const message = `🛍 Новый заказ в A-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
 
-  // === Отправка уведомления в Telegram ===
   fetch("https://api.telegram.org/bot8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE/sendMessage", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -121,9 +120,12 @@ function placeOrder() {
   .then(res => res.json())
   .then(data => {
     if (data.ok) {
-      alert("✅ Заказ оформлен! Мы скоро свяжемся с вами.");
+      showSuccessAnimation();
+      cart = []; // 🧹 очищаем корзину
+      document.getElementById("cartCount").textContent = 0;
+      renderCart();
     } else {
-      console.error("Ошибка отправки:", data);
+      console.error("Ошибка Telegram:", data);
       alert("⚠️ Ошибка при отправке уведомления.");
     }
   })
@@ -131,16 +133,31 @@ function placeOrder() {
     console.error("Ошибка Telegram:", err);
     alert("⚠️ Ошибка соединения с Telegram.");
   });
+}
 
-  cart = [];
-  document.getElementById("cartCount").textContent = 0;
-  renderCart();
-  toggleCart();
+/* === Анимация успешной покупки === */
+function showSuccessAnimation() {
+  const overlay = document.createElement("div");
+  overlay.className = "success-overlay";
+  overlay.innerHTML = `
+    <div class="success-checkmark">
+      <svg viewBox="0 0 52 52">
+        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+      </svg>
+      <p>Покупка завершена</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById("cartOverlay").style.display = "none";
+  setTimeout(() => {
+    overlay.classList.add("fade-out");
+    setTimeout(() => overlay.remove(), 800);
+  }, 2000);
 }
 
 /* === Информация о товаре === */
 let currentProductIndex = null;
-
 function showInfo(i) {
   currentProductIndex = i;
   const p = products[i];
@@ -156,7 +173,6 @@ function showInfo(i) {
     li.textContent = s;
     ul.appendChild(li);
   });
-
   if (admin) {
     document.getElementById("adminEdit").style.display = "block";
     document.getElementById("editSpecs").value = p.specs.join(", ");
@@ -164,11 +180,7 @@ function showInfo(i) {
     document.getElementById("adminEdit").style.display = "none";
   }
 }
-
-function closeInfo() {
-  document.getElementById("infoOverlay").style.display = "none";
-}
-
+function closeInfo() { document.getElementById("infoOverlay").style.display = "none"; }
 function saveSpecs() {
   const txt = document.getElementById("editSpecs").value.trim();
   if (!txt) return;
@@ -178,25 +190,22 @@ function saveSpecs() {
   alert("✅ Характеристики обновлены!");
 }
 
-/* === Добавление / удаление товаров === */
+/* === Добавление / удаление === */
 function openAddProduct() {
   const o = document.getElementById("addOverlay");
   o.style.display = o.style.display === "flex" ? "none" : "flex";
 }
-
 function addProduct() {
   const name = newName.value;
   const price = +newPrice.value;
   const img = newImg.value;
   const specs = newSpecs.value.split(",").map(s => s.trim());
   if (!name || !price || !img) return alert("Заполните все поля!");
-
   products.push({ name, price, img, specs });
   localStorage.setItem("products", JSON.stringify(products));
   renderProducts();
   openAddProduct();
 }
-
 function deleteProduct(i) {
   if (!admin) return;
   if (confirm("Удалить товар?")) {
@@ -209,37 +218,34 @@ function deleteProduct(i) {
 /* === Поиск и сортировка === */
 function filterProducts() {
   const q = searchInput.value.toLowerCase();
-  document.getElementById("productList").innerHTML = "";
+  const list = document.getElementById("productList");
+  list.innerHTML = "";
   products.filter(p => p.name.toLowerCase().includes(q)).forEach((p, i) => {
     const d = document.createElement("div");
     d.className = "product";
     d.innerHTML = `<img src="${p.img}" alt="${p.name}" onclick="showInfo(${i})">
       <h3>${p.name}</h3><p>${p.price.toLocaleString()} ₽</p>
       <button onclick="addToCart(${i})">Добавить</button>`;
-    productList.appendChild(d);
+    list.appendChild(d);
   });
 }
-
 document.querySelector('.select-selected').addEventListener('click', function () {
   this.nextElementSibling.classList.toggle('select-hide');
 });
-
 function sortBy(type) {
   const items = document.querySelector('.select-items');
   items.classList.add('select-hide');
   document.querySelector('.select-selected').textContent =
     type === 'default' ? 'Сортировка ▼' :
     type === 'priceAsc' ? 'Цена ↑' :
-    type === 'priceDesc' ? 'Цена ↓' :
-    'По названию';
-
+    type === 'priceDesc' ? 'Цена ↓' : 'По названию';
   if (type === 'priceAsc') products.sort((a, b) => a.price - b.price);
   else if (type === 'priceDesc') products.sort((a, b) => b.price - a.price);
   else if (type === 'name') products.sort((a, b) => a.name.localeCompare(b.name));
   renderProducts();
 }
 
-/* === Авторизация администратора === */
+/* === Админ вход === */
 function adminLogin() {
   const pass = prompt("Введите пароль администратора:");
   if (pass === ADMIN_PASSWORD) {
@@ -250,7 +256,6 @@ function adminLogin() {
     document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "block");
   } else alert("❌ Неверный пароль!");
 }
-
 function logoutAdmin() {
   admin = false;
   alert("🚪 Вы вышли из админ-режима.");
@@ -259,7 +264,7 @@ function logoutAdmin() {
   document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "none");
 }
 
-/* === Горячая клавиша ALT + A === */
+/* === ALT + A === */
 document.addEventListener("keydown", e => {
   if (e.altKey && e.code === "KeyA") {
     const btn = document.getElementById("adminLoginBtn");
@@ -274,6 +279,7 @@ function overlayClick(e) {
 
 /* === Старт === */
 renderProducts();
+
 
 
 
