@@ -11,8 +11,14 @@
   --muted: #9cc7ff;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; font-family: "Poppins", sans-serif; }
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+}
 body {
   color: var(--text);
   background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
@@ -101,9 +107,8 @@ body {
 /* ======= DROPDOWN (исправленный) ======= */
 .dropdown {
   position: relative;
-  z-index: 50; /* чтобы кнопка и меню были поверх карточек */
+  z-index: 50;
 }
-
 .dropdown-menu {
   position: absolute;
   top: 110%;
@@ -116,14 +121,12 @@ body {
   background: rgba(23, 25, 35, 0.98);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-  z-index: 9999; /* теперь меню не будет обрезаться */
+  z-index: 9999;
 }
-
 .dropdown.open .dropdown-menu {
   display: block;
   animation: fadeIn 0.25s ease;
 }
-
 .dropdown-menu button {
   width: 100%;
   text-align: left;
@@ -135,11 +138,7 @@ body {
   cursor: pointer;
   transition: 0.2s;
 }
-
-.dropdown-menu button:hover {
-  background: rgba(28, 121, 255, 0.22);
-}
-
+.dropdown-menu button:hover { background: rgba(28, 121, 255, 0.22); }
 
 /* ======= ТОВАРЫ ======= */
 .grid {
@@ -251,7 +250,6 @@ body {
 }
 .panel textarea { min-height: 70px; resize: none; }
 .row { display: flex; gap: 10px; margin-top: 6px; }
-
 .cart-buttons { display: flex; gap: 10px; margin-top: 10px; }
 
 /* ======= ПАНЕЛЬ ИНФОРМАЦИИ ======= */
@@ -276,31 +274,38 @@ body {
   z-index: 999;
   animation: fadeIn 0.4s ease;
 }
+
 .success-checkmark {
   text-align: center;
   transform: scale(0.9);
   opacity: 0;
   animation: successPop 0.6s forwards ease-out;
 }
+
 .success-checkmark svg {
-  width: 120px;
-  height: 120px;
-  stroke: #00ff9c;
-  stroke-width: 4;
+  width: 150px;
+  height: 150px;
+  overflow: visible; /* фикс обрезания круга */
+  stroke: #00ffb3;
+  stroke-width: 3.2;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
+  filter: drop-shadow(0 0 16px #00ffb3) drop-shadow(0 0 32px #00ffb3);
 }
+
 .success-checkmark circle {
-  stroke-dasharray: 160;
-  stroke-dashoffset: 160;
-  animation: drawCircle 0.9s ease forwards;
+  stroke-dasharray: 315;
+  stroke-dashoffset: 315;
+  animation: drawCircleSmooth 0.9s cubic-bezier(0.55, 0, 0.1, 1) forwards;
 }
+
 .success-checkmark path {
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
-  animation: drawCheck 0.6s ease forwards 0.5s;
+  animation: drawCheckSmooth 0.5s ease forwards 0.5s;
 }
+
 .success-checkmark p {
   margin-top: 10px;
   color: #b9ffd8;
@@ -313,10 +318,9 @@ body {
 /* ======= КЛЮЧЕВЫЕ КАДРЫ ======= */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes successPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes drawCircle { from { stroke-dashoffset: 160; } to { stroke-dashoffset: 0; } }
-@keyframes drawCheck { to { stroke-dashoffset: 0; } }
+@keyframes drawCircleSmooth { from { stroke-dashoffset: 315; } to { stroke-dashoffset: 0; } }
+@keyframes drawCheckSmooth { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
 @keyframes textFade { to { opacity: 1; } }
-@keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
 
 /* ======= АДМИН КНОПКА ======= */
 .admin-toggle { opacity: 0; transition: opacity 0.35s; }
