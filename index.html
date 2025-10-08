@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sn4ik-Store</title>
   <link rel="stylesheet" href="style.css"/>
@@ -53,12 +54,11 @@
       <ul id="cartItems"></ul>
       <p class="total">Итого: <span id="totalPrice">0</span> ₽</p>
       <div class="cart-buttons">
-        <button class="btn btn-danger" onclick="clearCart()">🗑 Очистить</button>
-        <button class="btn btn-success" onclick="placeOrder()">💳 Оформить заказ</button>
-        <button class="btn btn-glass" onclick="toggleCart()">✖ Закрыть</button>
-      </div>
-    </div>
-  </div>
+  <button class="btn btn-danger" onclick="clearCart()">🗑 Очистить</button>
+  <button class="btn btn-success" onclick="placeOrder()">💳 Оформить заказ</button>
+  <button class="btn btn-close" onclick="toggleCart()">✖ Закрыть</button>
+</div>
+
 
   <!-- Добавление товара -->
   <div id="addOverlay" class="overlay" onclick="overlayClick(event)">
