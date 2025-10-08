@@ -20,6 +20,7 @@
 
     <button id="cartBtn" class="btn btn-glass" onclick="toggleCart()">🧺 Корзина (<span id="cartCount">0</span>)</button>
   </header>
+  
 
   <!-- Панель управления -->
   <section class="controls">
@@ -44,19 +45,20 @@
   <!-- Пагинация -->
   <div id="pagination" class="pagination"></div>
 
-  <!-- Корзина -->
-  <div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
-    <div class="panel cart-panel" onclick="event.stopPropagation()">
-      <h3>Корзина</h3>
-      <ul id="cartItems"></ul>
-      <p class="total">Итого: <span id="totalPrice">0</span> ₽</p>
-      <div class="cart-buttons">
-        <button class="btn btn-danger" onclick="clearCart()">🗑 Очистить</button>
-        <button class="btn btn-success" onclick="placeOrder()">💳 Оформить заказ</button>
-        <button class="btn btn-close" onclick="toggleCart()">✖ Закрыть</button>
-      </div>
+  <!-- === КОРЗИНА (ОКНО) === -->
+<div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
+  <div class="cart-window">
+    <h2>🛒 Ваша корзина</h2>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-total">
+      <p>Итого: <span id="totalPrice">0</span> ₽</p>
+      <button class="btn btn-order" onclick="placeOrder()">Оформить заказ</button>
+      <button class="btn btn-clear" onclick="clearCart()">Очистить</button>
+      <button class="btn btn-close" onclick="toggleCart()">Закрыть</button>
     </div>
   </div>
+</div>
+
 
   <!-- Оформление заказа -->
   <div id="orderOverlay" class="overlay" onclick="overlayClick(event)">
