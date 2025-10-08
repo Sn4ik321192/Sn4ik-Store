@@ -72,7 +72,25 @@ body {
 .btn-glass { background: var(--glass); }
 .btn-pill { border-radius: 999px; padding: 12px 26px; }
 
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  margin-top: 4px;
+}
 
+@media (max-width: 768px) {
+  .controls {
+    gap: 4px;
+    padding: 2px 0;
+    margin-top: 2px;
+  }
+}
+
+
+/* ======= СЕТКА ======= */
 /* ======= СЕТКА ТОВАРОВ ======= */
 .grid {
   display: grid;
@@ -992,7 +1010,6 @@ button:active::after {
   }
 }
 
-
 /* === 📱 Кнопка корзины с кружком-счётчиком === */
 @media (max-width: 768px) {
   #cartBtn {
@@ -1042,47 +1059,6 @@ button:active::after {
     0% { transform: scale(0.6); opacity: 0.3; }
     60% { transform: scale(1.2); opacity: 1; }
     100% { transform: scale(1); }
-  }
-}
-
-/* === 📏 Расположение поиска и сортировки — одно под другим === */
-.search-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column; /* теперь поиск и сортировка в колонку */
-  gap: 4px; /* минимальное расстояние между ними */
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-/* Контейнер сортировки идёт сразу под поиском */
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 0;
-  padding-top: 0;
-}
-
-/* 📱 Для мобильных — всё по центру и компактно */
-@media (max-width: 768px) {
-  .search-wrap {
-    flex-direction: column;
-    gap: 3px;
-    margin-bottom: 0;
-  }
-
-  .controls {
-    flex-direction: column;
-    margin-top: 0;
-    gap: 4px;
-  }
-
-  #sortDropdown {
-    width: 90%;
-    text-align: center;
-    margin: 0 auto;
   }
 }
 
