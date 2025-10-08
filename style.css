@@ -298,3 +298,63 @@ input, textarea, select, button {
   .panel { width: 92%; }
   .card img { height: 160px; }
 }
+
+/* ======= АНИМАЦИЯ УСПЕШНОЙ ПОКУПКИ (App Store style) ======= */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: fadeIn 0.4s ease;
+}
+
+.success-checkmark {
+  text-align: center;
+  transform: scale(0.9);
+  opacity: 0;
+  animation: successPop 0.6s forwards ease-out;
+}
+
+.success-checkmark svg {
+  width: 150px;
+  height: 150px;
+  overflow: visible;
+  stroke: #00ffb3;
+  stroke-width: 3.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 16px #00ffb3) drop-shadow(0 0 32px #00ffb3);
+}
+
+.success-checkmark circle {
+  stroke-dasharray: 315;
+  stroke-dashoffset: 315;
+  animation: drawCircleSmooth 0.9s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+}
+
+.success-checkmark path {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: drawCheckSmooth 0.5s ease forwards 0.5s;
+}
+
+.success-checkmark p {
+  margin-top: 10px;
+  color: #b9ffd8;
+  font-weight: 600;
+  font-size: 18px;
+  opacity: 0;
+  animation: textFade 0.8s ease forwards 0.9s;
+}
+
+/* ======= КЛЮЧЕВЫЕ КАДРЫ ======= */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes successPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes drawCircleSmooth { from { stroke-dashoffset: 315; } to { stroke-dashoffset: 0; } }
+@keyframes drawCheckSmooth { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
+@keyframes textFade { to { opacity: 1; } }
+
