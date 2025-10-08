@@ -1,370 +1,148 @@
-/* ======= БАЗОВЫЙ СТИЛЬ ======= */
-body {
-  font-family: "Poppins", sans-serif;
-  background: radial-gradient(circle at top left, #0a0a0f, #12121a);
-  color: #eaeaea;
-  margin: 0;
-  overflow-x: hidden;
+/* ===== БАЗА ===== */
+:root{
+  --bg:#0b0c12;
+  --card:#171923;
+  --glass:rgba(255,255,255,.08);
+  --stroke:rgba(255,255,255,.14);
+  --accent:#1c79ff;
+  --accent-2:#00d084;
+  --danger:#d14;
+  --text:#eaeaea;
+  --muted:#9cc7ff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:var(--text);
+  background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 15px 30px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* ===== ШАПКА ===== */
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px; position:sticky; top:0; z-index:10;
+  background:rgba(20,20,28,.55); backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
+.brand{display:flex;align-items:center;gap:10px;}
+.logo{font-size:28px}
+.brand-name{font-weight:700;font-size:26px;letter-spacing:.2px}
 
-h1 { font-weight: 600; }
+.search-wrap{flex:0 1 540px; display:flex; justify-content:center}
+.search-wrap input{
+  width:100%; max-width:420px;
+  padding:12px 18px; border-radius:30px; border:1px solid var(--stroke);
+  background:var(--glass); color:#fff; outline:none; transition:.25s;
+  text-align:center;
+}
+.search-wrap input:focus{background:rgba(255,255,255,.16); box-shadow:0 0 0 4px rgba(28,121,255,.18) inset;}
 
-input[type="text"] {
-  padding: 8px 15px;
-  border-radius: 20px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  outline: none;
-  transition: 0.3s;
-  width: 200px;
-}
-input[type="text"]:focus { background: rgba(255, 255, 255, 0.2); }
+.btn{border:1px solid var(--stroke); padding:11px 18px; border-radius:28px; color:#fff; cursor:pointer; transition:.25s; background:var(--glass)}
+.btn:hover{background:rgba(255,255,255,.18)}
+.btn-primary{background:linear-gradient(175deg,#3b8aff,#2163ff); border-color:transparent; box-shadow:0 8px 18px rgba(28,121,255,.25)}
+.btn-primary:hover{filter:brightness(1.06)}
+.btn-success{background:linear-gradient(175deg,#00e08f,#0abf78); border-color:transparent; box-shadow:0 8px 18px rgba(10,191,120,.25)}
+.btn-danger{background:linear-gradient(175deg,#ff5a7a,#c21a3a); border-color:transparent; box-shadow:0 8px 18px rgba(194,26,58,.25)}
+.btn-glass{background:var(--glass)}
+.btn-pill{background:var(--glass); padding:12px 26px; border-radius:999px; box-shadow:0 8px 24px rgba(28,121,255,.18) inset}
 
-#cartBtn, .controls button {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  color: #fff;
-  transition: all 0.3s ease;
-}
-#cartBtn:hover, .controls button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
-}
+/* ===== Контролы ===== */
+.controls{display:flex; justify-content:center; align-items:center; gap:14px; padding:22px}
 
-/* ======= ПАНЕЛЬ УПРАВЛЕНИЯ ======= */
-.controls {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 20px;
+/* Кастомный dropdown */
+.dropdown{position:relative}
+.dropdown-menu{
+  position:absolute; top:110%; left:50%; transform:translateX(-50%);
+  min-width:220px; padding:8px; border-radius:16px; display:none;
+  background:rgba(23,25,35,.98); border:1px solid var(--stroke);
+  box-shadow:0 20px 40px rgba(0,0,0,.45);
 }
+.dropdown.open .dropdown-menu{display:block}
+.dropdown-menu button{
+  display:block; width:100%; text-align:left;
+  background:transparent; border:none; color:#fff; padding:10px 12px;
+  border-radius:12px; cursor:pointer; transition:.2s;
+}
+.dropdown-menu button:hover{background:rgba(28,121,255,.22)}
 
-/* ======= КАСТОМНОЕ МЕНЮ СОРТИРОВКИ ======= */
-.custom-select { position: relative; width: 180px; }
-.select-selected {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 25px;
-  padding: 10px 20px;
-  color: #fff;
-  cursor: pointer;
-  text-align: center;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-  transition: 0.3s;
+/* Сетка товаров */
+.grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:28px; padding:24px 28px 10px;
 }
-.select-selected:hover {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+.card{
+  background:linear-gradient(180deg, #141725, #11131b);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:28px; padding:22px; text-align:center;
+  box-shadow: 0 30px 60px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  transition:transform .35s, box-shadow .35s;
 }
-.select-items {
-  position: absolute;
-  background: rgba(30, 30, 40, 0.98);
-  border-radius: 20px;
-  top: 110%;
-  left: 0;
-  right: 0;
-  z-index: 99;
-  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
-  overflow: hidden;
-}
-.select-items div {
-  padding: 12px 15px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.select-items div:hover {
-  background: rgba(0, 123, 255, 0.4);
-  color: #fff;
-}
-.select-hide { display: none; }
+.card:hover{transform:translateY(-6px); box-shadow:0 40px 80px rgba(0,0,0,.45)}
+.card img{width:100%; height:210px; object-fit:contain; border-radius:18px; user-select:none}
+.card h3{margin:14px 0 6px}
+.price{margin:0 0 10px; color:var(--muted); font-weight:600}
 
-/* ======= СЕТКА ТОВАРОВ ======= */
-#productList {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 25px;
-  padding: 30px;
+/* Кнопка удаления в карточке (только в админ-режиме) */
+.delete-btn{
+  display:none; position:absolute; top:12px; right:14px;
+  width:30px;height:30px;border-radius:50%; border:1px solid rgba(255,255,255,.2);
+  background:rgba(210,30,60,.4); color:#fff; cursor:pointer; transition:.2s;
 }
+.delete-btn:hover{background:rgba(210,30,60,.7)}
 
-.product {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 30px;
-  padding: 20px;
-  text-align: center;
-  backdrop-filter: blur(15px);
-  transition: transform 0.4s, box-shadow 0.4s;
-  position: relative;
+/* Пагинация */
+.pagination{display:flex; justify-content:center; gap:10px; padding:22px}
+.page-btn{
+  width:36px; height:36px; border-radius:50%; border:1px solid var(--stroke);
+  background:var(--glass); color:#fff; cursor:pointer; transition:.2s;
 }
-.product:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 35px rgba(0, 120, 255, 0.3);
-}
-.product img {
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 20px;
-  cursor: pointer;
-}
-.product h3 { margin: 10px 0 5px; }
-.product p { margin: 0; color: #9cd0ff; }
-.product button {
-  margin-top: 10px;
-  background: rgba(0, 123, 255, 0.2);
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  cursor: pointer;
-  color: #fff;
-  transition: 0.4s;
-}
-.product button:hover {
-  background: rgba(0, 123, 255, 0.5);
-  transform: scale(1.1);
-}
-.delete-btn {
-  display: none;
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: rgba(255, 50, 50, 0.5);
-  border: none;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.delete-btn:hover { background: rgba(255, 50, 50, 0.8); }
+.page-btn.active, .page-btn:hover{background:rgba(28,121,255,.38); border-color:transparent}
 
-/* ======= МОДАЛЬНЫЕ ОКНА ======= */
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
+/* Оверлеи + панели */
+.overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); backdrop-filter: blur(10px); align-items:center; justify-content:center; z-index:20}
+.panel{
+  width:340px; background:var(--card); border:1px solid var(--stroke); border-radius:24px; padding:22px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.4); animation: pop .28s ease;
 }
-.cart-panel, .add-panel, .info-panel {
-  background: rgba(30, 30, 40, 0.95);
-  border-radius: 25px;
-  padding: 25px;
-  width: 320px;
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 0 25px rgba(0, 120, 255, 0.2);
-}
+@keyframes pop{from{transform:translateY(-8px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-/* Поля форм в модалках */
-.add-panel input,
-.add-panel textarea,
-#adminEdit textarea {
-  width: 100%;
-  box-sizing: border-box;
-  margin: 8px 0;
-  padding: 10px 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-  outline: none;
-  transition: 0.2s;
+.panel h3{margin:0 0 12px}
+.panel input,.panel textarea{
+  width:100%; padding:12px 14px; margin:8px 0;
+  border-radius:14px; border:1px solid var(--stroke);
+  background:var(--glass); color:#fff; outline:none; transition:.2s;
 }
-.add-panel input:focus,
-.add-panel textarea:focus,
-#adminEdit textarea:focus {
-  border-color: rgba(0,123,255,0.6);
-  background: rgba(255,255,255,0.12);
-}
-.add-panel button {
-  margin-top: 8px;
-  border: none;
-  background: rgba(0,123,255,0.35);
-  padding: 10px 16px;
-  border-radius: 18px;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.add-panel button:hover { background: rgba(0,123,255,0.6); }
+.panel input:focus,.panel textarea:focus{background:rgba(255,255,255,.16); box-shadow:0 0 0 4px rgba(28,121,255,.18) inset}
+.panel textarea{min-height:70px; resize:none}
+.panel .row{display:flex; gap:10px; margin-top:6px}
+.total{margin:8px 0 12px}
 
-/* ======= КНОПКИ ======= */
-.btn {
-  border: none;
-  background: rgba(0, 123, 255, 0.3);
-  padding: 8px 15px;
-  border-radius: 20px;
-  cursor: pointer;
-  color: #fff;
-  transition: 0.3s;
-}
-.btn:hover { background: rgba(0, 123, 255, 0.6); }
+.cart-buttons{display:flex; gap:10px}
 
-/* ======= КНОПКИ КОРЗИНЫ (стекло) ======= */
-.cart-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
-  gap: 10px;
-}
-.cart-buttons .btn {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.08);
-  border: none;
-  border-radius: 25px;
-  padding: 10px 15px;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 10px rgba(0, 120, 255, 0.15);
-  font-weight: 500;
-}
-.cart-buttons .btn:hover {
-  background: rgba(0, 123, 255, 0.4);
-  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
-  transform: scale(1.05);
-}
-/* Очистить */
-.cart-buttons .btn:first-child {
-  background: rgba(255, 60, 60, 0.2);
-  box-shadow: 0 0 10px rgba(255, 60, 60, 0.3);
-}
-.cart-buttons .btn:first-child:hover {
-  background: rgba(255, 60, 60, 0.5);
-  box-shadow: 0 0 15px rgba(255, 60, 60, 0.7);
-}
-/* Оформить заказ */
-.cart-buttons .btn-order {
-  background: rgba(0, 200, 100, 0.25);
-  box-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
-}
-.cart-buttons .btn-order:hover {
-  background: rgba(0, 255, 150, 0.6);
-  box-shadow: 0 0 20px rgba(0, 255, 150, 0.8);
-  transform: scale(1.05);
-}
-/* Закрыть */
-.cart-buttons .btn:last-child {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
-.cart-buttons .btn:last-child:hover {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
+/* Панель информации о товаре */
+.info-panel img{width:220px; height:auto; margin:8px auto 10px; display:block; border-radius:18px; box-shadow:0 18px 40px rgba(28,121,255,.18)}
+#infoSpecs{max-height:180px; overflow:auto; margin:0 0 10px 0; padding-left:18px}
+#infoSpecs li{margin:6px 0}
 
-/* ======= ПАГИНАЦИЯ ======= */
-#pagination { text-align: center; margin-bottom: 40px; }
-.page-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 8px 12px;
-  margin: 3px;
-  cursor: pointer;
-  transition: 0.25s;
-}
-.page-btn:hover { transform: translateY(-2px); }
-.page-btn.active { background: rgba(0, 123, 255, 0.7); }
+/* Успешная покупка */
+.success-overlay{position:fixed; inset:0; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; z-index:30; animation:fadeIn .3s}
+.success-checkmark{ text-align:center; color:#fff; animation:scale .45s ease }
+.success-checkmark svg{ width:108px; height:108px; stroke:#00e08f; stroke-width:4; fill:none; stroke-linecap:round; stroke-linejoin:round }
+.success-checkmark p{margin-top:10px; color:#b9ffd8; font-weight:600}
+.fade-out{ animation:fadeOut .6s forwards }
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeOut{to{opacity:0}}
+@keyframes scale{from{transform:scale(.9);opacity:.2}to{transform:scale(1);opacity:1}}
 
-/* ======= ИНФОРМАЦИЯ О ТОВАРЕ ======= */
-.info-panel h3 { margin-bottom: 10px; font-size: 20px; }
+/* Плавное появление скрытой кнопки входа */
+.admin-toggle{opacity:0; transition:opacity .35s}
+.admin-toggle.show{display:inline-block !important; opacity:1}
 
-.info-panel img {
-  width: 220px;            /* уменьшили, чтобы не закрывало характеристики */
-  height: auto;
-  border-radius: 20px;
-  margin: 15px 0;
-  box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
-  transition: transform 0.3s ease;
-}
-.info-panel img:hover { transform: scale(1.05); }
-
-.info-panel p {
-  margin: 5px 0 10px;
-  font-weight: 500;
-  color: #9cd0ff;
-}
-
-#infoSpecs {
-  max-height: 200px;       /* аккуратная прокрутка списка характеристик */
-  overflow-y: auto;
-  text-align: left;
-  margin: 10px 0;
-  padding-right: 5px;
-}
-#infoSpecs li { list-style: square; text-align: left; margin-left: 20px; }
-
-/* ======= АНИМАЦИЯ УСПЕШНОЙ ПОКУПКИ ======= */
-.success-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.4s ease forwards;
-  z-index: 9999;
-}
-.success-checkmark { text-align: center; color: #fff; animation: popUp 0.6s ease; }
-.success-checkmark svg {
-  width: 100px;
-  height: 100px;
-  stroke: #4CAF50;
-  stroke-width: 4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  fill: none;
-  animation: drawCircle 0.8s ease forwards;
-}
-.checkmark-check {
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: drawCheck 0.5s 0.8s ease forwards;
-}
-.success-checkmark p {
-  margin-top: 15px;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: #aef7ae;
-  opacity: 0;
-  animation: fadeText 1.2s ease forwards 0.8s;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes popUp { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes drawCircle { 0% { stroke-dasharray: 0 157; } 100% { stroke-dasharray: 157 0; } }
-@keyframes drawCheck { to { stroke-dashoffset: 0; } }
-@keyframes fadeText { to { opacity: 1; } }
-.fade-out { animation: fadeOut 0.6s ease forwards; }
-@keyframes fadeOut { to { opacity: 0; } }
-
-/* ======= АДАПТИВ ======= */
-@media (max-width: 420px) {
-  header { padding: 12px 16px; }
-  input[type="text"] { width: 160px; }
-  .cart-panel, .add-panel, .info-panel { width: 92%; padding: 20px; }
-  .select-selected { padding: 10px 14px; }
+/* Адаптив */
+@media (max-width:560px){
+  .brand-name{font-size:20px}
+  .search-wrap{flex:1}
+  .panel{width:92%}
 }
