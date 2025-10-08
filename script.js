@@ -1,284 +1,300 @@
-let admin = false;
+/* ============ Sn4ik-Store — основной скрипт ============ */
+
+// --- Настройки
 const ADMIN_PASSWORD = "Alex2307";
+const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
+const TELEGRAM_CHAT_ID = "6509764945";
+
+// --- Состояния
+let admin = false;
+let cart = [];
+let currentPage = 1;
+const perPage = 6;
+let sortMode = "default";
+let query = "";
 
 let products = [
   { name: "IPhone 16 Pro", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/2486c908-e555-47df-b9a8-57993939a343.webp", },
   { name: "MacBook Air M3", price: 159990, img: "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mba_13_m3_2024_hero.png", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
   { name: "iPad Pro M4", price: 149990, img: "https://redstore.by/wp-content/uploads/2024/05/Apple-iPad-Pro-M4-2024-silver-11.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
   { name: "Apple Watch Ultra 2", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/bfb8e7b2-fe18-418c-93ad-311c34356135.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
-  { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] }
+  { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] },
+  
+  { name: "IPhone 15 Pro", price: 120000, img: "https://apple-market.ru/image/cache/catalog/iPhone%2015/iPhone%2015%20Pro%20Max/iPhone-15-Pro-Max-black-1.jpg_500.webp", },
+  { name: "MacBook Air M4", price: 159990, img: "https://cdn.omd.md/eshop-assets/product_catalog/5896/19d0f01c479e4413b36311234dc8aa73.wl.webp", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
+  { name: "iPad Pro M2", price: 149990, img: "https://action-jo-v2.action.jo/1497/1669110050_d52b8aae55b5cc3185e2.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
+  { name: "Apple Watch series 10", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/2e4d3cb0-1af5-48b0-9695-702bab4a2e89.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
+  { name: "AirPods 4", price: 29990, img: "https://cdn-ultra.esempla.com/storage/webp/3eded361-a4d0-467b-972d-2262912d0dea.webp", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] },
 ];
 
-/* === Загружаем сохранённые товары === */
-const saved = localStorage.getItem("products");
-if (saved) {
-  try {
-    products = JSON.parse(saved);
-    if (!Array.isArray(products)) throw new Error("Invalid data");
-  } catch (err) {
-    console.warn("Ошибка чтения localStorage:", err);
-    localStorage.removeItem("products");
-  }
+// Загрузка сохранённых товаров
+try{
+  const saved = JSON.parse(localStorage.getItem("products"));
+  if (Array.isArray(saved) && saved.length) products = saved;
+}catch(e){ localStorage.removeItem("products"); }
+
+// --- Утилиты
+const fmt = n => n.toLocaleString("ru-RU");
+const $(id) = (id)=> document.getElementById(id);
+
+// --- Рендер
+function getFiltered(){
+  let list = products.slice();
+  if (query) list = list.filter(p => p.name.toLowerCase().includes(query));
+  if (sortMode === "priceAsc") list.sort((a,b)=>a.price-b.price);
+  if (sortMode === "priceDesc") list.sort((a,b)=>b.price-a.price);
+  if (sortMode === "name") list.sort((a,b)=>a.name.localeCompare(b.name,"ru"));
+  return list;
 }
 
-let cart = [];
-let currentPage = 1;
-const itemsPerPage = 6;
-
-/* === Отображение товаров === */
-function renderProducts() {
-  const list = document.getElementById("productList");
+function render(){
+  const list = $("productList");
   list.innerHTML = "";
+  const items = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage-1)*perPage;
+  const pageItems = items.slice(start, start+perPage);
 
-  const start = (currentPage - 1) * itemsPerPage;
-  const pageProducts = products.slice(start, start + itemsPerPage);
-
-  pageProducts.forEach((p, i) => {
-    const div = document.createElement("div");
-    div.className = "product";
-    div.innerHTML = `
-      <img src="${p.img}" alt="${p.name}" onclick="showInfo(${start + i})">
+  pageItems.forEach((p, i) => {
+    const idx = products.indexOf(p);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <button class="delete-btn" onclick="deleteProduct(${idx})">✕</button>
+      <img src="${p.img}" alt="${p.name}" onclick="showInfo(${idx})">
       <h3>${p.name}</h3>
-      <p>${p.price.toLocaleString()} ₽</p>
-      <button onclick="addToCart(${start + i})">Добавить</button>
-      <button class="delete-btn" onclick="deleteProduct(${start + i})">✕</button>
+      <p class="price">${fmt(p.price)} ₽</p>
+      <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
     `;
-    list.appendChild(div);
+    list.appendChild(card);
   });
 
-  if (admin) document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "block");
-  renderPagination();
-}
-renderProducts();
+  // показать крестики в админ-режиме
+  document.querySelectorAll(".delete-btn").forEach(b => b.style.display = admin ? "inline-flex" : "none");
 
-/* === Пагинация === */
-function renderPagination() {
-  const total = Math.ceil(products.length / itemsPerPage);
-  const pg = document.getElementById("pagination");
-  pg.innerHTML = "";
-  for (let i = 1; i <= total; i++) {
+  renderPagination(totalPages);
+}
+function renderPagination(total){
+  const box = $("pagination");
+  box.innerHTML = "";
+  for(let i=1;i<=total;i++){
     const b = document.createElement("button");
+    b.className = "page-btn"+(i===currentPage?" active":"");
     b.textContent = i;
-    b.className = "page-btn" + (i === currentPage ? " active" : "");
-    b.onclick = () => { currentPage = i; renderProducts(); };
-    pg.appendChild(b);
+    b.onclick = ()=>{ currentPage=i; render(); };
+    box.appendChild(b);
   }
 }
+render();
 
-/* === Корзина === */
-function toggleCart() {
-  const o = document.getElementById("cartOverlay");
-  o.style.display = o.style.display === "flex" ? "none" : "flex";
-  renderCart();
+/* --- Поиск --- */
+function filterProducts(){
+  query = $("searchInput").value.trim().toLowerCase();
+  currentPage = 1;
+  render();
 }
 
-function addToCart(i) {
+/* --- Сортировка (кастомный dropdown) --- */
+(function initSort(){
+  const dd = $("sortDropdown");
+  const btn = $("sortBtn");
+  const menu = $("sortMenu");
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    dd.classList.toggle("open");
+  });
+  menu.querySelectorAll("button").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      sortMode = b.dataset.sort;
+      btn.textContent =
+        sortMode==="priceAsc" ? "Цена ↑" :
+        sortMode==="priceDesc" ? "Цена ↓" :
+        sortMode==="name" ? "По названию" : "Сортировка ▾";
+      dd.classList.remove("open");
+      render();
+    });
+  });
+  document.addEventListener("click", e => dd.classList.remove("open"));
+})();
+
+/* --- Корзина --- */
+function toggleCart(){
+  const o = $("cartOverlay");
+  o.style.display = o.style.display==="flex" ? "none" : "flex";
+  renderCart();
+}
+function addToCart(i){
   cart.push(products[i]);
-  document.getElementById("cartCount").textContent = cart.length;
+  $("cartCount").textContent = cart.length;
   renderCart();
 }
-
-function renderCart() {
-  const ul = document.getElementById("cartItems");
-  ul.innerHTML = "";
+function renderCart(){
+  const ul = $("cartItems");
+  ul.innerHTML="";
   let total = 0;
-  cart.forEach(p => {
-    total += p.price;
+  cart.forEach(p=>{
+    total+=p.price;
     const li = document.createElement("li");
-    li.textContent = `${p.name} — ${p.price.toLocaleString()} ₽`;
+    li.textContent = `${p.name} — ${fmt(p.price)} ₽`;
     ul.appendChild(li);
   });
-  document.getElementById("totalPrice").textContent = total.toLocaleString();
+  $("totalPrice").textContent = fmt(total);
 }
-
-function clearCart() {
+function clearCart(){
   cart = [];
-  document.getElementById("cartCount").textContent = 0;
+  $("cartCount").textContent = 0;
   renderCart();
 }
 
-/* === Оформление заказа (Telegram + анимация) === */
-function placeOrder() {
-  if (cart.length === 0) return alert("Корзина пуста 😅");
+/* --- Оформление заказа (модалка) --- */
+function placeOrder(){
+  if(!cart.length) return alert("Корзина пуста 😅");
+  $("orderOverlay").style.display = "flex";
+}
+function closeOrder(){ $("orderOverlay").style.display = "none"; }
 
-  const name = prompt("Введите ваше имя:");
-  if (!name) return alert("Имя обязательно!");
+function sendOrder(){
+  const name = $("orderName").value.trim();
+  const phone = $("orderPhone").value.trim();
+  const comment = $("orderComment").value.trim();
+  if(!name || !phone) return alert("Введите имя и номер телефона!");
 
-  const phone = prompt("Введите ваш номер телефона:");
-  if (!phone) return alert("Номер телефона обязателен!");
+  const summary = cart.map(p=>`• ${p.name} — ${fmt(p.price)} ₽`).join("\n");
+  const total = fmt(cart.reduce((s,p)=>s+p.price,0));
+  const message = `🛍 Новый заказ в Sn4ik-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n💬 Комментарий: ${comment||"—"}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
 
-  let summary = cart.map(p => `• ${p.name} — ${p.price.toLocaleString()} ₽`).join("\n");
-  let total = cart.reduce((s, p) => s + p.price, 0).toLocaleString();
-
-  const message = `🛍 Новый заказ в A-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
-
-  fetch("https://api.telegram.org/bot8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE/sendMessage", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: "6509764945", text: message })
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.ok) {
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.ok){
+      closeOrder();
       showSuccessAnimation();
-      cart = []; // 🧹 очищаем корзину
-      document.getElementById("cartCount").textContent = 0;
-      renderCart();
-    } else {
-      console.error("Ошибка Telegram:", data);
-      alert("⚠️ Ошибка при отправке уведомления.");
-    }
+      playSuccessSound();
+      clearCart();
+      toggleCart(); // закрыть корзину
+    }else alert("⚠️ Ошибка отправки сообщения.");
   })
-  .catch(err => {
-    console.error("Ошибка Telegram:", err);
-    alert("⚠️ Ошибка соединения с Telegram.");
-  });
+  .catch(()=> alert("⚠️ Ошибка соединения с Telegram"));
 }
 
-/* === Анимация успешной покупки === */
-function showSuccessAnimation() {
-  const overlay = document.createElement("div");
-  overlay.className = "success-overlay";
-  overlay.innerHTML = `
+/* --- Успех + звук --- */
+function showSuccessAnimation(){
+  const o = document.createElement("div");
+  o.className = "success-overlay";
+  o.innerHTML = `
     <div class="success-checkmark">
       <svg viewBox="0 0 52 52">
-        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
-        <path class="checkmark-check" fill="none" d="M14 27l7 7 16-16"/>
+        <circle cx="26" cy="26" r="25"></circle>
+        <path d="M14 27l7 7 16-16"></path>
       </svg>
       <p>Покупка завершена</p>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  document.getElementById("cartOverlay").style.display = "none";
-  setTimeout(() => {
-    overlay.classList.add("fade-out");
-    setTimeout(() => overlay.remove(), 800);
-  }, 2000);
+    </div>`;
+  document.body.appendChild(o);
+  setTimeout(()=>{ o.classList.add("fade-out"); setTimeout(()=>o.remove(),600); }, 1600);
+}
+function playSuccessSound(){
+  const a = new Audio("https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3");
+  a.volume = 0.45; a.play().catch(()=>{});
 }
 
-/* === Информация о товаре === */
-let currentProductIndex = null;
-function showInfo(i) {
-  currentProductIndex = i;
+/* --- Карточка товара (инфо) --- */
+let currentIdx = null;
+function showInfo(i){
+  currentIdx = i;
   const p = products[i];
-  const overlay = document.getElementById("infoOverlay");
-  overlay.style.display = "flex";
-  document.getElementById("infoTitle").textContent = p.name;
-  document.getElementById("infoImg").src = p.img;
-  document.getElementById("infoPrice").textContent = p.price.toLocaleString() + " ₽";
-  const ul = document.getElementById("infoSpecs");
+  $("infoImg").src = p.img;
+  $("infoTitle").textContent = p.name;
+  $("infoPrice").textContent = fmt(p.price) + " ₽";
+  const ul = $("infoSpecs");
   ul.innerHTML = "";
-  p.specs.forEach(s => {
-    const li = document.createElement("li");
-    li.textContent = s;
-    ul.appendChild(li);
-  });
-  if (admin) {
-    document.getElementById("adminEdit").style.display = "block";
-    document.getElementById("editSpecs").value = p.specs.join(", ");
-  } else {
-    document.getElementById("adminEdit").style.display = "none";
-  }
+  p.specs.forEach(s=>{ const li=document.createElement("li"); li.textContent=s; ul.appendChild(li); });
+  $("adminEdit").style.display = admin ? "block" : "none";
+  $("editSpecs").value = p.specs.join(", ");
+  $("infoOverlay").style.display = "flex";
 }
-function closeInfo() { document.getElementById("infoOverlay").style.display = "none"; }
-function saveSpecs() {
-  const txt = document.getElementById("editSpecs").value.trim();
-  if (!txt) return;
-  products[currentProductIndex].specs = txt.split(",").map(s => s.trim());
+function closeInfo(){ $("infoOverlay").style.display = "none"; }
+function saveSpecs(){
+  const txt = $("editSpecs").value.trim();
+  if(!txt) return;
+  products[currentIdx].specs = txt.split(",").map(x=>x.trim()).filter(Boolean);
   localStorage.setItem("products", JSON.stringify(products));
-  showInfo(currentProductIndex);
+  showInfo(currentIdx);
   alert("✅ Характеристики обновлены!");
 }
 
-/* === Добавление / удаление === */
-function openAddProduct() {
-  const o = document.getElementById("addOverlay");
-  o.style.display = o.style.display === "flex" ? "none" : "flex";
+/* --- Добавление/удаление товаров --- */
+function openAddProduct(){
+  if(!admin) return alert("Только админ может добавлять товары!");
+  const o = $("addOverlay");
+  o.style.display = o.style.display==="flex" ? "none" : "flex";
 }
-function addProduct() {
-  const name = newName.value;
-  const price = +newPrice.value;
-  const img = newImg.value;
-  const specs = newSpecs.value.split(",").map(s => s.trim());
-  if (!name || !price || !img) return alert("Заполните все поля!");
+function addProduct(){
+  const name = $("newName").value.trim();
+  const price = +$("newPrice").value;
+  const img = $("newImg").value.trim();
+  const specs = $("newSpecs").value.split(",").map(x=>x.trim()).filter(Boolean);
+  if(!name || !price || !img) return alert("Заполните все поля!");
+
   products.push({ name, price, img, specs });
   localStorage.setItem("products", JSON.stringify(products));
-  renderProducts();
+  $("newName").value = $("newPrice").value = $("newImg").value = $("newSpecs").value = "";
   openAddProduct();
+  render();
 }
-function deleteProduct(i) {
-  if (!admin) return;
-  if (confirm("Удалить товар?")) {
-    products.splice(i, 1);
+function deleteProduct(i){
+  if(!admin) return;
+  if(confirm("Удалить товар?")){
+    products.splice(i,1);
     localStorage.setItem("products", JSON.stringify(products));
-    renderProducts();
+    render();
   }
 }
 
-/* === Поиск и сортировка === */
-function filterProducts() {
-  const q = searchInput.value.toLowerCase();
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  products.filter(p => p.name.toLowerCase().includes(q)).forEach((p, i) => {
-    const d = document.createElement("div");
-    d.className = "product";
-    d.innerHTML = `<img src="${p.img}" alt="${p.name}" onclick="showInfo(${i})">
-      <h3>${p.name}</h3><p>${p.price.toLocaleString()} ₽</p>
-      <button onclick="addToCart(${i})">Добавить</button>`;
-    list.appendChild(d);
-  });
-}
-document.querySelector('.select-selected').addEventListener('click', function () {
-  this.nextElementSibling.classList.toggle('select-hide');
-});
-function sortBy(type) {
-  const items = document.querySelector('.select-items');
-  items.classList.add('select-hide');
-  document.querySelector('.select-selected').textContent =
-    type === 'default' ? 'Сортировка ▼' :
-    type === 'priceAsc' ? 'Цена ↑' :
-    type === 'priceDesc' ? 'Цена ↓' : 'По названию';
-  if (type === 'priceAsc') products.sort((a, b) => a.price - b.price);
-  else if (type === 'priceDesc') products.sort((a, b) => b.price - a.price);
-  else if (type === 'name') products.sort((a, b) => a.name.localeCompare(b.name));
-  renderProducts();
-}
-
-/* === Админ вход === */
-function adminLogin() {
+/* --- Админ вход/выход --- */
+function adminLogin(){
   const pass = prompt("Введите пароль администратора:");
-  if (pass === ADMIN_PASSWORD) {
+  if(pass === ADMIN_PASSWORD){
     admin = true;
-    alert("✅ Вход выполнен. Админ-режим активен.");
-    document.getElementById("addBtn").style.display = "inline-block";
-    document.getElementById("logoutBtn").style.display = "inline-block";
-    document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "block");
-  } else alert("❌ Неверный пароль!");
+    alert("✅ Админ-режим активен");
+    $("addBtn").style.display = "inline-block";
+    $("logoutBtn").style.display = "inline-block";
+    document.querySelectorAll(".delete-btn").forEach(b=>b.style.display="inline-flex");
+  }else{
+    alert("❌ Неверный пароль");
+  }
 }
-function logoutAdmin() {
+function logoutAdmin(){
   admin = false;
-  alert("🚪 Вы вышли из админ-режима.");
-  document.getElementById("addBtn").style.display = "none";
-  document.getElementById("logoutBtn").style.display = "none";
-  document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "none");
+  alert("🚪 Вы вышли из админ-режима");
+  $("addBtn").style.display = "none";
+  $("logoutBtn").style.display = "none";
+  document.querySelectorAll(".delete-btn").forEach(b=>b.style.display="none");
 }
 
-/* === ALT + A === */
-document.addEventListener("keydown", e => {
-  if (e.altKey && e.code === "KeyA") {
-    const btn = document.getElementById("adminLoginBtn");
-    btn.style.display = btn.style.display === "none" ? "inline-block" : "none";
+/* --- Alt + A: показать/скрыть кнопку "Войти как админ" --- */
+document.addEventListener("keydown", (e)=>{
+  if(e.altKey && e.code === "KeyA"){
+    const b = $("adminLoginBtn");
+    if(getComputedStyle(b).display === "none"){
+      b.style.display = "inline-block";
+      setTimeout(()=> b.classList.add("show"), 10);
+    }else{
+      b.classList.remove("show");
+      setTimeout(()=> b.style.display = "none", 300);
+    }
   }
 });
 
-/* === Закрытие оверлеев === */
-function overlayClick(e) {
-  if (e.target.classList.contains("overlay")) e.target.style.display = "none";
-}
+/* --- Общие хэндлеры --- */
+function overlayClick(ev){ if(ev.target.classList.contains("overlay")) ev.target.style.display="none"; }
 
-/* === Старт === */
-renderProducts();
+/* стартовый рендер */
+render();
 
 
 
