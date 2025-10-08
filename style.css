@@ -1036,3 +1036,18 @@ button:active::after {
   }
 }
 
+/* 🔹 Уменьшаем расстояние между поиском и сортировкой */
+.controls {
+  margin-top: 6px !important; /* делаем ближе к поиску */
+  padding-top: 0 !important;
+}
+
+/* На телефоне ещё меньше отступ */
+@media (max-width: 768px) {
+  .controls {
+    margin-top: 2px !important;
+    padding-top: 0 !important;
+    gap: 6px !important;
+  }
+}
+
