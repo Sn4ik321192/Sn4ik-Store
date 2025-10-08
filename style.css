@@ -1061,4 +1061,18 @@ button:active::after {
     100% { transform: scale(1); }
   }
 }
+@media (max-width: 768px) {
+  .search-wrap {
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+  .search-wrap input {
+    height: 32px;
+    padding: 2px 12px;
+    font-size: 13px;
+    border-radius: 10px;
+    max-width: 100%;
+  }
+}
 
