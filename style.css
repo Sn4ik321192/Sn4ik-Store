@@ -668,4 +668,271 @@ body {
     margin: 10px auto;
   }
 }
+/* === ОКНО КОРЗИНЫ === */
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.cart-window {
+  background: #101217;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  color: #fff;
+  animation: cartFadeIn 0.4s ease;
+}
+
+@keyframes cartFadeIn {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: #1a1d24;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.cart-total {
+  text-align: right;
+}
+
+.btn-order, .btn-clear, .btn-close {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-order { background: #007bff; color: white; }
+.btn-clear { background: #e63946; color: white; }
+.btn-close { background: #444; color: white; }
+/* === Подсветка и подпрыгивание корзины === */
+@keyframes cartGlow {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0px #00ff88;
+    background: transparent;
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px #00ff88;
+    background: rgba(0, 255, 136, 0.15);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0px transparent;
+    background: transparent;
+  }
+}
+
+.cart-pulse {
+  animation: cartGlow 0.6s ease;
+}
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
+  border: 1px solid rgba(0, 140, 255, 0.6);
+}
+.card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.2s; }
+.card:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.overlay {
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.5);
+  transition: opacity 0.4s ease;
+}
+.cart-window {
+  animation: popUp 0.4s ease;
+}
+@keyframes popUp {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.dropdown button {
+  position: relative;
+  overflow: hidden;
+}
+.dropdown button::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 255, 136, 0.2);
+  top: 100%;
+  left: 0;
+  transition: top 0.3s ease;
+}
+.dropdown button:hover::after {
+  top: 0;
+}
+/* === 💙 Градиентные кнопки с плавной анимацией наведения === */
+button, .btn, .btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(270deg, #0077ff, #00aaff, #0077ff);
+  background-size: 300% 300%;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition:
+    transform 0.4s cubic-bezier(0.25, 1, 0.3, 1),
+    box-shadow 0.5s ease,
+    filter 0.4s ease,
+    opacity 0.4s ease;
+  animation: gradientFlow 6s ease infinite;
+  box-shadow: 0 0 15px rgba(0, 140, 255, 0.3);
+}
+
+/* === Эффект наведения === */
+button:hover, .btn:hover, .btn-primary:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
+  filter: brightness(1.2);
+  opacity: 0.95;
+}
+
+/* === Кликаем — лёгкая вспышка === */
+button:active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(0, 140, 255, 0.4);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: btnFlashBlue 0.6s ease-out forwards;
+}
+
+/* === Анимация движения градиента === */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes btnFlashBlue {
+  0% { width: 0; height: 0; opacity: 1; }
+  100% { width: 280%; height: 280%; opacity: 0; }
+}
+/* === 📱 Адаптив для поиска (мобильная версия) === */
+@media (max-width: 768px) {
+  #search-bar {
+    width: 90%;
+    max-width: 350px;
+    margin: 10px auto;
+  }
+
+  #search-bar input {
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    height: 42px; /* 🔹 уменьшили высоту */
+  }
+
+  header h1 {
+    font-size: 20px;
+  }
+
+  nav button {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+/* === 💙 Анимация корзины при добавлении товара === */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cartGlow {
+  0% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
+  50% { box-shadow: 0 0 20px 5px rgba(0, 150, 255, 0.8); }
+  100% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
+}
+
+#cartBtn.cart-animate {
+  animation: cartBounce 0.5s ease, cartGlow 0.8s ease;
+}
+/* === 🛒 Фото товаров в корзине === */
+.cart-items img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain; /* чтобы не обрезалось */
+  border-radius: 10px;
+  background: #111;
+  padding: 5px;
+  margin-right: 10px;
+  display: block;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
+}
+
+.cart-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
 
