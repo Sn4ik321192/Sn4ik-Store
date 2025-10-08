@@ -935,38 +935,26 @@ button:active::after {
 .cart-item:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-
-/* === Поле поиска — универсальный стиль === */
+/* === 📱 Исправление высоты поля поиска === */
 .search-wrap input {
   width: 100%;
   max-width: 600px;
-  padding: 12px 18px;
-  border-radius: 25px;
+  padding: 8px 14px; /* было 12px 18px — уменьшаем */
+  border-radius: 20px;
   border: none;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
-  font-size: 16px;
-  outline: none;
+  font-size: 15px;
   text-align: center;
+  outline: none;
   transition: all 0.3s ease;
 }
 
-/* === 📱 На телефонах уменьшаем высоту === */
-@media (max-width: 768px) {
-  .search-wrap input {
-    padding: 6px 12px;     /* ↓↓↓ делает поле ниже */
-    font-size: 14px;
-    border-radius: 18px;   /* чуть меньше закругление */
-  }
+.search-wrap input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 10px rgba(0, 140, 255, 0.4);
 }
 
-@media (max-width: 480px) {
-  .search-wrap input {
-    padding: 5px 10px;     /* ещё тоньше на маленьких экранах */
-    font-size: 13px;
-    border-radius: 16px;
-  }
-}
 
 /* === 📱 Исправление поля поиска только на телефонах === */
 @media (max-width: 768px) {
@@ -1034,6 +1022,17 @@ button:active::after {
     transform: scale(1.1);
   }
 }
-
-
+.search-wrap input {
+  height: 36px; /* <-- вот это регулирует высоту */
+  padding: 4px 14px; /* меньше отступы — тоже делает тоньше */
+  font-size: 14px;
+  border-radius: 12px;
+}
+@media (max-width: 768px) {
+  .search-wrap input {
+    height: 28px;        /* делаем ниже только на телефоне */
+    padding: 2px 12px;   /* чуть меньше отступы */
+    font-size: 13px;     /* и текст меньше */
+  }
+}
 
