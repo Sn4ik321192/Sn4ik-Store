@@ -152,6 +152,41 @@ function clearCart() {
   renderCart();
 }
 
+// --- Информация о товаре ---
+function showInfo(i) {
+  const product = products[i];
+  $("infoImg").src = product.img;
+  $("infoTitle").textContent = product.name;
+  $("infoPrice").textContent = fmt(product.price) + " ₽";
+
+  const list = $("infoSpecs");
+  list.innerHTML = "";
+  product.specs.forEach(spec => {
+    const li = document.createElement("li");
+    li.textContent = "• " + spec;
+    list.appendChild(li);
+  });
+
+  $("infoOverlay").style.display = "flex";
+
+  // Добавляем анимацию появления
+  const panel = document.querySelector(".info-panel");
+  panel.classList.remove("pop-in");
+  void panel.offsetWidth; // перезапуск анимации
+  panel.classList.add("pop-in");
+
+  // Кнопка "Добавить в корзину" работает напрямую
+  $("addToCartFromInfo").onclick = () => {
+    addToCart(i);
+    closeInfo();
+  };
+}
+
+function closeInfo() {
+  $("infoOverlay").style.display = "none";
+}
+
+
 // --- Оформление заказа
 function placeOrder() {
   
@@ -351,6 +386,7 @@ function exportProducts() {
 
   alert("✅ Файл products.json успешно сохранён!");
 }
+
 
 
 
