@@ -181,11 +181,11 @@ function render() {
       <p class="price">${fmt(p.price)} ₽</p>
       <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
     `;
-
+    
     list.appendChild(card);
   });
 
-  renderPagination(totalPages);
+  renderPagination(totalPages);Ss
 }
 
 function renderPagination(total) {
@@ -232,8 +232,8 @@ function filterProducts() {
 
 // --- Корзина
 function toggleCart() {
-  const o = $("cartOverlay");
-  o.style.display = o.style.display === "flex" ? "none" : "flex";
+  const overlay = $("cartOverlay");
+  overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
   renderCart();
 }
 
@@ -242,21 +242,46 @@ function addToCart(i) {
   cart.push(product);
   $("cartCount").textContent = cart.length;
   renderCart();
+
+  // Эффект корзины при добавлении
+const cartBtn = $("cartBtn");
+cartBtn.classList.add("cart-animate");
+setTimeout(() => cartBtn.classList.remove("cart-animate"), 800);
+li.classList.add("cart-item");
+li.innerHTML = `
+  <img src="${p.img}" alt="${p.name}">
+  <div>
+    <strong>${p.name}</strong><br>
+    ${fmt(p.price)} ₽
+  </div>
+  <button onclick="removeFromCart(${index})" class="btn btn-danger">✕</button>
+`;
+
+  
 }
 
+
+
 function renderCart() {
-  const ul = $("cartItems");
-  ul.innerHTML = "";
+  const container = $("cartItems");
+  container.innerHTML = "";
   let total = 0;
+
   cart.forEach((p, index) => {
     total += p.price;
-    const li = document.createElement("li");
-    li.innerHTML = `
-      ${p.displayName || p.name} — ${fmt(p.price)} ₽
-      <button onclick="removeFromCart(${index})" style="margin-left: 10px; background: var(--danger); border: none; color: white; border-radius: 4px; padding: 2px 6px;">✕</button>
+    const item = document.createElement("div");
+    item.className = "cart-item";
+    item.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div class="cart-info">
+        <h4>${p.displayName || p.name}</h4>
+        <p>${fmt(p.price)} ₽</p>
+        <button onclick="removeFromCart(${index})" class="btn btn-clear" style="padding:5px 8px;">✕</button>
+      </div>
     `;
-    ul.appendChild(li);
+    container.appendChild(item);
   });
+
   $("totalPrice").textContent = fmt(total);
 }
 
@@ -271,6 +296,11 @@ function clearCart() {
   $("cartCount").textContent = 0;
   renderCart();
 }
+
+function overlayClick(ev) {
+  if (ev.target.classList.contains("overlay")) ev.target.style.display = "none";
+}
+
 
 // --- Модалка товара с цветом и памятью
 function showProductModal(i) {
