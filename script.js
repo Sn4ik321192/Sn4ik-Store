@@ -196,7 +196,7 @@ function showSuccessAnimation() {
     <div class="success-checkmark">
       <svg viewBox="0 0 120 120">
         <circle cx="60" cy="60" r="50" />
-        <path d="M40 65l15 15 25-35" />
+        <path d="M38 62 L55 78 L84 45" />
       </svg>
       <p>Покупка завершена</p>
     </div>`;
