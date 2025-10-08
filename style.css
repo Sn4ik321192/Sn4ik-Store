@@ -987,41 +987,7 @@ button:active::after {
 .card:nth-child(5) { animation-delay: 0.25s; }
 .card:nth-child(6) { animation-delay: 0.3s; }
 
-/* === 📱 Версия для телефона — кнопка корзины в виде круга === */
-@media (max-width: 768px) {
-  #cartBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    padding: 0;
-    font-size: 22px;
-    background: rgba(0, 140, 255, 0.15);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 12px rgba(0, 140, 255, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-  }
 
-  #cartBtn span {
-    display: none; /* убираем текст "(0)" */
-  }
-
-  #cartBtn::after {
-    content: "🛒";
-    font-size: 22px;
-  }
-
-  #cartBtn:hover {
-    background: rgba(0, 140, 255, 0.3);
-    box-shadow: 0 0 18px rgba(0, 140, 255, 0.6);
-    transform: scale(1.1);
-  }
-}
 .search-wrap input {
   height: 36px; /* <-- вот это регулирует высоту */
   padding: 4px 14px; /* меньше отступы — тоже делает тоньше */
@@ -1050,4 +1016,56 @@ button:active::after {
     gap: 6px !important;
   }
 }
+/* === 📱 Кнопка корзины с кружком-счётчиком === */
+@media (max-width: 768px) {
+  #cartBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 140, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(0, 140, 255, 0.4);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  #cartBtn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 140, 255, 0.7);
+    background: rgba(0, 140, 255, 0.25);
+  }
+
+  /* 🔵 Маленький кружок со счётчиком */
+  .cart-badge {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: #1c79ff;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(0, 140, 255, 0.6);
+    font-weight: bold;
+    animation: badgePop 0.4s ease;
+  }
+
+  @keyframes badgePop {
+    0% { transform: scale(0.6); opacity: 0.3; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+}
+
 
