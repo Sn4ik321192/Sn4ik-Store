@@ -237,15 +237,19 @@ function adminLogin() {
     admin = true;
     alert("✅ Админ-режим активен");
     $("addBtn").style.display = "inline-block";
+    $("exportBtn").style.display = "inline-block";
     $("logoutBtn").style.display = "inline-block";
     document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "inline-flex");
   } else alert("❌ Неверный пароль");
 }
+
 function logoutAdmin() {
   admin = false;
   alert("🚪 Вы вышли из админ-режима");
   $("addBtn").style.display = "none";
   $("logoutBtn").style.display = "none";
+  $("exportBtn").style.display = "none";
+
   document.querySelectorAll(".delete-btn").forEach(b => b.style.display = "none");
 }
 
@@ -253,20 +257,49 @@ function logoutAdmin() {
 function openAddProduct() {
   if (!admin) return alert("Только админ может добавлять товары!");
   const o = $("addOverlay");
-  o.style.display = o.style.display === "flex" ? "none" : "flex";
+  const controls = document.querySelector(".controls");
+  const isOpen = o.style.display === "flex";
+
+  // Переключаем отображение окна
+  o.style.display = isOpen ? "none" : "flex";
+
+  // Скрываем / показываем панель управления (сортировка, кнопки)
+  if (!isOpen) {
+    controls.style.display = "none";
+  } else {
+    controls.style.display = "flex";
+  }
 }
+
 function addProduct() {
   const name = $("newName").value.trim();
   const price = +$("newPrice").value;
   const img = $("newImg").value.trim();
   const specs = $("newSpecs").value.split(",").map(x => x.trim()).filter(Boolean);
-  if (!name || !price || !img) return alert("Заполните все поля!");
 
+  if (!name || !price || !img) {
+    alert("⚠️ Заполните все поля!");
+    return;
+  }
+
+  // Добавляем товар в массив
   products.push({ name, price, img, specs });
+
+  // Сохраняем в localStorage
   localStorage.setItem("products", JSON.stringify(products));
-  $("newName").value = $("newPrice").value = $("newImg").value = $("newSpecs").value = "";
+
+  // Очищаем поля формы
+  $("newName").value = "";
+  $("newPrice").value = "";
+  $("newImg").value = "";
+  $("newSpecs").value = "";
+
+  // Закрываем окно и обновляем список
   openAddProduct();
   render();
+
+  // Уведомление
+  alert("✅ Товар успешно добавлен и сохранён!");
 }
 function deleteProduct(i) {
   if (!admin) return;
@@ -298,6 +331,27 @@ function overlayClick(ev) {
 
 // --- Запуск
 render();
+
+// --- Экспорт товаров в файл JSON ---
+function exportProducts() {
+  if (!admin) return alert("Только админ может экспортировать товары!");
+
+  const dataStr = JSON.stringify(products, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "products.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+
+  alert("✅ Файл products.json успешно сохранён!");
+}
+
 
 
 
