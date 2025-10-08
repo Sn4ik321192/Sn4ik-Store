@@ -1067,5 +1067,29 @@ button:active::after {
     100% { transform: scale(1); }
   }
 }
+/* 🔹 Уменьшаем отступ между поиском и сортировкой (особенно на телефоне) */
+.controls {
+  margin-top: 4px !important;
+  padding-top: 0 !important;
+}
+
+/* Для мобильных — делаем ещё компактнее */
+@media (max-width: 768px) {
+  .search-wrap {
+    margin-bottom: 4px !important; /* уменьшает промежуток */
+  }
+
+  .controls {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    gap: 4px !important; /* уменьшает вертикальный интервал между элементами */
+  }
+
+  #sortDropdown {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
+
 
 
