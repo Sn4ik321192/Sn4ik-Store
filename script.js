@@ -1,838 +1,402 @@
-/* ======= ОСНОВНЫЕ ПЕРЕМЕННЫЕ ======= */
-:root {
-  --bg: #0b0c12;
-  --card: #171923;
-  --glass: rgba(255, 255, 255, 0.08);
-  --stroke: rgba(255, 255, 255, 0.14);
-  --accent: #1c79ff;
-  --accent-2: #00d084;
-  --danger: #d14;
-  --text: #eaeaea;
-  --muted: #9cc7ff;
+/* ============ Sn4ik-Store — основной скрипт ============ */
+
+// --- Настройки
+const ADMIN_PASSWORD = "Alex2307";
+const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
+const TELEGRAM_CHAT_ID = "6509764945";
+
+// --- Состояния
+let admin = false;
+let cart = [];
+let currentPage = 1;
+const perPage = 6;
+let sortMode = "default";
+let query = "";
+
+// --- Данные (по умолчанию)
+let products = [
+  {
+    "name": "iPhone 16 Pro Max",
+    "price": 199990,
+    "img": "https://e-catalog.md/storage/ultra_images/66f2e54b3fe70.webp",
+    "specs": ["Чип A18 Pro", "Дисплей 6.9″ 120 Гц", "Титан", "Камера 48 МП", "Батарея 5000 мАч"],
+    "memory": [
+      { "size": "256 ГБ", "price": 199990 },
+      { "size": "512 ГБ", "price": 229990 },
+      { "size": "1 ТБ", "price": 259990 }
+    ],
+    "colors": [
+      { "name": "Черный титан", "color": "#212329ff", "img": "https://e-catalog.md/storage/ultra_images/66f2e54b3fe70.webp" },
+      { "name": "Натуральный титан", "color": "#b6b1a9", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-pro-natural-titanium-1.png" },
+      { "name": "Белый титан", "color": "#f4f4f4", "img": "file:///C:/Users/sasab/Downloads/iphone_16_pro_white_1_1725911507571-preview-webp.png" }
+    ]
+  },
+  {
+    "name": "iPhone 16 Pro",
+    "price": 154990,
+    "img": "https://e-catalog.md/storage/ultra_images/66f2e54b3fe70.webp",
+    "specs": ["Чип A18 Pro", "Дисплей 6.3″ 120 Гц", "Титан", "Камера 48 МП", "Батарея 4500 мАч"],
+    "memory": [
+      { "size": "128 ГБ", "price": 154990 },
+      { "size": "256 ГБ", "price": 169990 },
+      { "size": "512 ГБ", "price": 199990 }
+    ],
+    "colors": [
+      { "name": "Черный титан", "color": "#212329ff", "img": "https://e-catalog.md/storage/ultra_images/66f2e54b3fe70.webp" },
+      { "name": "Натуральный титан", "color": "#b6b1a9", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-pro-natural-titanium-1.png" },
+      { "name": "Белый титан", "color": "#f4f4f4", "img": "file:///C:/Users/sasab/Downloads/iphone_16_pro_white_1_1725911507571-preview-webp.png" }
+    ]
+  },
+  {
+    "name": "iPhone 16 ",
+    "price": 119990,
+    "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-black-1.png",
+    "specs": ["Чип A18", "Дисплей 6.7″ 90 Гц", "Алюминий", "Камера 48 МП", "Батарея 4800 мАч"],
+    "memory": [
+      { "size": "128 ГБ", "price": 119990 },
+      { "size": "256 ГБ", "price": 134990 }
+    ],
+    "colors": [
+      { "name": "Черный ", "color": "#212329ff", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-black-1.png" },
+      { "name": "Синий", "color": "#1e3a8a", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-ultramarine-1.png" },
+      { "name": "Розовый", "color": "#f472b6", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-pink-1.png" },
+      { "name": "Зелёный", "color": "#15803d", "img": "file:///C:/Users/sasab/Downloads/apple-iphone-16-teal-1.png" }
+    ]
+  },
+  
+  
+];
+
+// --- Утилиты
+const fmt = n => n.toLocaleString("ru-RU");
+function $(id) { return document.getElementById(id); }
+
+// --- Отображение товаров
+function getFiltered() {
+  let list = products.slice();
+  if (query) list = list.filter(p => p.name.toLowerCase().includes(query));
+  if (sortMode === "priceAsc") list.sort((a, b) => a.price - b.price);
+  if (sortMode === "priceDesc") list.sort((a, b) => b.price - a.price);
+  if (sortMode === "name") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  return list;
 }
 
-* { box-sizing: border-box; }
+function render() {
+  const list = $("productList");
+  list.innerHTML = "";
+  const items = getFiltered();
+  const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * perPage;
+  const pageItems = items.slice(start, start + perPage);
 
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  -webkit-tap-highlight-color: transparent;
+  pageItems.forEach(p => {
+    const idx = products.indexOf(p);
+    const card = document.createElement("div");
+    card.className = "card";
+    
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" onclick="showProductModal(${idx})">
+      <h3>${p.name}</h3>
+      <p class="price">${fmt(p.price)} ₽</p>
+      <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
+    `;
+
+    list.appendChild(card);
+  });
+
+  renderPagination(totalPages);
 }
 
-body {
-  color: var(--text);
-  background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
-  overflow-x: hidden;
-}
-
-/* ======= ФИКС ДЛЯ iPHONE: предотвращение увеличения ======= */
-input, textarea, select, button {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
-
-@supports (-webkit-touch-callout: none) {
-  input, textarea, select, button {
-    font-size: 16px !important;
+function renderPagination(total) {
+  const box = $("pagination");
+  box.innerHTML = "";
+  for (let i = 1; i <= total; i++) {
+    const b = document.createElement("button");
+    b.className = "page-btn" + (i === currentPage ? " active" : "");
+    b.textContent = i;
+    b.onclick = () => { currentPage = i; render(); };
+    box.appendChild(b);
   }
 }
 
-/* ======= ХЕДЕР ======= */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 28px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(20, 20, 28, 0.55);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-.brand { display: flex; align-items: center; gap: 10px; }
-.logo { font-size: 28px; }
-.brand-name { font-weight: 700; font-size: 26px; }
-
-.search-wrap { flex: 0 1 540px; display: flex; justify-content: center; }
-.search-wrap input {
-  width: 100%;
-  max-width: 420px;
-  padding: 12px 18px;
-  border-radius: 30px;
-  border: 1px solid var(--stroke);
-  background: var(--glass);
-  color: #fff;
-  outline: none;
-  transition: 0.25s;
-  text-align: center;
-}
-.search-wrap input:focus {
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 0 0 4px rgba(28, 121, 255, 0.18) inset;
+// --- Поиск
+function filterProducts() {
+  query = $("searchInput").value.trim().toLowerCase();
+  currentPage = 1;
+  render();
 }
 
-/* ======= КНОПКИ ======= */
-.btn {
-  border: 1px solid var(--stroke);
-  padding: 11px 18px;
-  border-radius: 28px;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.25s;
-  background: var(--glass);
-}
-.btn:hover { background: rgba(255, 255, 255, 0.18); }
-.btn-primary {
-  background: linear-gradient(175deg, #3b8aff, #2163ff);
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(28, 121, 255, 0.25);
-}
-.btn-primary:hover { filter: brightness(1.06); }
-.btn-success {
-  background: linear-gradient(175deg, #00e08f, #0abf78);
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(10, 191, 120, 0.25);
-}
-.btn-danger {
-  background: linear-gradient(175deg, #ff5a7a, #c21a3a);
-  border-color: transparent;
-  box-shadow: 0 8px 18px rgba(194, 26, 58, 0.25);
-}
-.btn-glass { background: var(--glass); }
-.btn-pill {
-  background: var(--glass);
-  padding: 12px 26px;
-  border-radius: 999px;
-  box-shadow: inset 0 8px 24px rgba(28, 121, 255, 0.18);
+// --- Сортировка
+(function initSort() {
+  const dd = $("sortDropdown");
+  const btn = $("sortBtn");
+  const menu = $("sortMenu");
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    dd.classList.toggle("open");
+  });
+  menu.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
+      sortMode = b.dataset.sort;
+      btn.textContent =
+        sortMode === "priceAsc" ? "Цена ↑" :
+        sortMode === "priceDesc" ? "Цена ↓" :
+        sortMode === "name" ? "По названию" : "Сортировка ▾";
+      dd.classList.remove("open");
+      render();
+    });
+  });
+  document.addEventListener("click", () => dd.classList.remove("open"));
+})();
+
+// --- Корзина
+function toggleCart() {
+  const o = $("cartOverlay");
+  o.style.display = o.style.display === "flex" ? "none" : "flex";
+  renderCart();
 }
 
-/* ======= КОНТРОЛЫ ======= */
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 14px;
-  padding: 22px;
+function addToCart(i) {
+  const product = products[i];
+  cart.push(product);
+  $("cartCount").textContent = cart.length;
+  renderCart();
 }
 
-/* ======= DROPDOWN ======= */
-.dropdown {
-  position: relative;
-  z-index: 50;
-}
-.dropdown-menu {
-  position: absolute;
-  top: 110%;
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 220px;
-  padding: 8px;
-  border-radius: 16px;
-  display: none;
-  background: rgba(23, 25, 35, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
-  z-index: 9999;
-}
-.dropdown.open .dropdown-menu {
-  display: block;
-  animation: fadeIn 0.25s ease;
-}
-.dropdown-menu button {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  color: #fff;
-  padding: 10px 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.dropdown-menu button:hover { background: rgba(28, 121, 255, 0.22); }
-
-/* ======= Сетка карточек ======= */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  justify-items: center;
-  align-items: start;
-  padding: 20px;
+function renderCart() {
+  const ul = $("cartItems");
+  ul.innerHTML = "";
+  let total = 0;
+  cart.forEach((p, index) => {
+    total += p.price;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${p.displayName || p.name} — ${fmt(p.price)} ₽
+      <button onclick="removeFromCart(${index})" style="margin-left: 10px; background: var(--danger); border: none; color: white; border-radius: 4px; padding: 2px 6px;">✕</button>
+    `;
+    ul.appendChild(li);
+  });
+  $("totalPrice").textContent = fmt(total);
 }
 
-/* 📱 Адаптация для телефонов */
-@media (max-width: 1000px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+function removeFromCart(index) {
+  cart.splice(index, 1);
+  $("cartCount").textContent = cart.length;
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  $("cartCount").textContent = 0;
+  renderCart();
+}
+
+// --- Модалка товара с цветом и памятью
+function showProductModal(i) {
+  const product = products[i];
+  $("productModal").style.display = "flex";
+  
+  // Очистка перед заполнением
+  $("colorOptions").innerHTML = "";
+  $("memorySelect").innerHTML = "";
+  
+  // Заполняем основную информацию
+  $("modalTitle").textContent = product.name;
+  $("modalImg").src = product.img;
+  $("modalSpecs").innerHTML = product.specs.map(s => `<li>• ${s}</li>`).join("");
+  
+  // --- ВАРИАНТЫ ЦВЕТА ---
+  const colorOptions = $("colorOptions");
+  if (product.colors && product.colors.length > 0) {
+    product.colors.forEach((colorObj, index) => {
+      const colorSwatch = document.createElement("div");
+      colorSwatch.className = "color-swatch" + (index === 0 ? " active" : "");
+      colorSwatch.style.backgroundColor = colorObj.color;
+      colorSwatch.title = colorObj.name;
+      colorSwatch.onclick = () => {
+        document.querySelectorAll(".color-swatch").forEach(sw => sw.classList.remove("active"));
+        colorSwatch.classList.add("active");
+        if (colorObj.img) {
+          $("modalImg").src = colorObj.img;
+        }
+      };
+      colorOptions.appendChild(colorSwatch);
+    });
+  } else {
+    colorOptions.innerHTML = '<div style="color: var(--muted);">Нет вариантов цвета</div>';
   }
-}
-@media (max-width: 600px) {
-  .grid {
-    grid-template-columns: 1fr;
+  
+  // --- ВАРИАНТЫ ПАМЯТИ ---
+  const memoryBox = $("memorySelect");
+  if (product.memory && product.memory.length > 0) {
+    const memoryList = document.createElement("div");
+    memoryList.className = "custom-select";
+
+    const selected = document.createElement("div");
+    selected.className = "select-selected";
+    selected.textContent = `${product.memory[0].size} — ${fmt(product.memory[0].price)} ₽`;
+
+    const items = document.createElement("div");
+    items.className = "select-items select-hide";
+
+    product.memory.forEach((mem, index) => {
+      const item = document.createElement("div");
+      item.textContent = `${mem.size} — ${fmt(mem.price)} ₽`;
+      item.onclick = () => {
+        selected.textContent = item.textContent;
+        $("modalPrice").textContent = `${fmt(mem.price)} ₽`;
+        items.classList.add("select-hide");
+        selected.classList.remove("active");
+        memoryBox.dataset.selectedPrice = mem.price;
+        memoryBox.dataset.selectedSize = mem.size;
+      };
+      items.appendChild(item);
+    });
+
+    memoryList.appendChild(selected);
+    memoryList.appendChild(items);
+    memoryBox.appendChild(memoryList);
+
+    memoryBox.dataset.selectedPrice = product.memory[0].price;
+    memoryBox.dataset.selectedSize = product.memory[0].size;
+    $("modalPrice").textContent = `${fmt(product.memory[0].price)} ₽`;
+
+    selected.onclick = (e) => {
+      e.stopPropagation();
+      items.classList.toggle("select-hide");
+      selected.classList.toggle("active");
+    };
+
+    document.addEventListener("click", () => {
+      items.classList.add("select-hide");
+      selected.classList.remove("active");
+    });
+
+  } else {
+    memoryBox.innerHTML = `<div style="color: var(--muted);">${fmt(product.price)} ₽</div>`;
+    memoryBox.dataset.selectedPrice = product.price;
+    memoryBox.dataset.selectedSize = "Базовый";
+    $("modalPrice").textContent = `${fmt(product.price)} ₽`;
   }
+
+  // --- КНОПКА ДОБАВЛЕНИЯ В КОРЗИНУ ---
+  $("modalAddToCart").onclick = () => {
+    const selectedPrice = +memoryBox.dataset.selectedPrice;
+    const selectedSize = memoryBox.dataset.selectedSize;
+    const selectedColor = document.querySelector(".color-swatch.active")?.title || "Стандартный";
+    
+    const cartProduct = {
+      ...product,
+      price: selectedPrice,
+      selectedSize: selectedSize,
+      selectedColor: selectedColor,
+      displayName: `${product.name} (${selectedColor}, ${selectedSize})`
+    };
+    
+    cart.push(cartProduct);
+    $("cartCount").textContent = cart.length;
+    renderCart();
+    closeModal();
+    
+    $("cartBtn").classList.add("cart-pulse");
+    setTimeout(() => $("cartBtn").classList.remove("cart-pulse"), 400);
+  };
 }
 
-.card {
-  background: linear-gradient(180deg, #141725, #11131b);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 28px;
-  padding: 22px;
-  text-align: center;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  transition: transform 0.35s, box-shadow 0.35s;
-  position: relative;
-  width: 320px;
-  height: 420px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-}
-.card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45);
+function closeModal() {
+  $("productModal").style.display = "none";
 }
 
-.card img {
-  width: 220px;
-  height: 220px;
-  object-fit: contain;
-  border-radius: 18px;
-  user-select: none;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-}
-.card:hover img {
-  transform: scale(1.06);
-  box-shadow: 0 0 25px rgba(28,121,255,0.2);
+// --- Оформление заказа
+function placeOrder() {
+  if (!cart.length) return alert("Корзина пуста 😅");
+  $("orderOverlay").style.display = "flex";
 }
 
-.card h3 { margin: 14px 0 6px; }
-.price { color: var(--muted); font-weight: 600; margin: 0 0 10px; }
-
-/* ======= ПАГИНАЦИЯ ======= */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 22px;
-}
-.page-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--stroke);
-  background: var(--glass);
-  color: #fff;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.page-btn.active, .page-btn:hover {
-  background: rgba(28, 121, 255, 0.38);
-  border-color: transparent;
+function closeOrder() {
+  $("orderOverlay").style.display = "none";
 }
 
-/* ======= ОВЕРЛЕИ И ПАНЕЛИ ======= */
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(10px);
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-}
-.panel {
-  width: 340px;
-  background: var(--card);
-  border: 1px solid var(--stroke);
-  border-radius: 24px;
-  padding: 22px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-  animation: pop 0.28s ease;
-}
-@keyframes pop {
-  from { transform: translateY(-8px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-.panel input, .panel textarea {
-  width: 100%;
-  padding: 12px 14px;
-  margin: 8px 0;
-  border-radius: 14px;
-  border: 1px solid var(--stroke);
-  background: var(--glass);
-  color: #fff;
-  outline: none;
-  transition: 0.2s;
-}
-.panel input:focus, .panel textarea:focus {
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 0 0 4px rgba(28, 121, 255, 0.18) inset;
-}
-.panel textarea { min-height: 70px; resize: none; }
-.row { display: flex; gap: 10px; margin-top: 6px; }
-.cart-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  flex-wrap: wrap;
+function sendOrder() {
+  const name = $("orderName").value.trim();
+  const phone = $("orderPhone").value.trim();
+  const comment = $("orderComment").value.trim();
+  if (!name || !phone) return alert("Введите имя и номер телефона!");
+
+  const summary = cart.map(p => `• ${p.displayName || p.name} — ${fmt(p.price)} ₽`).join("\n");
+  const total = fmt(cart.reduce((s, p) => s + p.price, 0));
+  const message = `🛍 Новый заказ в Sn4ik-Store\n\n👤 Имя: ${name}\n📞 Телефон: ${phone}\n💬 Комментарий: ${comment || "—"}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
+
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message })
+  })
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) {
+        closeOrder();
+        clearCart();
+        toggleCart();
+        alert("✅ Заказ успешно оформлен!");
+      } else alert("⚠️ Ошибка отправки в Telegram.");
+    })
+    .catch(() => alert("⚠️ Ошибка соединения с Telegram"));
 }
 
-.cart-buttons .btn {
-  flex: 1;
-  min-width: 100px;
-  text-align: center;
-  font-size: 15px;
-  padding: 12px 0;
-  border-radius: 18px;
-  transition: 0.25s ease;
+// --- Админ (только для экспорта)
+function adminLogin() {
+  const pass = prompt("Введите пароль администратора:");
+  if (pass === ADMIN_PASSWORD) {
+    admin = true;
+    alert("✅ Админ-режим активен (только экспорт)");
+    $("exportBtn").style.display = "inline-block";
+    $("logoutBtn").style.display = "inline-block";
+    $("adminLoginBtn").style.display = "none";
+  } else alert("❌ Неверный пароль");
 }
 
-.cart-buttons .btn-close {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #fff;
-}
-.cart-buttons .btn-close:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-/* ======= АДАПТИВ ======= */
-@media (max-width: 560px) {
-  .brand-name { font-size: 20px; }
-  .search-wrap { flex: 1; }
-  .panel { width: 92%; }
-  .card img { height: 160px; }
+function logoutAdmin() {
+  admin = false;
+  alert("🚪 Вы вышли из админ-режима");
+  $("logoutBtn").style.display = "none";
+  $("exportBtn").style.display = "none";
+  $("adminLoginBtn").style.display = "inline-block";
 }
 
-/* ======= АНИМАЦИЯ УСПЕШНОЙ ПОКУПКИ ======= */
-.success-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  animation: fadeIn 0.4s ease;
-}
-
-.success-checkmark {
-  text-align: center;
-  transform: scale(0.9);
-  opacity: 0;
-  animation: successPop 0.6s forwards ease-out;
-}
-
-.success-checkmark svg {
-  width: 150px;
-  height: 150px;
-  overflow: visible;
-  stroke: #00ffb3;
-  stroke-width: 3.2;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 16px #00ffb3) drop-shadow(0 0 32px #00ffb3);
-}
-
-.success-checkmark circle {
-  stroke-dasharray: 315;
-  stroke-dashoffset: 315;
-  animation: drawCircleSmooth 0.9s cubic-bezier(0.55, 0, 0.1, 1) forwards;
-}
-
-.success-checkmark path {
-  stroke-dasharray: 48;
-  stroke-dashoffset: 48;
-  animation: drawCheckSmooth 0.5s ease forwards 0.5s;
-}
-
-.success-checkmark p {
-  margin-top: 10px;
-  color: #b9ffd8;
-  font-weight: 600;
-  font-size: 18px;
-  opacity: 0;
-  animation: textFade 0.8s ease forwards 0.9s;
-}
-
-/* ======= КЛЮЧЕВЫЕ КАДРЫ ======= */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes successPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes drawCircleSmooth { from { stroke-dashoffset: 315; } to { stroke-dashoffset: 0; } }
-@keyframes drawCheckSmooth { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
-@keyframes textFade { to { opacity: 1; } }
-
-/* ======= ОКНО ИНФОРМАЦИИ О ТОВАРЕ ======= */
-.info-panel {
-  max-width: 420px;
-  width: 90%;
-  text-align: center;
-  background: linear-gradient(180deg, #171923, #0d0f16);
-  border-radius: 26px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(28, 121, 255, 0.25);
-}
-
-.info-panel img {
-  width: 100%;
-  height: 220px;
-  object-fit: contain;
-  border-radius: 20px;
-  margin-bottom: 14px;
-}
-
-.info-panel h2 {
-  margin: 6px 0;
-  font-size: 22px;
-  color: #fff;
-}
-
-.info-panel .price {
-  font-size: 18px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-.info-panel ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 18px;
-  text-align: left;
-}
-
-.info-panel ul li {
-  margin: 4px 0;
-  color: #b0c7ff;
-  font-size: 15px;
-}
-
-/* ======= Анимации ======= */
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 rgba(28,121,255,0.4); transform: scale(1); }
-  50% { box-shadow: 0 0 20px rgba(28,121,255,0.8); transform: scale(1.1); }
-  100% { box-shadow: 0 0 0 rgba(28,121,255,0.4); transform: scale(1); }
-}
-#cartBtn.pulse {
-  animation: pulse 0.8s ease;
-}
-
-@keyframes cartBounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-.cart-pulse {
-  animation: cartBounce 0.4s ease;
-}
-
-.card {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeUp 0.6s ease forwards;
-}
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.2s; }
-.card:nth-child(3) { animation-delay: 0.3s; }
-
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ======= Варианты цвета и памяти ======= */
-.color-options {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin: 10px 0;
-}
-.color-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.color-swatch:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 8px var(--accent);
-}
-.color-swatch.active {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 3px var(--accent), 0 0 12px var(--accent-2);
-  border: 2px solid white;
-}
-.option-row {
-  margin: 10px 0;
-  text-align: center;
-}
-.option-row label {
-  display: block;
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-/* ======= Кастомный выпадающий список памяти ======= */
-.custom-select {
-  position: relative;
-  width: 220px;
-  user-select: none;
-}
-
-.select-selected {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(0, 255, 150, 0.5);
-  border-radius: 10px;
-  padding: 10px 16px;
-  color: #00ffaa;
-  cursor: pointer;
-  transition: 0.25s;
-  text-align: center;
-  font-weight: 500;
-}
-
-.select-selected:hover {
-  box-shadow: 0 0 12px rgba(0, 255, 150, 0.5);
-}
-
-.select-items {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  right: 0;
-  background: rgba(12, 12, 12, 0.95);
-  border-radius: 12px;
-  border: 1px solid rgba(0, 255, 150, 0.35);
-  margin-top: 8px;
-  overflow: hidden;
-  z-index: 9999;
-  box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
-  animation: fadeInSelect 0.25s ease;
-}
-
-.select-items div {
-  padding: 10px;
-  color: #00ffaa;
-  text-align: center;
-  transition: 0.2s;
-  cursor: pointer;
-}
-
-.select-items div:hover {
-  background: rgba(0, 255, 150, 0.15);
-  color: #fff;
-  box-shadow: inset 0 0 8px rgba(0, 255, 150, 0.3);
-}
-
-.select-hide {
-  display: none;
-}
-
-.select-selected.active {
-  box-shadow: 0 0 16px rgba(0, 255, 150, 0.7);
-  background: rgba(0, 255, 150, 0.1);
-}
-
-@keyframes fadeInSelect {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-/* ======= ПРОСТЫЕ АНИМАЦИИ ТОЛЬКО CSS ======= */
-
-/* 1. Плавное появление карточек при загрузке */
-.card {
-  opacity: 0;
-  transform: translateY(30px);
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-.card:nth-child(1) { animation-delay: 0.1s; }
-.card:nth-child(2) { animation-delay: 0.2s; }
-.card:nth-child(3) { animation-delay: 0.3s; }
-.card:nth-child(4) { animation-delay: 0.4s; }
-.card:nth-child(5) { animation-delay: 0.5s; }
-.card:nth-child(6) { animation-delay: 0.6s; }
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
+// --- Alt + A (вход в админку)
+document.addEventListener("keydown", e => {
+  if (e.altKey && e.code === "KeyA") {
+    const b = $("adminLoginBtn");
+    if (getComputedStyle(b).display === "none") {
+      b.style.display = "inline-block";
+      setTimeout(() => b.classList.add("show"), 10);
+    } else {
+      b.classList.remove("show");
+      setTimeout(() => (b.style.display = "none"), 300);
+    }
   }
+});
+
+// --- Оверлеи
+function overlayClick(ev) {
+  if (ev.target.classList.contains("overlay")) ev.target.style.display = "none";
 }
 
-/* 2. Пульсация кнопки корзины при изменении количества - УБРАТЬ transform */
-#cartBtn:active {
-  animation: pulse 0.4s ease;
+// --- Экспорт
+function exportProducts() {
+  if (!admin) return alert("Только админ может экспортировать товары!");
+  const dataStr = JSON.stringify(products, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "products.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  alert("✅ Файл products.json сохранён!");
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-/* 3. Плавное увеличение карточки при наведении - ИСПРАВИТЬ */
-.card:hover {
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
-}
-
-/* 4. Свечение кнопок при наведении */
-.btn:hover {
-  box-shadow: 0 0 15px rgba(28, 121, 255, 0.4);
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  box-shadow: 0 0 20px rgba(28, 121, 255, 0.6);
-}
-
-/* 5. Анимация появления оверлеев */
-.overlay[style*="display: flex"] .panel {
-  animation: slideUp 0.4s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 6. Плавное изменение цвета цены при наведении */
-.price:hover {
-  color: var(--accent-2);
-  transition: color 0.3s ease;
-}
-
-/* 7. Анимация увеличения изображения в карточке - ИСПРАВИТЬ */
-.card img {
-  transition: transform 0.3s ease;
-}
-
-.card:hover img {
-  transform: scale(1.05);
-}
-
-/* 8. Эффект "дыхания" для активных элементов */
-.page-btn.active {
-  animation: breathe 2s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-/* 9. Плавное появление выпадающего меню */
-.dropdown.open .dropdown-menu {
-  animation: fadeInDown 0.3s ease;
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 10. Анимация перелистывания страниц - УБРАТЬ transform */
-.page-btn:hover {
-  background: rgba(28, 121, 255, 0.5);
-  transition: background 0.3s ease;
-}
-
-/* 11. Плавное изменение фона при наведении на карточку */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent, rgba(28, 121, 255, 0.1), transparent);
-  border-radius: 28px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: -1;
-}
-
-.card:hover::before {
-  opacity: 1;
-}
-
-/* 12. Анимация появления поиска */
-.search-wrap input:focus {
-  animation: searchFocus 0.3s ease;
-}
-
-@keyframes searchFocus {
-  from {
-    box-shadow: 0 0 0 0 rgba(28, 121, 255, 0.3);
-  }
-  to {
-    box-shadow: 0 0 0 4px rgba(28, 121, 255, 0.1);
-  }
-}
-
-/* 13. Плавное изменение цвета свачей цвета */
-.color-swatch {
-  transition: all 0.2s ease;
-}
-
-.color-swatch:hover {
-  transform: scale(1.2);
-}
-
-.color-swatch.active {
-  animation: colorSelect 0.3s ease;
-}
-
-@keyframes colorSelect {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1.2); }
-}
-
-/* 14. Анимация появления выпадающего списка памяти */
-.select-items {
-  animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 15. Эффект "нажатия" для всех кнопок - УБРАТЬ transform */
-.btn:active {
-  filter: brightness(0.9);
-  transition: filter 0.1s ease;
-}
-
-/* 16. Плавное изменение градиента для дорогих товаров */
-.card .price[data-price="high"] {
-  background: linear-gradient(45deg, #ff6b6b, #ffa726);
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-/* 17. Мигание для уведомлений */
-.blink {
-  animation: blink 1s ease-in-out infinite;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.7; }
-}
-
-/* 18. Вращение логотипа при наведении */
-.logo:hover {
-  animation: rotate 0.5s ease;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* 19. Эффект "пульсации" для загрузки */
-.loading {
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* 20. Плавное исчезновение при закрытии */
-.panel.closing {
-  animation: slideDown 0.3s ease forwards;
-}
-
-/* 21. Анимация для кнопок добавления в корзину - БЕЗОПАСНАЯ */
-.card .btn {
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
-}
-
-.card .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(28, 121, 255, 0.4);
-}
-
-.card .btn:active {
-  transform: translateY(0);
-}
-
-/* 22. Убедимся, что карточки не перекрывают клики */
-.card {
-  position: relative;
-  z-index: 1;
-}
-
-/* 23. Анимация для модального окна товара */
-#productModal[style*="display: flex"] .panel {
-  animation: modalAppear 0.4s ease;
-}
-
-@keyframes modalAppear {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* 24. Анимация для элементов в корзине */
-.cart-panel li {
-  animation: slideInRight 0.3s ease;
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* 25. Простая анимация загрузки */
-@keyframes simplePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.pulse-simple {
-  animation: simplePulse 2s ease-in-out infinite;
-}
+// --- Запуск
+render();
