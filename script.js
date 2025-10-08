@@ -1,6 +1,9 @@
 /* ============ Sn4ik-Store — основной скрипт ============ */
 
 // --- Настройки
+/* ============ Sn4ik-Store — основной скрипт ============ */
+
+// --- Настройки
 const ADMIN_PASSWORD = "Alex2307";
 const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
 const TELEGRAM_CHAT_ID = "6509764945";
@@ -13,6 +16,7 @@ const perPage = 6;
 let sortMode = "default";
 let query = "";
 
+// --- Данные (по умолчанию). Затем подменяются из localStorage, если есть
 let products = [
   { name: "IPhone 16 Pro", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/2486c908-e555-47df-b9a8-57993939a343.webp", },
   { name: "MacBook Air M3", price: 159990, img: "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mba_13_m3_2024_hero.png", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
@@ -35,7 +39,8 @@ try{
 
 // --- Утилиты
 const fmt = n => n.toLocaleString("ru-RU");
-const $(id) = (id)=> document.getElementById(id);
+const $ = (id) => document.getElementById(id);
+
 
 // --- Рендер
 function getFiltered(){
@@ -295,6 +300,7 @@ function overlayClick(ev){ if(ev.target.classList.contains("overlay")) ev.target
 
 /* стартовый рендер */
 render();
+
 
 
 
