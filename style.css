@@ -358,3 +358,55 @@ input, textarea, select, button {
 @keyframes drawCheckSmooth { from { stroke-dashoffset: 48; } to { stroke-dashoffset: 0; } }
 @keyframes textFade { to { opacity: 1; } }
 
+/* ======= Центровка окна "Добавить товар" ======= */
+.add-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  max-width: 360px;
+  width: 90%;
+  animation: popAdd 0.25s ease;
+}
+
+/* ======= Анимация появления ======= */
+@keyframes popAdd {
+  from { transform: translate(-50%, -48%) scale(0.95); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+/* ======= Поправка для окна добавления товара ======= */
+.add-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  max-width: 360px;
+  width: 90%;
+  border-radius: 22px;
+  backdrop-filter: blur(20px);
+  animation: popupShow 0.35s ease;
+}
+
+/* Эффект появления окна */
+@keyframes popupShow {
+  from {
+    transform: translate(-50%, -48%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* При открытии окна фон чуть сильнее затемняется */
+#addOverlay.overlay {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.65);
+  transition: 0.3s ease;
+}
+
+
