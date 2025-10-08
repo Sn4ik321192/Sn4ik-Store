@@ -175,3 +175,299 @@ body {
 @media (min-width: 1600px) {
   .grid { grid-template-columns: repeat(4, 1fr); max-width: 1500px; margin: auto; }
 }
+/* ======= СТИЛЬ ДЛЯ ВЫПАДАЮЩЕГО МЕНЮ ======= */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(23, 25, 35, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  padding: 8px;
+  z-index: 100;
+  animation: fadeIn 0.3s ease;
+}
+
+.dropdown.open .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.dropdown-menu button:hover {
+  background: rgba(28, 121, 255, 0.25);
+  color: #fff;
+  box-shadow: inset 0 0 8px rgba(28, 121, 255, 0.4);
+}
+
+/* ======= КРАСИВЫЕ ПОЛЯ ВВОДА ======= */
+.panel input, 
+.panel textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.panel input:focus, 
+.panel textarea:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(28, 121, 255, 0.4);
+}
+
+.panel textarea {
+  resize: none;
+  min-height: 70px;
+}
+
+/* ======= МОДАЛКИ ======= */
+.info-panel, .cart-panel, .order-panel {
+  background: linear-gradient(180deg, #161922, #0f1017);
+  border-radius: 24px;
+  padding: 24px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(28, 121, 255, 0.25);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  animation: modalFadeIn 0.4s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.info-panel h2,
+.order-panel h3 {
+  margin-bottom: 10px;
+  color: #b0c8ff;
+  text-shadow: 0 0 8px rgba(28,121,255,0.3);
+}
+
+.info-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  color: #a5baff;
+  text-align: left;
+}
+
+/* ======= КНОПКИ В МОДАЛКАХ ======= */
+.order-buttons, .cart-buttons {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.order-buttons .btn, .cart-buttons .btn {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+/* ======= ДОБАВЛЕНО ДЛЯ СТИЛЯ В СОРТИРОВКЕ ======= */
+.btn-pill {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.btn-pill:hover {
+  background: rgba(28,121,255,0.2);
+  box-shadow: 0 0 12px rgba(28,121,255,0.4);
+}
+/* ======= МОДАЛЬНОЕ ОКНО ТОВАРА ======= */
+.info-panel {
+  max-width: 420px;
+  width: 90%;
+  background: linear-gradient(180deg, #181b25, #0f1118);
+  border-radius: 24px;
+  box-shadow: 0 0 30px rgba(28, 121, 255, 0.3), 0 15px 60px rgba(0, 0, 0, 0.6);
+  color: #fff;
+  text-align: center;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.info-panel img {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
+
+.info-panel h2 {
+  font-size: 22px;
+  color: #bcd6ff;
+  margin-bottom: 5px;
+}
+
+.info-panel .price {
+  font-size: 18px;
+  color: var(--accent-2);
+  margin-bottom: 8px;
+}
+
+.info-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+  text-align: left;
+  color: #a8bfff;
+}
+
+/* ======= Варианты цвета ======= */
+.color-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.color-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.color-swatch.active {
+  box-shadow: 0 0 0 3px var(--accent), 0 0 15px var(--accent-2);
+  transform: scale(1.2);
+}
+
+/* ======= Выбор памяти ======= */
+.custom-select {
+  position: relative;
+  width: 220px;
+  margin: 10px auto;
+  user-select: none;
+}
+
+.select-selected {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 255, 150, 0.4);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: #00ffaa;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.select-selected:hover {
+  box-shadow: 0 0 12px rgba(0, 255, 150, 0.5);
+}
+
+.select-items {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: rgba(14, 16, 20, 0.95);
+  border: 1px solid rgba(0, 255, 150, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 999;
+  animation: fadeInSelect 0.25s ease;
+}
+
+.select-items div {
+  padding: 10px;
+  color: #00ffaa;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-items div:hover {
+  background: rgba(0, 255, 150, 0.15);
+  color: #fff;
+}
+
+.select-hide {
+  display: none;
+}
+
+@keyframes fadeInSelect {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======= КНОПКИ В МОДАЛКЕ ======= */
+.info-panel .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.info-panel .btn-primary {
+  flex: 1;
+  background: linear-gradient(180deg, #257cff, #1459ff);
+  border: none;
+  color: #fff;
+  border-radius: 18px;
+  padding: 12px 0;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.info-panel .btn-primary:hover {
+  box-shadow: 0 0 15px rgba(28,121,255,0.6);
+}
+
+.info-panel .btn-glass {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 18px;
+  padding: 12px 0;
+  transition: 0.25s;
+}
+
+.info-panel .btn-glass:hover {
+  background: rgba(255,255,255,0.18);
+}
