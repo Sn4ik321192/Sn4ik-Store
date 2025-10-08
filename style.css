@@ -612,3 +612,60 @@ body {
   .grid{ grid-template-columns: 1fr; }
   .card{ width: min(340px, 92vw); margin: 0 auto; }
 }
+/* ======= Исправление адаптива для поиска, корзины и сортировки ======= */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  /* поиск */
+  #search-bar {
+    width: 90%;
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    text-align: center;
+  }
+
+  /* корзина */
+  #cartBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px auto;
+    border-radius: 16px;
+    width: 90%;
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* сортировка */
+  #sortDropdown {
+    margin: 15px auto;
+    width: 90%;
+    text-align: center;
+  }
+
+  /* карточки в одну колонку по центру */
+  .grid {
+    grid-template-columns: 1fr;
+    justify-content: center;
+  }
+
+  .card {
+    width: 90%;
+    margin: 10px auto;
+  }
+}
+
