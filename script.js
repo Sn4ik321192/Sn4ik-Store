@@ -154,6 +154,8 @@ function clearCart() {
 
 // --- Оформление заказа
 function placeOrder() {
+  
+
   if (!cart.length) return alert("Корзина пуста 😅");
   $("orderOverlay").style.display = "flex";
 }
@@ -190,24 +192,36 @@ function sendOrder() {
 
 // --- Анимация App Store + звук + вибрация
 function showSuccessAnimation() {
-  const o = document.createElement("div");
-  o.className = "success-overlay";
-  o.innerHTML = `
+  // Создаём оверлей
+  const overlay = document.createElement("div");
+  overlay.className = "success-overlay";
+  overlay.innerHTML = `
     <div class="success-checkmark">
       <svg viewBox="0 0 120 120">
         <circle cx="60" cy="60" r="50" />
         <path d="M38 62 L55 78 L84 45" />
       </svg>
-      <p>Покупка завершена</p>
-    </div>`;
-  document.body.appendChild(o);
-  playSuccessSound();
+      <p>Заказ оформлен!</p>
+    </div>
+  `;
+  document.body.appendChild(overlay);
 
+  // Воспроизведение звука
+  const sound = new Audio("sounds/success.mp3");
+  sound.volume = 0.6;
+  sound.play().catch(() => {}); // если браузер блокирует звук без действия
+
+  // Лёгкая вибрация / Haptic feedback
+  if (window.navigator.vibrate) {
+    navigator.vibrate([10, 20, 10]); // мягкая тройная вибрация
+  }
+
+  // Удаляем анимацию через 2.3 секунды
   setTimeout(() => {
-    o.classList.add("fade-out");
-    setTimeout(() => o.remove(), 800);
-  }, 2000);
+    overlay.remove();
+  }, 2300);
 }
+
 
 function playSuccessSound() {
   const audio = new Audio("file:///C:/Users/sasab/Downloads/1642068871_1641201879pmntsccs.mp3"); // лёгкий App Store-style звук
@@ -284,6 +298,7 @@ function overlayClick(ev) {
 
 // --- Запуск
 render();
+
 
 
 
