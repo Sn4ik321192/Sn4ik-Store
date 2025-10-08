@@ -18,13 +18,13 @@ let query = "";
 
 // --- Данные (по умолчанию). Затем подменяются из localStorage, если есть
 let products = [
-  { name: "IPhone 16 Pro", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/2486c908-e555-47df-b9a8-57993939a343.webp", },
+  { name: "IPhone 16 Pro", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/2486c908-e555-47df-b9a8-57993939a343.webp", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
   { name: "MacBook Air M3", price: 159990, img: "https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mba_13_m3_2024_hero.png", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
   { name: "iPad Pro M4", price: 149990, img: "https://redstore.by/wp-content/uploads/2024/05/Apple-iPad-Pro-M4-2024-silver-11.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
   { name: "Apple Watch Ultra 2", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/bfb8e7b2-fe18-418c-93ad-311c34356135.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
   { name: "AirPods Pro 2", price: 29990, img: "https://png.pngtree.com/png-clipart/20230504/ourmid/pngtree-airpods-png-image_7081756.png", specs: ["Активное шумоподавление", "Bluetooth 5.3", "Зарядка MagSafe"] },
   
-  { name: "IPhone 15 ", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/1a063c20-ad57-4158-9246-0a8c128fde2b.webp", },
+  { name: "IPhone 15 ", price: 120000, img: "https://cdn-ultra.esempla.com/storage/webp/1a063c20-ad57-4158-9246-0a8c128fde2b.webp", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"]},
   { name: "MacBook Air M4", price: 159990, img: "https://cdn.omd.md/eshop-assets/product_catalog/5896/19d0f01c479e4413b36311234dc8aa73.wl.webp", specs: ["Экран 13.6\"", "Чип M3", "8 ГБ RAM", "SSD 256 ГБ"] },
   { name: "iPad Pro M2", price: 149990, img: "https://action-jo-v2.action.jo/1497/1669110050_d52b8aae55b5cc3185e2.png", specs: ["Дисплей 13\"", "Процессор M4", "120 Гц", "Face ID"] },
   { name: "Apple Watch series 10", price: 74990, img: "https://cdn-ultra.esempla.com/storage/webp/2e4d3cb0-1af5-48b0-9695-702bab4a2e89.webp", specs: ["Корпус 49 мм", "Титан", "GPS + LTE", "Аккумулятор 36 ч"] },
@@ -300,6 +300,7 @@ function overlayClick(ev){ if(ev.target.classList.contains("overlay")) ev.target
 
 /* стартовый рендер */
 render();
+
 
 
 
