@@ -2,10 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Sn4ik-Store</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Шапка -->
@@ -24,7 +23,6 @@
 
   <!-- Панель управления -->
   <section class="controls">
-    <!-- Кастомное выпадающее меню сортировки -->
     <div id="sortDropdown" class="dropdown">
       <button id="sortBtn" class="btn btn-pill">Сортировка ▾</button>
       <div id="sortMenu" class="dropdown-menu">
@@ -35,13 +33,12 @@
       </div>
     </div>
 
-    <!-- Скрытые админ-кнопки -->
     <button id="adminLoginBtn" class="btn btn-glass admin-toggle" onclick="adminLogin()" style="display:none;">🔐 Войти как админ</button>
     <button id="exportBtn" class="btn btn-glass" style="display:none;" onclick="exportProducts()">📤 Экспорт товаров</button>
     <button id="logoutBtn" class="btn btn-glass" style="display:none;" onclick="logoutAdmin()">🚪 Выйти</button>
   </section>
 
-  <!-- Товары -->
+  <!-- Список товаров -->
   <main id="productList" class="grid"></main>
 
   <!-- Пагинация -->
@@ -75,7 +72,7 @@
     </div>
   </div>
 
-  <!-- Модальное окно расширенных характеристик -->
+  <!-- Модальное окно товара -->
   <div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
     <div class="panel info-panel" onclick="event.stopPropagation()">
       <img id="modalImg" src="" alt="Фото товара">
