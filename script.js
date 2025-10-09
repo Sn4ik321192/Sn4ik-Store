@@ -605,5 +605,38 @@ document.addEventListener('DOMContentLoaded', () => {
     headerBottom.style.gap = "12px";
   }
 });
+// === 🌗 Переключение темы (ночная ↔ дневная) ===
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. Находим кнопку и корневой элемент
+  const themeBtn = document.getElementById("themeToggle");
+  const root = document.documentElement; // это <html>
+
+  // 2. Проверяем, сохранена ли тема в localStorage
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    // Если ранее была выбрана светлая — включаем её
+    root.classList.add("light-theme");
+    themeBtn.textContent = "🌞"; // показываем солнце
+  } else {
+    // Если тёмная (по умолчанию)
+    themeBtn.textContent = "🌙";
+  }
+
+  // 3. Обработка клика по кнопке
+  themeBtn.addEventListener("click", () => {
+    // Переключаем класс у <html>
+    root.classList.toggle("light-theme");
+
+    // Проверяем, включена ли светлая тема
+    const isLight = root.classList.contains("light-theme");
+
+    // Меняем иконку на кнопке
+    themeBtn.textContent = isLight ? "🌞" : "🌙";
+
+    // Сохраняем выбор в localStorage
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+  });
+});
 
 
