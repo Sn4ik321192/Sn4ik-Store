@@ -15,22 +15,22 @@
       <span class="brand-name">Sn4ik-Store</span>
     </div>
 
-    <!-- 🟢 КНОПКА-БУРГЕР (добавлено) -->
+    <!-- 🟢 КНОПКА-БУРГЕР -->
     <button class="burger" onclick="toggleMenu()">☰</button>
 
-    <!-- Навигация (три кнопки) -->
+    <!-- Навигация -->
     <nav class="top-nav">
       <button class="nav-btn" onclick="showPage('shop')">🏪 Магазин</button>
       <button class="nav-btn" onclick="showPage('about')">ℹ️ О сайте</button>
       <button class="nav-btn" onclick="showPage('me')">👤 О нас</button>
     </nav>
 
-    <!-- Поиск -->
+    <!-- 🔍 Поиск -->
     <div class="search-wrap">
       <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
     </div>
 
-    <!-- Сортировка + Корзина -->
+    <!-- 🔽 Сортировка + Корзина -->
     <div class="header-bottom">
       <div id="sortDropdown" class="dropdown">
         <button id="sortBtn" class="btn sort-btn">Сортировка ▾</button>
@@ -56,6 +56,7 @@
     <button class="cat-btn" data-cat="ipad">📟 iPad</button>
   </nav>
 
+  <!-- Основная часть -->
   <main>
     <div id="productList" class="grid"></div>
     <div id="pagination" class="pagination"></div>
@@ -119,14 +120,14 @@
   <!-- Уведомления -->
   <div id="toastContainer"></div>
 
-  <!-- Страница "О сайте" -->
+  <!-- 📄 Страница "О сайте" -->
   <section id="page-about" class="page" style="display:none;">
     <h2>ℹ️ О сайте</h2>
     <p>Sn4ik-Store — современный онлайн-магазин техники Apple. Мы создаём уникальный опыт покупки, объединяя дизайн, удобство и инновации.</p>
     <p>На сайте представлена только оригинальная техника: iPhone, MacBook, iPad и аксессуары. Все товары проходят проверку качества.</p>
   </section>
 
-  <!-- Страница "О нас" -->
+  <!-- 📄 Страница "О нас" -->
   <section id="page-me" class="page" style="display:none;">
     <h2>👤 О нас</h2>
     <p>Привет! Мы — команда <b>Sn4ik-Store</b>. Любим технику Apple и делаем всё, чтобы покупки у нас были максимально удобными и безопасными.</p>
@@ -144,7 +145,18 @@
     </div>
   </section>
 
-  <!-- Подключаем скрипт в самом конце -->
+  <!-- Подключение скрипта -->
   <script src="script.js"></script>
+
+  <!-- 💡 Дополнение: автоцентрирование сортировки -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const headerBottom = document.querySelector(".header-bottom");
+      if (headerBottom) {
+        headerBottom.style.justifyContent = "center"; // центрируем кнопки
+        headerBottom.style.gap = "12px";
+      }
+    });
+  </script>
 </body>
 </html>
