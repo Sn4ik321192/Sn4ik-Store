@@ -1,76 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Sn4ik-Store</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- ====== Хедер ====== -->
+  <!-- Хедер -->
   <header class="header">
     <div class="brand">
-      <div class="logo">🛍</div>
-      <div class="brand-name">Sn4ik-Store</div>
+      <span class="logo">🍏</span>
+      <span class="brand-name">Sn4ik-Store</span>
     </div>
 
-    <div class="header-controls">
+    <div class="search-wrap">
       <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
-      
-      <div class="sort-dropdown" id="sortDropdown">
-        <button id="sortBtn" class="btn">Сортировка ▾</button>
-        <div class="sort-menu" id="sortMenu">
-          <button data-sort="default">По умолчанию</button>
+    </div>
+
+    <div class="header-right">
+      <div id="sortDropdown" class="dropdown">
+        <button id="sortBtn" class="btn sort-btn">Сортировка ▾</button>
+        <div id="sortMenu" class="dropdown-menu">
+          <button data-sort="default">Без сортировки</button>
           <button data-sort="priceAsc">Цена ↑</button>
           <button data-sort="priceDesc">Цена ↓</button>
           <button data-sort="name">По названию</button>
         </div>
       </div>
 
-      <button id="cartBtn" class="cart-btn" onclick="toggleCart()">
-        🛒<span id="cartCount">0</span>
+      <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
+        <span id="cartCount" class="cart-badge">0</span>
       </button>
     </div>
   </header>
 
-  <!-- ====== Список товаров ====== -->
+  <!-- Товары -->
   <main id="productList" class="grid"></main>
 
-  <!-- ====== Пагинация ====== -->
+  <!-- Пагинация -->
   <div id="pagination" class="pagination"></div>
 
-  <!-- ====== Окно корзины ====== -->
+  <!-- Корзина -->
   <div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
-    <div class="cart-window" onclick="event.stopPropagation()">
-      <h2>🛒 Ваша корзина</h2>
+    <div class="panel cart-panel" onclick="event.stopPropagation()">
+      <h3>Корзина</h3>
       <div id="cartItems" class="cart-items"></div>
       <div class="cart-total">
         <p>Итого: <span id="totalPrice">0</span> ₽</p>
-        <button class="btn btn-order" onclick="placeOrder()">Оформить заказ</button>
-        <button class="btn btn-clear" onclick="clearCart()">Очистить</button>
-        <button class="btn btn-close" onclick="toggleCart()">Закрыть</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-danger" onclick="clearCart()">🗑 Очистить</button>
+        <button class="btn btn-success" onclick="placeOrder()">💳 Оформить</button>
+        <button class="btn btn-glass" onclick="toggleCart()">✖ Закрыть</button>
       </div>
     </div>
   </div>
 
-  <!-- ====== Оформление заказа ====== -->
+  <!-- Оформление заказа -->
   <div id="orderOverlay" class="overlay" onclick="overlayClick(event)">
     <div class="panel order-panel" onclick="event.stopPropagation()">
       <h3>Оформление заказа</h3>
-      <input id="orderName" placeholder="Ваше имя" />
-      <input id="orderPhone" placeholder="Телефон" type="tel" />
+      <input id="orderName" placeholder="Ваше имя"/>
+      <input id="orderPhone" placeholder="Телефон" type="tel"/>
       <textarea id="orderComment" placeholder="Комментарий (необязательно)"></textarea>
-      <div class="order-buttons">
+      <div class="row">
         <button class="btn btn-success" onclick="sendOrder()">Отправить</button>
         <button class="btn btn-danger" onclick="closeOrder()">Отмена</button>
       </div>
     </div>
   </div>
 
-  <!-- ====== Модальное окно товара ====== -->
+  <!-- Модалка товара -->
   <div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
     <div class="panel info-panel" onclick="event.stopPropagation()">
-      <img id="modalImg" src="" alt="Фото товара" />
+      <img id="modalImg" src="" alt="Фото товара"/>
       <h2 id="modalTitle"></h2>
       <p id="modalPrice" class="price"></p>
       <ul id="modalSpecs"></ul>
@@ -82,7 +86,7 @@
 
       <div class="option-row">
         <label>Память:</label>
-        <div id="memorySelect"></div>
+        <div id="memoryOptions" class="memory-options"></div>
       </div>
 
       <div class="row">
