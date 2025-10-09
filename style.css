@@ -195,8 +195,22 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .grid{display:grid;grid-template-columns:repeat(3,340px);gap:40px;justify-content:center;align-items:start;margin:0 auto;padding:30px 20px}
 
 /* Card */
-.card{background:linear-gradient(180deg,#141725,#11131b);border:1px solid rgba(255,255,255,.06);border-radius:28px;
-  padding:22px;width:340px;height:460px;display:flex;flex-direction:column;justify-content:space-between;text-align:center}
+.card {
+  position: relative; /* нужно для границы */
+  overflow: hidden;   /* чтобы граница не вылезала */
+  background: linear-gradient(180deg,#141725,#11131b);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 28px;
+  padding: 22px;
+  width: 340px;
+  height: 460px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
 .card img{width:100%;height:240px;object-fit:contain;border-radius:18px}
 .card h3{font-size:18px;margin:12px 0 4px}
 .price{color:var(--muted);font-weight:600}
@@ -215,6 +229,28 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .cart-items{display:flex;flex-direction:column;gap:10px;margin:10px 0 14px}
 .cart-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.05);padding:10px;border-radius:12px}
 .cart-item img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#0e0f15}
+
+.cart-panel {
+  max-height: 80vh;           /* ограничиваем высоту корзины 80% от экрана */
+  overflow-y: auto;            /* включаем вертикальную прокрутку */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;     /* плавная прокрутка */
+}
+
+/* Чтобы скролл выглядел красиво */
+.cart-panel::-webkit-scrollbar {
+  width: 8px;
+}
+.cart-panel::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+}
+.cart-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
+}
+
 
 /* Product modal */
 .info-panel{max-width:440px;width:92%}
@@ -264,24 +300,111 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   background:linear-gradient(175deg,#1c79ff,#00d084);
   box-shadow:0 0 12px rgba(28,121,255,.4);
 }
-.logo{
-  background:linear-gradient(90deg,#1c79ff,#00d084);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+.logo {
+  background: linear-gradient(90deg, #1c79ff, #00d084);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
+
 .brand-name {
   font-weight: 700;
   font-size: 30px;
   background: linear-gradient(90deg, #00d084, #1c79ff, #00d084);
+  background-clip: text;
   -webkit-background-clip: text;
+  color: transparent;
   -webkit-text-fill-color: transparent;
   animation: gradientMove 4s ease infinite;
   background-size: 200%;
 }
+
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
 .cart-btn.pulse{animation:pulse .4s ease;}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  border: 2px solid transparent;
+  background: linear-gradient(90deg, #1c79ff, #00d084) border-box;
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none; /* чтобы клики проходили */
+}
+.card:hover::before {
+  opacity: 1;
+}
+.info-panel {
+  animation: zoomIn 0.4s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.logo {
+  display: inline-block;
+  animation: bounce 3s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+/* === Анимация появления корзины с эффектом увеличения === */
+.cart-panel {
+  animation: zoomCart 0.4s ease;
+}
+
+@keyframes zoomCart {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+/* === Анимация смены страниц (fade + slide) === */
+.grid {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.grid.page-exit {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.grid.page-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.grid.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+
+
+
+
