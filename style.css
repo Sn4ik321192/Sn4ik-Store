@@ -288,3 +288,9 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   .info-panel img{max-height:200px}
   .search-wrap{flex:1}
 }
+@media (max-width: 600px) {
+  .dropdown-menu {
+    left: 0;
+    right: auto;
+  }
+}
