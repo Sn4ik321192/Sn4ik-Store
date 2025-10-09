@@ -1,12 +1,8 @@
-/* ============ Sn4ik-Store — основной скрипт ============ */
-
 // --- Настройки
-const ADMIN_PASSWORD = "Alex2307";
 const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
 const TELEGRAM_CHAT_ID = "6509764945";
 
 // --- Состояния
-let admin = false;
 let cart = [];
 let currentPage = 1;
 const perPage = 6;
