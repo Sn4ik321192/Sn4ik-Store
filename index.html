@@ -2,46 +2,63 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sn4ik-Store</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  
-<section class="controls">
-  <button id="adminLoginBtn" class="btn btn-glass admin-toggle" onclick="adminLogin()" style="display:none;">🔐 Войти как админ</button>
-  <button id="addBtn" class="btn btn-primary" style="display:none;" onclick="openAddProduct()">➕ Добавить товар</button>
-  <button id="exportBtn" class="btn btn-glass" style="display:none;" onclick="exportProducts()">📤 Экспорт товаров</button>
-  <button id="logoutBtn" class="btn btn-glass" style="display:none;" onclick="logoutAdmin()">🚪 Выйти</button>
-</section>
+  <!-- ====== Хедер ====== -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo">🛍</div>
+      <div class="brand-name">Sn4ik-Store</div>
+    </div>
 
-  <!-- Список товаров -->
+    <div class="header-controls">
+      <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
+      
+      <div class="sort-dropdown" id="sortDropdown">
+        <button id="sortBtn" class="btn">Сортировка ▾</button>
+        <div class="sort-menu" id="sortMenu">
+          <button data-sort="default">По умолчанию</button>
+          <button data-sort="priceAsc">Цена ↑</button>
+          <button data-sort="priceDesc">Цена ↓</button>
+          <button data-sort="name">По названию</button>
+        </div>
+      </div>
+
+      <button id="cartBtn" class="cart-btn" onclick="toggleCart()">
+        🛒<span id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ====== Список товаров ====== -->
   <main id="productList" class="grid"></main>
 
-  <!-- Пагинация -->
+  <!-- ====== Пагинация ====== -->
   <div id="pagination" class="pagination"></div>
 
-  <!-- === КОРЗИНА (ОКНО) === -->
-<div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
-  <div class="cart-window">
-    <h2>🛒 Ваша корзина</h2>
-    <div id="cartItems" class="cart-items"></div>
-    <div class="cart-total">
-      <p>Итого: <span id="totalPrice">0</span> ₽</p>
-      <button class="btn btn-order" onclick="placeOrder()">Оформить заказ</button>
-      <button class="btn btn-clear" onclick="clearCart()">Очистить</button>
-      <button class="btn btn-close" onclick="toggleCart()">Закрыть</button>
+  <!-- ====== Окно корзины ====== -->
+  <div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
+    <div class="cart-window" onclick="event.stopPropagation()">
+      <h2>🛒 Ваша корзина</h2>
+      <div id="cartItems" class="cart-items"></div>
+      <div class="cart-total">
+        <p>Итого: <span id="totalPrice">0</span> ₽</p>
+        <button class="btn btn-order" onclick="placeOrder()">Оформить заказ</button>
+        <button class="btn btn-clear" onclick="clearCart()">Очистить</button>
+        <button class="btn btn-close" onclick="toggleCart()">Закрыть</button>
+      </div>
     </div>
   </div>
-</div>
 
-
-  <!-- Оформление заказа -->
+  <!-- ====== Оформление заказа ====== -->
   <div id="orderOverlay" class="overlay" onclick="overlayClick(event)">
     <div class="panel order-panel" onclick="event.stopPropagation()">
       <h3>Оформление заказа</h3>
-      <input id="orderName" placeholder="Ваше имя"/>
-      <input id="orderPhone" placeholder="Телефон" type="tel"/>
+      <input id="orderName" placeholder="Ваше имя" />
+      <input id="orderPhone" placeholder="Телефон" type="tel" />
       <textarea id="orderComment" placeholder="Комментарий (необязательно)"></textarea>
       <div class="order-buttons">
         <button class="btn btn-success" onclick="sendOrder()">Отправить</button>
@@ -50,10 +67,10 @@
     </div>
   </div>
 
-  <!-- Модальное окно товара -->
+  <!-- ====== Модальное окно товара ====== -->
   <div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
     <div class="panel info-panel" onclick="event.stopPropagation()">
-      <img id="modalImg" src="" alt="Фото товара">
+      <img id="modalImg" src="" alt="Фото товара" />
       <h2 id="modalTitle"></h2>
       <p id="modalPrice" class="price"></p>
       <ul id="modalSpecs"></ul>
