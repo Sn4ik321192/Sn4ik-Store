@@ -374,7 +374,7 @@ function closeModal() { $("productModal").style.display = "none"; }
 
 // --- Оформление заказа
 function placeOrder() {
-  if (!cart.length) return alert("Корзина пуста 😅");
+  if (!cart.length) return showToast("🛒 Корзина пуста!", "info");
   $("orderOverlay").style.display = "flex";
 }
 function closeOrder() { $("orderOverlay").style.display = "none"; }
@@ -384,7 +384,7 @@ function sendOrder() {
   const name = $("orderName").value.trim();
   const phone = $("orderPhone").value.trim();
   const comment = $("orderComment").value.trim();
-  if (!name || !phone) return alert("Введите имя и номер телефона!");
+  if (!name || !phone) return showToast("🛒 Корзина пуста!", "info");
 
   const summary = cart.map(p => `• ${p.displayName || p.name} — ${fmt(p.price)} ₽`).join("\n");
   const total = fmt(cart.reduce((s, p) => s + p.price, 0));
@@ -406,11 +406,29 @@ ${summary}
   .then(r => r.json())
   .then(d => {
     if (d.ok) {
-      alert("✅ Заказ отправлен!");
+      showToast("✅ Заказ отправлен!", "success");
       clearCart();
       closeOrder();
       toggleCart();
-    } else alert("⚠️ Ошибка Telegram.");
+    } else showToast("⚠️ Ошибка Telegram!", "error");
   })
-  .catch(() => alert("⚠️ Ошибка соединения с Telegram."));
+  .catch(() => {
+  showToast("⚠️ Ошибка соединения с Telegram!", "error");
+});
+
 }
+// === Кастомные уведомления ===
+function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  // Автоматическое исчезновение
+  setTimeout(() => {
+    toast.style.animation = "toastOut 0.4s ease forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
