@@ -10,16 +10,16 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 /* Header */
 .header {
   display: flex;
+  flex-direction: column; /* теперь элементы идут в столбик */
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   padding: 12px 16px;
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(20,20,28,0.55);
+  background: rgba(20, 20, 28, 0.55);
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .brand {
@@ -31,10 +31,81 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .logo { font-size: 26px; }
 .brand-name { font-weight: 700; font-size: 22px; }
 
-.header-right {
+/* Search */
+.search-wrap {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrap input {
+  width: 100%;
+  height: 38px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  outline: none;
+  text-align: left;
+  font-size: 16px;
+}
+
+.search-wrap input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+/* Вторая строка: сортировка + корзина */
+.header-bottom {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Сортировка */
+.sort-btn {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sort-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* Корзина */
+.cart-btn {
+  position: relative;
+  min-width: 42px;
+  height: 34px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #1c79ff;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
 }
 
 /* Search */
