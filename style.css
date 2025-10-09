@@ -728,3 +728,422 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   text-shadow: 0 0 10px #ffd600;
   transform: scale(1.15);
 }
+/* === Кнопка смены темы === */
+.theme-btn {
+  min-width: 42px;
+  height: 34px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.theme-btn:hover {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+/* === Светлая тема (серо-металлическая, в стиле Sn4ik-Store) === */
+.light-theme {
+  --bg: #c5c7cc;              /* базовый фон – нейтрально-серый */
+  --card: #d6d8dc;            /* карточки чуть светлее фона */
+  --glass: rgba(0,0,0,0.08);  /* полупрозрачные блоки */
+  --stroke: rgba(0,0,0,0.2);  /* границы темнее */
+  --accent: #1c79ff;          /* синий акцент */
+  --accent2: #00d084;         /* зелёный акцент */
+  --text: #1b1b1b;            /* тёмно-графитовый текст */
+  --muted: #4c4c4c;           /* серый для второстепенного текста */
+}
+
+/* === Фон страницы === */
+.light-theme body {
+  background: radial-gradient(900px 500px at 20% -20%, #d1d3d7 0%, transparent 70%), var(--bg);
+  color: var(--text);
+}
+
+/* === Карточки === */
+.light-theme .card {
+  background: linear-gradient(180deg, #d9dbdf, #c3c5c9);
+  border: 1px solid rgba(0,0,0,0.25);
+  border-radius: 28px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+.light-theme .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* === Название и цена === */
+.light-theme .card h3 { color: #111; }
+.light-theme .price { color: var(--accent); font-weight: 600; }
+
+/* === Текст и характеристики === */
+.light-theme .card ul,
+.light-theme .card li {
+  color: #2a2a2a;
+}
+
+/* === Опции (цвет и память) === */
+.light-theme .option-label { color: #222; }
+
+.light-theme .color-chip {
+  border: 2px solid rgba(0,0,0,0.25);
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+}
+.light-theme .color-chip.active {
+  outline: 3px solid var(--accent);
+}
+
+.light-theme .mem-btn {
+  border: 1px solid rgba(0,0,0,0.25);
+  background: #e0e0e0;
+  color: #111;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.light-theme .mem-btn:hover {
+  border-color: var(--accent);
+  background: #d9e5f9;
+  box-shadow: 0 0 6px rgba(28,121,255,0.25);
+}
+.light-theme .mem-btn.active {
+  background: #eaf4ff;
+  border-color: var(--accent);
+}
+
+/* === Кнопки === */
+.light-theme .btn,
+.light-theme .sort-btn,
+.light-theme .cart-btn,
+.light-theme .fav-btn,
+.light-theme .btn-fav,
+.light-theme .btn-glass {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+  transition: all 0.25s ease;
+}
+.light-theme .btn:hover,
+.light-theme .sort-btn:hover,
+.light-theme .cart-btn:hover,
+.light-theme .fav-btn:hover,
+.light-theme .btn-fav:hover {
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* === Навигация и категории === */
+.light-theme .nav-btn,
+.light-theme .cat-btn {
+  background: rgba(240,240,240,0.7);
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+}
+.light-theme .nav-btn:hover,
+.light-theme .cat-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+.light-theme .cat-btn.active {
+  background: linear-gradient(175deg, var(--accent), var(--accent2));
+  color: #fff;
+  border-color: transparent;
+}
+
+/* === Панели и формы === */
+.light-theme .panel {
+  background: #d0d2d6;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.25);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+.light-theme input,
+.light-theme textarea {
+  background: #e5e5e5;
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+}
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: #666;
+}
+
+/* === Логотип === */
+.light-theme .brand-name,
+.light-theme .logo {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* === Плавный переход между темами === */
+html, body, .card, .btn, .header, .catalog, .nav-btn, .panel {
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+/* === Исправление цвета меток для серой темы === */
+.light-theme .option-row label,
+.light-theme .option-label {
+  color: #111 !important; /* Чёткий тёмный цвет, хорошо читается */
+  font-weight: 600;       /* Сделаем чуть жирнее для визуального баланса */
+}
+
+.light-theme .option-row span {
+  color: #111 !important; /* Чтобы случайно не остался светлым */
+}
+
+.light-theme .color-chip {
+  border: 2px solid rgba(0,0,0,0.25);
+  background: #d9d9d9; /* фон под чипами чуть светлее */
+}
+
+.light-theme .mem-btn {
+  background: #e7e7e7;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+}
+.light-theme .mem-btn:hover {
+  background: #f3f3f3;
+}
+/* === Кнопки в корзине и избранном для серой темы === */
+
+/* Основные цветные кнопки */
+.light-theme .btn-danger {
+  background: linear-gradient(175deg, #ff6a80, #d83150);
+  color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(255, 70, 90, 0.35);
+}
+.light-theme .btn-danger:hover {
+  background: linear-gradient(175deg, #ff4c6d, #c41b3f);
+  box-shadow: 0 4px 10px rgba(255, 70, 90, 0.5);
+}
+
+.light-theme .btn-success {
+  background: linear-gradient(175deg, #00d084, #00a76c);
+  color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(0, 208, 132, 0.35);
+}
+.light-theme .btn-success:hover {
+  background: linear-gradient(175deg, #00e598, #00b67b);
+  box-shadow: 0 4px 10px rgba(0, 208, 132, 0.5);
+}
+
+/* Кнопка "Закрыть" */
+.light-theme .btn-glass {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
+}
+.light-theme .btn-glass:hover {
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* === Кнопка “В избранное” === */
+.light-theme .btn-fav {
+  background: rgba(255,255,255,0.8);
+  border: 1px solid rgba(0,0,0,0.15);
+  color: #444;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.25s ease;
+}
+.light-theme .btn-fav:hover {
+  background: linear-gradient(175deg, #1c79ff, #00d084);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(28,121,255,0.3);
+}
+.light-theme .btn-fav.active {
+  background: linear-gradient(175deg, #ffd600, #f6c800);
+  color: #111;
+  box-shadow: 0 4px 12px rgba(255,214,0,0.4);
+  text-shadow: 0 0 6px rgba(255,214,0,0.5);
+}
+/* === Открытая карточка товара — улучшение для серой темы === */
+.light-theme .info-panel {
+  background: linear-gradient(180deg, #d1d3d7 0%, #b7b9be 100%);
+  border: 1px solid rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  border-radius: 24px;
+  padding: 22px;
+  color: #111;
+}
+
+/* Фон под фото */
+.light-theme .info-panel img {
+  background: #7c7d82; /* тёмно-серый фон под товаром */
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.25);
+}
+
+/* Метки и подписи */
+.light-theme .option-row label,
+.light-theme .option-label {
+  color: #111 !important;
+  font-weight: 600;
+}
+
+/* === Кнопки в карточке === */
+.light-theme .info-panel .btn {
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* Кнопка "В корзину" */
+.light-theme .info-panel .btn-primary {
+  background: linear-gradient(175deg, #1c79ff, #00a4f5);
+  color: #fff;
+  border: none;
+  box-shadow: 0 3px 8px rgba(28,121,255,0.3);
+}
+.light-theme .info-panel .btn-primary:hover {
+  background: linear-gradient(175deg, #0e68ef, #00b27a);
+  box-shadow: 0 4px 10px rgba(28,121,255,0.45);
+}
+
+/* Кнопка "В избранное" */
+.light-theme .info-panel .btn-fav {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,0,0,0.15);
+  color: #444;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: all 0.25s ease;
+}
+.light-theme .info-panel .btn-fav:hover {
+  background: linear-gradient(175deg, #1c79ff, #00d084);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(28,121,255,0.3);
+}
+.light-theme .info-panel .btn-fav.active {
+  background: linear-gradient(175deg, #ffd600, #f6c800);
+  color: #111;
+  box-shadow: 0 4px 12px rgba(255,214,0,0.4);
+  text-shadow: 0 0 6px rgba(255,214,0,0.4);
+}
+
+/* Кнопка "Закрыть" */
+.light-theme .info-panel .btn-glass {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(0,0,0,0.15);
+  color: #111;
+  box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
+}
+.light-theme .info-panel .btn-glass:hover {
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Кнопки памяти */
+.light-theme .info-panel .mem-btn {
+  background: #e5e5e5;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.25);
+}
+.light-theme .info-panel .mem-btn.active {
+  background: #eaf4ff;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(28,121,255,0.25) inset;
+}
+/* === Кнопка "В корзину" в карточках товаров (серая тема) === */
+.light-theme .btn-primary,
+.light-theme .card .btn-primary {
+  background: linear-gradient(175deg, #1c79ff, #00a4f5);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(28,121,255,0.3);
+  transition: all 0.25s ease;
+}
+
+.light-theme .btn-primary:hover,
+.light-theme .card .btn-primary:hover {
+  background: linear-gradient(175deg, #0e68ef, #00b27a);
+  box-shadow: 0 4px 10px rgba(28,121,255,0.45), 0 0 8px rgba(0,208,132,0.35);
+  transform: translateY(-1px);
+}
+
+/* Активная кнопка (если товар уже добавлен) */
+.light-theme .btn-primary.active,
+.light-theme .card .btn-primary.active {
+  background: linear-gradient(175deg, #00b27a, #009b6b);
+  box-shadow: 0 4px 10px rgba(0,208,132,0.45);
+  color: #fff;
+}
+/* --- FAV STAR (светлая тема): светится только звезда --- */
+.light-theme .btn-fav{
+  /* спокойный серый фон как у остальных кнопок */
+  background: rgba(0,0,0,.06);
+  border-color: rgba(0,0,0,.12);
+  color: #777;
+}
+
+/* активная "Избранное": НЕ меняем фон, подсвечиваем только символ ⭐ */
+.light-theme .btn-fav.active{
+  background: rgba(0,0,0,.06) !important; /* чтобы не желтел весь квадрат */
+  box-shadow: none !important;
+  color: #e6b800; /* тёплый жёлтый у звезды */
+  text-shadow:
+    0 0 6px rgba(230,184,0,.9),
+    0 0 14px rgba(230,184,0,.55),
+    0 0 24px rgba(230,184,0,.35); /* «свечение» только у символа */
+  transform: scale(1.1);
+}
+
+/* ховер в светлой теме — звезда ярче, фон всё ещё нейтральный */
+.light-theme .btn-fav:hover{
+  background: rgba(0,0,0,.08);
+}
+.light-theme .btn-fav.active:hover{
+  text-shadow:
+    0 0 8px rgba(230,184,0,1),
+    0 0 18px rgba(230,184,0,.6),
+    0 0 28px rgba(230,184,0,.45);
+}
+/* === Плавающая кнопка смены темы (FAB) === */
+.theme-fab{
+  position: fixed;
+  right: 16px;
+top: 18px;
+bottom: auto;
+  z-index: 10000;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.theme-fab:hover{
+  background: rgba(255,255,255,0.14);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.45);
+}
+
+/* Светлая тема — спокойные серые тона для кнопки */
+.light-theme .theme-fab{
+  border-color: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.06);
+  color: #111;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+.light-theme .theme-fab:hover{
+  background: rgba(0,0,0,0.1);
+  box-shadow: 0 10px 26px rgba(0,0,0,.25);
+}
