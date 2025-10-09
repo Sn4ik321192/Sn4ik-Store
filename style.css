@@ -31,32 +31,6 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .logo { font-size: 26px; }
 .brand-name { font-weight: 700; font-size: 22px; }
 
-/* Search */
-.search-wrap {
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  justify-content: center;
-}
-
-.search-wrap input {
-  width: 100%;
-  height: 38px;
-  padding: 6px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-  outline: none;
-  text-align: left;
-  font-size: 16px;
-}
-
-.search-wrap input::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
-}
-
 /* Вторая строка: сортировка + корзина */
 .header-bottom {
   width: 100%;
@@ -108,34 +82,6 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   font-size: 12px;
 }
 
-/* Search */
-.search-wrap {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 6px;
-  min-width: 130px; /* не даст поиску исчезнуть */
-}
-
-.search-wrap input {
-  width: 100%;
-  max-width: 300px; /* уменьшено, чтобы всё влезло */
-  height: 34px;
-  padding: 5px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.07);
-  color: #fff;
-  outline: none;
-  text-align: left;
-  font-size: 16px;
-}
-
-.search-wrap input::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
-}
 
 /* Сортировка и корзина */
 .sort-btn,
@@ -177,14 +123,34 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 }
 
 /* Search */
-.search-wrap{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:0 10px;
-  min-width:180px; /* 👈 добавь эту строку */
+.search-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10px;
+  min-width: 180px;
 }
+
+.search-wrap input {
+  width: 100%;
+  max-width: 420px;
+  height: 38px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: var(--glass);
+  color: #fff;
+  outline: none;
+  text-align: left;
+  font-size: 16px;
+}
+
+.search-wrap input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
 
 .search-wrap input{
   width:100%;
@@ -294,3 +260,28 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
     right: auto;
   }
 }
+.btn-primary:hover{
+  background:linear-gradient(175deg,#1c79ff,#00d084);
+  box-shadow:0 0 12px rgba(28,121,255,.4);
+}
+.logo{
+  background:linear-gradient(90deg,#1c79ff,#00d084);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.brand-name {
+  font-weight: 700;
+  font-size: 30px;
+  background: linear-gradient(90deg, #00d084, #1c79ff, #00d084);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 4s ease infinite;
+  background-size: 200%;
+}
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.cart-btn.pulse{animation:pulse .4s ease;}
