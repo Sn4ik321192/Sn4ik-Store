@@ -41,9 +41,13 @@
           <button data-sort="name">По названию</button>
         </div>
       </div>
+<button id="favBtn" class="btn fav-btn" onclick="toggleFavorites()">⭐
+  <span id="favCount" class="cart-badge">0</span>
+</button>
 
       <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
         <span id="cartCount" class="cart-badge">0</span>
+        
       </button>
     </div>
   </header>
@@ -78,6 +82,19 @@
     </div>
   </div>
 
+<!-- ⭐ Избранное -->
+<div id="favOverlay" class="overlay" onclick="overlayClick(event)">
+  <div class="panel cart-panel" onclick="event.stopPropagation()">
+    <h3>Избранное</h3>
+    <div id="favItems" class="cart-items"></div>
+    <div class="row">
+      <button class="btn btn-danger" onclick="favorites=[];renderFavorites();document.getElementById('favCount').textContent=0;">🗑 Очистить</button>
+      <button class="btn btn-glass" onclick="toggleFavorites()">✖ Закрыть</button>
+    </div>
+  </div>
+</div>
+
+
   <!-- Оформление заказа -->
   <div id="orderOverlay" class="overlay" onclick="overlayClick(event)">
     <div class="panel order-panel" onclick="event.stopPropagation()">
@@ -111,9 +128,11 @@
       </div>
 
       <div class="row">
-        <button class="btn btn-primary" id="modalAddToCart">🧺 В корзину</button>
-        <button class="btn btn-glass" onclick="closeModal()">✖ Закрыть</button>
-      </div>
+  <button class="btn btn-primary" id="modalAddToCart">🧺 В корзину</button>
+  <button class="btn-fav" id="modalAddToFav" onclick="toggleModalFavorite()">⭐ В избранное</button>
+  <button class="btn btn-glass" onclick="closeModal()">✖ Закрыть</button>
+</div>
+
     </div>
   </div>
 
