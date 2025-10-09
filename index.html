@@ -41,16 +41,26 @@
           <button data-sort="name">По названию</button>
         </div>
       </div>
-<button id="favBtn" class="btn fav-btn" onclick="toggleFavorites()">⭐
-  <span id="favCount" class="cart-badge">0</span>
-</button>
 
-      <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
-        <span id="cartCount" class="cart-badge">0</span>
-        
-      </button>
-    </div>
+
+  <!-- ⭐ Избранное -->
+  <button id="favBtn" class="btn fav-btn" onclick="toggleFavorites()">⭐
+    <span id="favCount" class="cart-badge">0</span>
+  </button>
+
+  <!-- 🧺 Корзина -->
+  <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
+    <span id="cartCount" class="cart-badge">0</span>
+  </button>
+
+</div>
+
+
   </header>
+</header>
+
+<!-- Плавающая кнопка смены темы -->
+<button id="themeToggle" class="theme-fab" title="Переключить тему">🌗</button>
 
   <!-- Каталог -->
   <nav class="catalog">
