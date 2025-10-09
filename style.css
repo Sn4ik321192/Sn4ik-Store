@@ -17,9 +17,30 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .header-right{display:flex;align-items:center;gap:10px}
 
 /* Search */
-.search-wrap{flex:0 1 520px;display:flex;justify-content:center}
-.search-wrap input{width:100%;max-width:520px;height:38px;padding:6px 14px;border-radius:12px;border:1px solid var(--stroke);
-  background:var(--glass);color:#fff;outline:none;text-align:center}
+.search-wrap{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:0 10px;
+}
+
+.search-wrap input{
+  width:100%;
+  max-width:420px;
+  height:38px;
+  padding:6px 14px;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  background:var(--glass);
+  color:#fff;
+  outline:none;
+  text-align:left;
+}
+
+.search-wrap input::placeholder{
+  color:var(--muted);
+}
 
 /* Buttons */
 .btn{border:1px solid var(--stroke);padding:10px 16px;border-radius:14px;background:var(--glass);color:#fff;cursor:pointer}
