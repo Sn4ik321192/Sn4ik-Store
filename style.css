@@ -670,4 +670,61 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
     text-align: center;
   }
 }
+/* === Избранное === */
+.fav-btn {
+  position: relative;
+  min-width: 42px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
 
+.fav-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.fav-btn.active {
+  background: linear-gradient(175deg,#1c79ff,#00d084);
+  box-shadow: 0 0 10px rgba(28,121,255,0.4);
+}
+
+.fav-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #00d084;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* === Кнопка "Избранное" на карточке === */
+.btn-fav {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-fav:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+/* Активная (добавлено в избранное) */
+.btn-fav.active {
+  color: #ffd600;
+  text-shadow: 0 0 10px #ffd600;
+  transform: scale(1.15);
+}
