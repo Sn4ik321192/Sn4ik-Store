@@ -1075,4 +1075,33 @@ button:active::after {
     max-width: 100%;
   }
 }
+/* Убрали поисковую область и выпадашку сортировки, на всякий случай, если где-то остались */
+.search-wrap,
+#sortDropdown,
+.dropdown { 
+  display: none !important; 
+}
 
+/* Контролы только для админа: меньше отступов, при отсутствии кнопок не занимают место */
+.controls-admin-only {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 8px 16px 0; /* меньше воздуха сверху/снизу */
+}
+
+/* Если все админ-кнопки скрыты, секция не должна занимать место */
+.controls-admin-only:empty,
+.controls-admin-only > :where(#adminLoginBtn,#exportBtn,#logoutBtn)[style*="display: none"] + *:last-child:empty {
+  display: none;
+}
+
+/* Чуть уменьшим верхний паддинг у сетки, чтобы товар начинался ближе к шапке */
+.grid {
+  padding-top: 16px;
+}
+
+/* Шапка — компактнее, чтобы компенсировать отсутствие поиска */
+.header {
+  padding: 14px 22px;
+}
