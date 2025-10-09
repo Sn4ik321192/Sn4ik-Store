@@ -8,15 +8,23 @@
 </head>
 <body>
   <header class="header">
-  <div class="brand">
-    <span class="logo">🍏</span>
-    <span class="brand-name">Sn4ik-Store</span>
-  </div>
+  <div class="brand" onclick="goHome()" title="На главную">
+  <span class="logo">🍏</span>
+  <span class="brand-name">Sn4ik-Store</span>
+</div>
+
 
   <!-- Поиск -->
   <div class="search-wrap">
     <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
   </div>
+
+  <!-- Меню страниц -->
+  <nav class="top-nav">
+    <button class="nav-btn" onclick="showPage('shop')">🏪 Магазин</button>
+    <button class="nav-btn" onclick="showPage('about')">ℹ️ О сайте</button>
+    <button class="nav-btn" onclick="showPage('me')">👤 О нас</button>
+  </nav>
 
   <!-- Сортировка + Корзина -->
   <div class="header-bottom">
@@ -36,11 +44,20 @@
   </div>
 </header>
 
-  <!-- Товары -->
-  <main id="productList" class="grid"></main>
+<!-- Каталог -->
+<nav class="catalog">
+  <button class="cat-btn active" data-cat="all">Все</button>
+  <button class="cat-btn" data-cat="iphone">📱 iPhone</button>
+  <button class="cat-btn" data-cat="macbook">💻 MacBook</button>
+  <button class="cat-btn" data-cat="ipad">📟 iPad</button>
+</nav>
 
-  <!-- Пагинация -->
+
+  <main>
+  <div id="productList" class="grid"></div>
   <div id="pagination" class="pagination"></div>
+</main>
+
 
   <!-- Корзина -->
   <div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
@@ -72,33 +89,69 @@
     </div>
   </div>
 
+  
   <!-- Модалка товара -->
-  <div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
-    <div class="panel info-panel" onclick="event.stopPropagation()">
-      <img id="modalImg" src="" alt="Фото товара"/>
-      <h2 id="modalTitle"></h2>
-      <p id="modalPrice" class="price"></p>
-      <ul id="modalSpecs"></ul>
+<div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
+  <div class="panel info-panel" onclick="event.stopPropagation()">
+    <img id="modalImg" src="" alt="Фото товара"/>
+    <h2 id="modalTitle"></h2>
+    <p id="modalPrice" class="price"></p>
+    <ul id="modalSpecs"></ul>
 
-      <div class="option-row">
-        <label>Цвет:</label>
-        <div id="colorOptions" class="color-options"></div>
-      </div>
+    <div class="option-row">
+      <label>Цвет:</label>
+      <div id="colorOptions" class="color-options"></div>
+    </div>
 
-      <div class="option-row">
-        <label>Память:</label>
-        <div id="memoryOptions" class="memory-options"></div>
-      </div>
+    <div class="option-row">
+      <label>Память:</label>
+      <div id="memoryOptions" class="memory-options"></div>
+    </div>
 
-      <div class="row">
-        <button class="btn btn-primary" id="modalAddToCart">🧺 В корзину</button>
-        <button class="btn btn-glass" onclick="closeModal()">✖ Закрыть</button>
-      </div>
+    <div class="row">
+      <button class="btn btn-primary" id="modalAddToCart">🧺 В корзину</button>
+      <button class="btn btn-glass" onclick="closeModal()">✖ Закрыть</button>
     </div>
   </div>
+</div>
+
+
 <!-- Уведомления -->
 <div id="toastContainer"></div>
 
-  <script src="script.js"></script>
+
+
+
+<!-- Страница "О сайте" -->
+<section id="page-about" class="page" style="display:none;">
+  <h2>ℹ️ О сайте</h2>
+  <p>Sn4ik-Store — современный онлайн-магазин техники Apple. Мы создаём уникальный опыт покупки, объединяя дизайн, удобство и инновации.</p>
+  <p>На сайте представлена только оригинальная техника: iPhone, MacBook, iPad и аксессуары. Все товары проходят проверку качества.</p>
+</section>
+
+<!-- Страница "О нас" -->
+<section id="page-me" class="page" style="display:none;">
+  <h2>👤 О нас</h2>
+  <p>Привет! Мы — команда <b>Sn4ik-Store</b>. Любим технику Apple и делаем всё, чтобы покупки у нас были максимально удобными и безопасными.</p>
+  <p>Связаться с нами можно через соцсети — мы всегда открыты для общения 😊</p>
+
+  <div class="social-links">
+    <a href="https://t.me/sn4ik23" target="_blank" class="social-btn tg">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
+      Telegram
+    </a>
+    <a href="https://www.instagram.com/sn4i.k" target="_blank" class="social-btn ig">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+      Instagram
+    </a>
+  </div>
+</section>
+
+<!-- Подключаем скрипт в самом конце -->
+<script src="script.js"></script>
+
+
+
+  
 </body>
 </html>
