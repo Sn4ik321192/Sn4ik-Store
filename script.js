@@ -143,95 +143,239 @@ let products = [
 ];
 
 
-// === Рендер товаров ===
+// --- Утилиты
+const fmt = n => n.toLocaleString("ru-RU");
+const $ = id => document.getElementById(id);
+
+// --- Фильтрация/сортировка
 function getFiltered() {
   let list = products.slice();
   if (query) list = list.filter(p => p.name.toLowerCase().includes(query));
-  if (sortMode === "priceAsc") list.sort((a,b)=>a.price-b.price);
-  if (sortMode === "priceDesc") list.sort((a,b)=>b.price-a.price);
-  if (sortMode === "name") list.sort((a,b)=>a.name.localeCompare(b.name,"ru"));
+  if (sortMode === "priceAsc") list.sort((a, b) => a.price - b.price);
+  if (sortMode === "priceDesc") list.sort((a, b) => b.price - a.price);
+  if (sortMode === "name") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
   return list;
 }
 
+// --- Рендер товаров
 function render() {
   const list = $("productList");
   list.innerHTML = "";
   const items = getFiltered();
-  const totalPages = Math.ceil(items.length / perPage);
-  const pageItems = items.slice((currentPage-1)*perPage, currentPage*perPage);
+  const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * perPage;
+  const pageItems = items.slice(start, start + perPage);
 
-  pageItems.forEach((p,i)=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
-      <img src="${p.img}" alt="${p.name}">
+  pageItems.forEach(p => {
+    const idx = products.indexOf(p);
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
       <h3>${p.name}</h3>
       <p class="price">${fmt(p.price)} ₽</p>
-      <button class="btn" onclick="addToCart(${products.indexOf(p)})">Добавить</button>`;
+      <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
+    `;
     list.appendChild(card);
   });
+  renderPagination(totalPages);
+}
+render();
 
-  const pag=$("pagination"); pag.innerHTML="";
-  for(let i=1;i<=totalPages;i++){
-    const b=document.createElement("button");
-    b.className="page-btn"+(i===currentPage?" active":"");
-    b.textContent=i;
-    b.onclick=()=>{currentPage=i;render();};
-    pag.appendChild(b);
+function renderPagination(total) {
+  const box = $("pagination");
+  box.innerHTML = "";
+  for (let i = 1; i <= total; i++) {
+    const b = document.createElement("button");
+    b.className = "page-btn" + (i === currentPage ? " active" : "");
+    b.textContent = i;
+    b.onclick = () => { currentPage = i; render(); };
+    box.appendChild(b);
   }
 }
 
-// === Поиск и сортировка ===
-function filterProducts(){ query=$("searchInput").value.toLowerCase(); currentPage=1; render(); }
-(function(){
-  const dd=$("sortDropdown"),btn=$("sortBtn"),menu=$("sortMenu");
-  btn.onclick=e=>{e.stopPropagation();dd.classList.toggle("open");};
-  menu.querySelectorAll("button").forEach(b=>{
-    b.onclick=()=>{
-      sortMode=b.dataset.sort;
-      btn.textContent=b.textContent;
+// --- Поиск
+function filterProducts() {
+  query = $("searchInput").value.trim().toLowerCase();
+  currentPage = 1;
+  render();
+}
+
+// --- Сортировка
+(function initSort() {
+  const dd = $("sortDropdown");
+  const btn = $("sortBtn");
+  const menu = $("sortMenu");
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    dd.classList.toggle("open");
+  });
+  menu.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
+      sortMode = b.dataset.sort;
+      btn.textContent =
+        sortMode === "priceAsc" ? "Цена ↑" :
+        sortMode === "priceDesc" ? "Цена ↓" :
+        sortMode === "name" ? "По названию" :
+        "Сортировка ▾";
       dd.classList.remove("open");
       render();
-    };
+    });
   });
-  document.addEventListener("click",()=>dd.classList.remove("open"));
+  document.addEventListener("click", () => dd.classList.remove("open"));
 })();
 
-// === Корзина ===
-function toggleCart(){const o=$("cartOverlay");o.style.display=o.style.display==="flex"?"none":"flex";renderCart();}
-function addToCart(i){cart.push(products[i]);$("cartCount").textContent=cart.length;renderCart();}
-function renderCart(){
-  const c=$("cartItems");c.innerHTML="";let t=0;
-  cart.forEach((p,i)=>{t+=p.price;
-    const d=document.createElement("div");
-    d.className="cart-item";
-    d.innerHTML=`<img src="${p.img}" alt=""><div><strong>${p.name}</strong><br>${fmt(p.price)} ₽</div>
-    <button onclick="removeFromCart(${i})" class="btn btn-clear">✕</button>`;
-    c.appendChild(d);
-  });
-  $("totalPrice").textContent=fmt(t);
-}
-function removeFromCart(i){cart.splice(i,1);$("cartCount").textContent=cart.length;renderCart();}
-function clearCart(){cart=[];$("cartCount").textContent=0;renderCart();}
-function overlayClick(e){if(e.target.classList.contains("overlay"))e.target.style.display="none";}
-
-// === Заказ ===
-function placeOrder(){if(!cart.length)return alert("Корзина пуста!");$("orderOverlay").style.display="flex";}
-function closeOrder(){$("orderOverlay").style.display="none";}
-function sendOrder(){
-  const name=$("orderName").value.trim(),phone=$("orderPhone").value.trim();
-  if(!name||!phone)return alert("Введите имя и телефон!");
-  const summary=cart.map(p=>`• ${p.name} — ${fmt(p.price)} ₽`).join("\n");
-  const total=fmt(cart.reduce((s,p)=>s+p.price,0));
-  const msg=`🛍 Заказ в Sn4ik-Store\n👤 ${name}\n📞 ${phone}\n\n${summary}\n\n💰 Итого: ${total} ₽`;
-  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`,{
-    method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({chat_id:TELEGRAM_CHAT_ID,text:msg})
-  }).then(r=>r.json()).then(d=>{
-    if(d.ok){clearCart();closeOrder();toggleCart();alert("✅ Заказ отправлен!");}
-    else alert("⚠️ Ошибка Telegram");
-  });
+// --- Корзина
+function toggleCart() {
+  const o = $("cartOverlay");
+  o.style.display = o.style.display === "flex" ? "none" : "flex";
+  renderCart();
 }
 
-// === Запуск ===
-render();
+function addToCart(i) {
+  const p = products[i];
+  cart.push({...p});
+  $("cartCount").textContent = cart.length;
+  renderCart();
+}
+
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  $("cartCount").textContent = cart.length;
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  $("cartCount").textContent = 0;
+  renderCart();
+}
+
+function renderCart() {
+  const box = $("cartItems");
+  box.innerHTML = "";
+  let total = 0;
+  cart.forEach((p, i) => {
+    total += p.price;
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <img src="${p.img}" alt="">
+      <div style="flex:1">
+        <div style="font-weight:600">${p.displayName || p.name}</div>
+        <div>${fmt(p.price)} ₽</div>
+      </div>
+      <button class="btn btn-danger" onclick="removeFromCart(${i})">✖</button>
+    `;
+    box.appendChild(row);
+  });
+  $("totalPrice").textContent = fmt(total);
+}
+
+// --- Модалка товара (цвет + память)
+let modalState = { index: null, colorIdx: 0, memIdx: 0 };
+
+function openProduct(i) {
+  modalState = { index: i, colorIdx: 0, memIdx: 0 };
+  const p = products[i];
+
+  $("modalTitle").textContent = p.name;
+  $("modalSpecs").innerHTML = p.specs.map(s => `<li>• ${s}</li>`).join("");
+  $("modalPrice").textContent = fmt(p.memory?.[0]?.price ?? p.price) + " ₽";
+  $("modalImg").src = p.colors?.[0]?.img || p.img;
+
+  // Цвета
+  const colorBox = $("colorOptions");
+  colorBox.innerHTML = "";
+  if (p.colors?.length) {
+    p.colors.forEach((c, ci) => {
+      const chip = document.createElement("div");
+      chip.className = "color-chip" + (ci === 0 ? " active" : "");
+      chip.style.backgroundColor = c.color;
+      chip.title = c.name;
+      chip.onclick = () => {
+        colorBox.querySelectorAll(".color-chip").forEach(x => x.classList.remove("active"));
+        chip.classList.add("active");
+        modalState.colorIdx = ci;
+        $("modalImg").src = c.img || p.img;
+      };
+      colorBox.appendChild(chip);
+    });
+  }
+
+  // Память
+  const memBox = $("memoryOptions");
+  memBox.innerHTML = "";
+  const memory = p.memory?.length ? p.memory : [{ size: "Базовый", price: p.price }];
+  memory.forEach((m, mi) => {
+    const b = document.createElement("button");
+    b.className = "mem-btn" + (mi === 0 ? " active" : "");
+    b.textContent = m.size;
+    b.onclick = () => {
+      memBox.querySelectorAll(".mem-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      modalState.memIdx = mi;
+      $("modalPrice").textContent = fmt(memory[mi].price) + " ₽";
+    };
+    memBox.appendChild(b);
+  });
+
+  $("modalAddToCart").onclick = () => {
+    const c = p.colors?.[modalState.colorIdx];
+    const m = memory[modalState.memIdx];
+    const price = m.price ?? p.price;
+    const name = `${p.name}${c ? ` (${c.name}` : ""}${m ? `${c ? ", " : " ("}${m.size}` : ""}${(c || m) ? ")" : ""}`;
+    cart.push({ ...p, price, displayName: name, img: c?.img || p.img });
+    $("cartCount").textContent = cart.length;
+    renderCart();
+    closeModal();
+  };
+
+  $("productModal").style.display = "flex";
+}
+
+function closeModal() { $("productModal").style.display = "none"; }
+
+// --- Оформление заказа
+function placeOrder() {
+  if (!cart.length) return alert("Корзина пуста 😅");
+  $("orderOverlay").style.display = "flex";
+}
+function closeOrder() { $("orderOverlay").style.display = "none"; }
+function overlayClick(e) { if (e.target.classList.contains("overlay")) e.target.style.display = "none"; }
+
+function sendOrder() {
+  const name = $("orderName").value.trim();
+  const phone = $("orderPhone").value.trim();
+  const comment = $("orderComment").value.trim();
+  if (!name || !phone) return alert("Введите имя и номер телефона!");
+
+  const summary = cart.map(p => `• ${p.displayName || p.name} — ${fmt(p.price)} ₽`).join("\n");
+  const total = fmt(cart.reduce((s, p) => s + p.price, 0));
+  const msg =
+`🛍 Новый заказ в Sn4ik-Store
+👤 Имя: ${name}
+📞 Телефон: ${phone}
+💬 Комментарий: ${comment || "—"}
+
+${summary}
+
+💰 Итого: ${total} ₽`;
+
+  fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: msg })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.ok) {
+      alert("✅ Заказ отправлен!");
+      clearCart();
+      closeOrder();
+      toggleCart();
+    } else alert("⚠️ Ошибка Telegram.");
+  })
+  .catch(() => alert("⚠️ Ошибка соединения с Telegram."));
+}
