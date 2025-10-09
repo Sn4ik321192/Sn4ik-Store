@@ -11,15 +11,13 @@
   --muted: #9cc7ff;
 }
 
+/* ======= БАЗОВЫЕ НАСТРОЙКИ ======= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
   font-family: "Poppins", sans-serif;
   -webkit-tap-highlight-color: transparent;
-}
-
-body {
   color: var(--text);
   background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
   overflow-x: hidden;
@@ -30,7 +28,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 28px;
+  padding: 14px 22px;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -42,86 +40,81 @@ body {
 .logo { font-size: 28px; }
 .brand-name { font-weight: 700; font-size: 26px; }
 
-.search-wrap { flex: 0 1 540px; display: flex; justify-content: center; }
-.search-wrap input {
-  width: 100%;
-  max-width: 420px;
-  padding: 12px 18px;
-  border-radius: 30px;
-  border: 1px solid var(--stroke);
-  background: var(--glass);
-  color: #fff;
-  outline: none;
-  text-align: center;
-}
-
 /* ======= КНОПКИ ======= */
-.btn {
-  border: 1px solid var(--stroke);
-  padding: 11px 18px;
-  border-radius: 28px;
+button, .btn {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(270deg, #0077ff, #00aaff, #0077ff);
+  background-size: 300% 300%;
   color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 24px;
   cursor: pointer;
-  transition: 0.25s;
-  background: var(--glass);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: gradientFlow 6s ease infinite;
+  box-shadow: 0 0 15px rgba(0, 140, 255, 0.3);
 }
-.btn:hover { background: rgba(255, 255, 255, 0.18); }
-.btn-primary { background: linear-gradient(175deg, #3b8aff, #2163ff); border: none; }
-.btn-success { background: linear-gradient(175deg, #00e08f, #0abf78); border: none; }
-.btn-danger { background: linear-gradient(175deg, #ff5a7a, #c21a3a); border: none; }
-.btn-glass { background: var(--glass); }
-.btn-pill { border-radius: 999px; padding: 12px 26px; }
+button:hover, .btn:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
+  filter: brightness(1.15);
+}
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
+/* ======= ПАНЕЛЬ УПРАВЛЕНИЯ ======= */
 .controls {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 0;
-  margin-top: 4px;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 8px 16px 0;
 }
 
-@media (max-width: 768px) {
-  .controls {
-    gap: 4px;
-    padding: 2px 0;
-    margin-top: 2px;
-  }
-}
-
-
-/* ======= СЕТКА ======= */
 /* ======= СЕТКА ТОВАРОВ ======= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, 340px);
   gap: 40px;
-  justify-items: center;
-  align-items: stretch;
-  max-width: 1200px;
+  justify-content: center;
+  align-items: start;
   margin: 0 auto;
   padding: 30px 20px;
 }
 
-/* ======= КАРТОЧКА ======= */
+/* ======= КАРТОЧКА ТОВАРА ======= */
 .card {
   background: linear-gradient(180deg, #141725, #11131b);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 28px;
-  padding: 24px;
-  text-align: center;
-  width: 100%;
-  max-width: 340px;
+  padding: 22px;
+  width: 340px;
   height: 460px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+.card:nth-child(5) { animation-delay: 0.25s; }
+.card:nth-child(6) { animation-delay: 0.3s; }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 25px rgba(28, 121, 255, 0.25);
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
+  border: 1px solid rgba(0, 140, 255, 0.6);
 }
 
 .card img {
@@ -129,61 +122,18 @@ body {
   height: 240px;
   object-fit: contain;
   border-radius: 18px;
-  margin-bottom: 12px;
-}
-
-.card h3 {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.card .price {
-  color: #79a8ff;
-  font-weight: 600;
-  font-size: 17px;
-  margin-bottom: 10px;
-}
-
-.card button {
-  background: linear-gradient(180deg, #1e6fff, #0059ff);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 12px 0;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s;
-}
-
-.card button:hover {
-  box-shadow: 0 0 12px rgba(28, 121, 255, 0.6);
-}
-
-@media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
-
-.card {
-  background: linear-gradient(180deg, #141725, #11131b);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 28px;
-  padding: 22px;
-  text-align: center;
-  width: 320px;
-  height: 420px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-.card img {
-  width: 220px;
-  height: 220px;
-  object-fit: contain;
-  border-radius: 18px;
   transition: transform 0.3s ease;
 }
 .card:hover img { transform: scale(1.05); }
-.card h3 { margin: 14px 0 6px; }
-.price { color: var(--muted); font-weight: 600; }
+
+.card h3 { font-size: 18px; margin: 14px 0 6px; }
+.price { color: var(--muted); font-weight: 600; font-size: 17px; }
+
+/* ======= АНИМАЦИЯ КАРТОЧЕК ======= */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ======= ПАГИНАЦИЯ ======= */
 .pagination {
@@ -207,7 +157,7 @@ body {
   border-color: transparent;
 }
 
-/* ======= ОВЕРЛЕИ ======= */
+/* ======= МОДАЛКИ ======= */
 .overlay {
   display: none;
   position: fixed;
@@ -217,6 +167,7 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 20;
+  transition: opacity 0.4s ease;
 }
 .panel {
   width: 340px;
@@ -224,104 +175,14 @@ body {
   border: 1px solid var(--stroke);
   border-radius: 24px;
   padding: 22px;
-}
-
-/* ======= АДАПТИВ ======= */
-@media (max-width: 480px) {
-  .header { flex-direction: column; gap: 10px; text-align: center; }
-  .brand-name { font-size: 22px; }
-  .controls { flex-direction: column; gap: 10px; padding: 10px; }
-  .grid { grid-template-columns: 1fr; gap: 20px; padding: 10px; }
-  .card { width: 95%; height: auto; }
-  .card img { width: 180px; height: 180px; }
-  .btn { font-size: 14px; padding: 10px 14px; }
-  .panel { width: 92%; max-height: 90vh; overflow-y: auto; }
-}
-@media (min-width: 481px) and (max-width: 1024px) {
-  .grid { grid-template-columns: repeat(2, 1fr); gap: 25px; padding: 15px; }
-  .header { flex-wrap: wrap; justify-content: center; }
-  .search-wrap { flex-basis: 100%; margin-top: 10px; }
-}
-@media (min-width: 1600px) {
-  .grid { grid-template-columns: repeat(4, 1fr); max-width: 1500px; margin: auto; }
-}
-/* ======= СТИЛЬ ДЛЯ ВЫПАДАЮЩЕГО МЕНЮ ======= */
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  top: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(23, 25, 35, 0.95);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-  padding: 8px;
-  z-index: 100;
-  animation: fadeIn 0.3s ease;
-}
-
-.dropdown.open .dropdown-menu {
-  display: block;
-}
-
-.dropdown-menu button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.dropdown-menu button:hover {
-  background: rgba(28, 121, 255, 0.25);
   color: #fff;
-  box-shadow: inset 0 0 8px rgba(28, 121, 255, 0.4);
 }
 
-/* ======= КРАСИВЫЕ ПОЛЯ ВВОДА ======= */
-.panel input, 
-.panel textarea {
-  width: 100%;
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin: 8px 0;
-  font-size: 15px;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.panel input:focus, 
-.panel textarea:focus {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: var(--accent);
-  box-shadow: 0 0 10px rgba(28, 121, 255, 0.4);
-}
-
-.panel textarea {
-  resize: none;
-  min-height: 70px;
-}
-
-/* ======= МОДАЛКИ ======= */
+/* ======= МОДАЛЬНЫЕ ОКНА ======= */
 .info-panel, .cart-panel, .order-panel {
   background: linear-gradient(180deg, #161922, #0f1017);
   border-radius: 24px;
   padding: 24px;
-  color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(28, 121, 255, 0.25);
   max-width: 400px;
@@ -329,607 +190,12 @@ body {
   text-align: center;
   animation: modalFadeIn 0.4s ease;
 }
-
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.info-panel h2,
-.order-panel h3 {
-  margin-bottom: 10px;
-  color: #b0c8ff;
-  text-shadow: 0 0 8px rgba(28,121,255,0.3);
-}
-
-.info-panel ul {
-  list-style: none;
-  padding: 0;
-  margin: 12px 0;
-  color: #a5baff;
-  text-align: left;
-}
-
-/* ======= КНОПКИ В МОДАЛКАХ ======= */
-.order-buttons, .cart-buttons {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.order-buttons .btn, .cart-buttons .btn {
-  flex: 1;
-  min-width: 100px;
-  text-align: center;
-  font-weight: 500;
-  font-size: 15px;
-}
-
-/* ======= ДОБАВЛЕНО ДЛЯ СТИЛЯ В СОРТИРОВКЕ ======= */
-.btn-pill {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  font-weight: 500;
-  transition: all 0.25s ease;
-}
-
-.btn-pill:hover {
-  background: rgba(28,121,255,0.2);
-  box-shadow: 0 0 12px rgba(28,121,255,0.4);
-}
-/* ======= МОДАЛЬНОЕ ОКНО ТОВАРА ======= */
-.info-panel {
-  max-width: 420px;
-  width: 90%;
-  background: linear-gradient(180deg, #181b25, #0f1118);
-  border-radius: 24px;
-  box-shadow: 0 0 30px rgba(28, 121, 255, 0.3), 0 15px 60px rgba(0, 0, 0, 0.6);
-  color: #fff;
-  text-align: center;
-  padding: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.info-panel img {
-  width: 100%;
-  max-height: 250px;
-  object-fit: contain;
-  border-radius: 16px;
-  margin-bottom: 10px;
-}
-
-.info-panel h2 {
-  font-size: 22px;
-  color: #bcd6ff;
-  margin-bottom: 5px;
-}
-
-.info-panel .price {
-  font-size: 18px;
-  color: var(--accent-2);
-  margin-bottom: 8px;
-}
-
-.info-panel ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
-  text-align: left;
-  color: #a8bfff;
-}
-
-/* ======= Варианты цвета ======= */
-.color-options {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 12px 0;
-}
-
-.color-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.color-swatch:hover {
-  transform: scale(1.15);
-  box-shadow: 0 0 10px var(--accent);
-}
-
-.color-swatch.active {
-  box-shadow: 0 0 0 3px var(--accent), 0 0 15px var(--accent-2);
-  transform: scale(1.2);
-}
-
-/* ======= Выбор памяти ======= */
-.custom-select {
-  position: relative;
-  width: 220px;
-  margin: 10px auto;
-  user-select: none;
-}
-
-.select-selected {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(0, 255, 150, 0.4);
-  border-radius: 12px;
-  padding: 10px 14px;
-  color: #00ffaa;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.select-selected:hover {
-  box-shadow: 0 0 12px rgba(0, 255, 150, 0.5);
-}
-
-.select-items {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  right: 0;
-  background: rgba(14, 16, 20, 0.95);
-  border: 1px solid rgba(0, 255, 150, 0.3);
-  border-radius: 12px;
-  overflow: hidden;
-  z-index: 999;
-  animation: fadeInSelect 0.25s ease;
-}
-
-.select-items div {
-  padding: 10px;
-  color: #00ffaa;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.select-items div:hover {
-  background: rgba(0, 255, 150, 0.15);
-  color: #fff;
-}
-
-.select-hide {
-  display: none;
-}
-
-@keyframes fadeInSelect {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ======= КНОПКИ В МОДАЛКЕ ======= */
-.info-panel .row {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.info-panel .btn-primary {
-  flex: 1;
-  background: linear-gradient(180deg, #257cff, #1459ff);
-  border: none;
-  color: #fff;
-  border-radius: 18px;
-  padding: 12px 0;
-  font-weight: 600;
-  transition: all 0.25s ease;
-}
-
-.info-panel .btn-primary:hover {
-  box-shadow: 0 0 15px rgba(28,121,255,0.6);
-}
-
-.info-panel .btn-glass {
-  flex: 1;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  border-radius: 18px;
-  padding: 12px 0;
-  transition: 0.25s;
-}
-
-.info-panel .btn-glass:hover {
-  background: rgba(255,255,255,0.18);
-}
-::placeholder {
-  color: rgba(156, 199, 255, 0.6);
-  font-weight: 400;
-  letter-spacing: 0.3px;
-}
-.dropdown-menu button {
-  display: block;
-  width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: none;
-  color: #bcd6ff;
-  padding: 10px 14px;
-  border-radius: 10px;
-  text-align: center;
-  transition: all 0.25s ease;
-}
-
-.dropdown-menu button:hover {
-  background: rgba(28,121,255,0.3);
-  color: #fff;
-  box-shadow: inset 0 0 10px rgba(28,121,255,0.4);
-}
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-}
-
-@media (max-width: 600px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* ====== ЖЁСТКО 3 КАРТОЧКИ В РЯД, ЦЕНТР ПО ЭКРАНУ ====== */
-.grid{
-  display: grid;
-  grid-template-columns: repeat(3, 340px); /* три фиксированные колонки */
-  gap: 40px;                               /* отступы между карточками */
-  justify-content: center;                 /* весь блок карт по центру */
-  align-items: start;                      /* верхние края в линию */
-  margin: 0 auto;
-  padding: 30px 20px;
-}
-
-/* фиксируем ширину карточки, чтобы сетка была ровной */
-.card{
-  width: 340px;
-  height: 460px;              /* можно подогнать под ваш контент */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-/* одинаковая зона под изображение, чтобы высоты не прыгали */
-.card img{
-  width: 100%;
-  height: 240px;
-  object-fit: contain;
-  border-radius: 18px;
-  margin-bottom: 12px;
-}
-
-/* пагинация по центру (на всякий случай) */
-.pagination{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* ====== АДАПТИВ ====== */
-/* планшеты: 2 в ряд по центру */
-@media (max-width: 1100px){
-  .grid{ grid-template-columns: repeat(2, 340px); }
-}
-/* телефоны: 1 в ряд по центру */
-@media (max-width: 740px){
-  .grid{ grid-template-columns: 1fr; }
-  .card{ width: min(340px, 92vw); margin: 0 auto; }
-}
-/* ======= Исправление адаптива для поиска, корзины и сортировки ======= */
-@media (max-width: 768px) {
-  header h1 {
-    font-size: 1.3rem;
-    text-align: center;
-  }
-
-  /* поиск */
-  #search-bar {
-    width: 90%;
-    margin: 15px auto;
-    display: flex;
-    justify-content: center;
-  }
-
-  #search-input {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border-radius: 20px;
-    border: none;
-    outline: none;
-    background: rgba(255,255,255,0.05);
-    color: #fff;
-    text-align: center;
-  }
-
-  /* корзина */
-  #cartBtn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px auto;
-    border-radius: 16px;
-    width: 90%;
-    background: rgba(255,255,255,0.08);
-  }
-
-  /* сортировка */
-  #sortDropdown {
-    margin: 15px auto;
-    width: 90%;
-    text-align: center;
-  }
-
-  /* карточки в одну колонку по центру */
-  .grid {
-    grid-template-columns: 1fr;
-    justify-content: center;
-  }
-
-  .card {
-    width: 90%;
-    margin: 10px auto;
-  }
-}
-/* === ОКНО КОРЗИНЫ === */
-.overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.cart-window {
-  background: #101217;
-  border-radius: 20px;
-  padding: 30px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  color: #fff;
-  animation: cartFadeIn 0.4s ease;
-}
-
-@keyframes cartFadeIn {
-  from { transform: translateY(-30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.cart-items {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.cart-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #1a1d24;
-  border-radius: 10px;
-  padding: 10px;
-}
-
-.cart-item img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.cart-total {
-  text-align: right;
-}
-
-.btn-order, .btn-clear, .btn-close {
-  margin: 5px;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-order { background: #007bff; color: white; }
-.btn-clear { background: #e63946; color: white; }
-.btn-close { background: #444; color: white; }
-/* === Подсветка и подпрыгивание корзины === */
-@keyframes cartGlow {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0px #00ff88;
-    background: transparent;
-  }
-  50% {
-    transform: scale(1.2);
-    box-shadow: 0 0 20px #00ff88;
-    background: rgba(0, 255, 136, 0.15);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0px transparent;
-    background: transparent;
-  }
-}
-
-.cart-pulse {
-  animation: cartGlow 0.6s ease;
-}
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.card:hover {
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
-  border: 1px solid rgba(0, 140, 255, 0.6);
-}
-.card {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.6s ease forwards;
-}
-.card:nth-child(2) { animation-delay: 0.1s; }
-.card:nth-child(3) { animation-delay: 0.2s; }
-.card:nth-child(4) { animation-delay: 0.3s; }
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.overlay {
-  backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.5);
-  transition: opacity 0.4s ease;
-}
-.cart-window {
-  animation: popUp 0.4s ease;
-}
-@keyframes popUp {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.dropdown button {
-  position: relative;
-  overflow: hidden;
-}
-.dropdown button::after {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 255, 136, 0.2);
-  top: 100%;
-  left: 0;
-  transition: top 0.3s ease;
-}
-.dropdown button:hover::after {
-  top: 0;
-}
-/* === 💙 Градиентные кнопки с плавной анимацией наведения === */
-button, .btn, .btn-primary {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(270deg, #0077ff, #00aaff, #0077ff);
-  background-size: 300% 300%;
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  padding: 12px 24px;
-  cursor: pointer;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition:
-    transform 0.4s cubic-bezier(0.25, 1, 0.3, 1),
-    box-shadow 0.5s ease,
-    filter 0.4s ease,
-    opacity 0.4s ease;
-  animation: gradientFlow 6s ease infinite;
-  box-shadow: 0 0 15px rgba(0, 140, 255, 0.3);
-}
-
-/* === Эффект наведения === */
-button:hover, .btn:hover, .btn-primary:hover {
-  transform: scale(1.06) translateY(-2px);
-  box-shadow: 0 0 40px rgba(0, 140, 255, 0.9);
-  filter: brightness(1.2);
-  opacity: 0.95;
-}
-
-/* === Кликаем — лёгкая вспышка === */
-button:active::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(0, 140, 255, 0.4);
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  animation: btnFlashBlue 0.6s ease-out forwards;
-}
-
-/* === Анимация движения градиента === */
-@keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes btnFlashBlue {
-  0% { width: 0; height: 0; opacity: 1; }
-  100% { width: 280%; height: 280%; opacity: 0; }
-}
-/* === 📱 Адаптив для поиска (мобильная версия) === */
-@media (max-width: 768px) {
-  #search-bar {
-    width: 90%;
-    max-width: 350px;
-    margin: 10px auto;
-  }
-
-  #search-bar input {
-    font-size: 14px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    height: 42px; /* 🔹 уменьшили высоту */
-  }
-
-  header h1 {
-    font-size: 20px;
-  }
-
-  nav button {
-    font-size: 13px;
-    padding: 8px 12px;
-  }
-
-  .controls {
-    flex-direction: column;
-    gap: 8px;
-  }
-}
-/* === 💙 Анимация корзины при добавлении товара === */
-@keyframes cartBounce {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.25); }
-  70% { transform: scale(0.9); }
-  100% { transform: scale(1); }
-}
-
-@keyframes cartGlow {
-  0% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
-  50% { box-shadow: 0 0 20px 5px rgba(0, 150, 255, 0.8); }
-  100% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
-}
-
-#cartBtn.cart-animate {
-  animation: cartBounce 0.5s ease, cartGlow 0.8s ease;
-}
-/* === 🛒 Фото товаров в корзине === */
-.cart-items img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain; /* чтобы не обрезалось */
-  border-radius: 10px;
-  background: #111;
-  padding: 5px;
-  margin-right: 10px;
-  display: block;
-}
+/* ======= КОРЗИНА ======= */
 .cart-item {
   display: flex;
   align-items: center;
@@ -940,168 +206,46 @@ button:active::after {
   background: rgba(255, 255, 255, 0.05);
   transition: background 0.3s ease;
 }
+.cart-item:hover { background: rgba(255, 255, 255, 0.1); }
 
-.cart-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-/* === 📱 Исправление высоты поля поиска === */
-.search-wrap input {
-  width: 100%;
-  max-width: 600px;
-  padding: 8px 14px; /* было 12px 18px — уменьшаем */
-  border-radius: 20px;
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  font-size: 15px;
-  text-align: center;
-  outline: none;
-  transition: all 0.3s ease;
+.cart-items img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #111;
+  padding: 5px;
 }
 
-.search-wrap input:focus {
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 0 10px rgba(0, 140, 255, 0.4);
+/* ======= АНИМАЦИЯ КОРЗИНЫ ======= */
+@keyframes cartBounce {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+@keyframes cartGlow {
+  0% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
+  50% { box-shadow: 0 0 20px 5px rgba(0, 150, 255, 0.8); }
+  100% { box-shadow: 0 0 0 rgba(0, 150, 255, 0); }
+}
+#cartBtn.cart-animate {
+  animation: cartBounce 0.5s ease, cartGlow 0.8s ease;
 }
 
-
-/* === 📱 Исправление поля поиска только на телефонах === */
-@media (max-width: 768px) {
-  .search-wrap input {
-    padding: 4px 10px;      /* уменьшает высоту */
-    font-size: 13px;        /* чуть меньше шрифт */
-    border-radius: 14px;    /* меньше скругление, чтобы не выглядел как кирпич */
-    max-width: 85%;         /* чтобы не прилипал к краям */
-  }
+/* ======= АДАПТИВ ======= */
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: repeat(2, 340px); }
 }
-/* === 💫 Анимация плавного появления карточек === */
-.card {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.5s ease forwards;
+@media (max-width: 740px) {
+  .grid { grid-template-columns: 1fr; }
+  .card { width: min(340px, 92vw); margin: 0 auto; height: auto; }
 }
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Добавим небольшую задержку между карточками */
-.card:nth-child(1) { animation-delay: 0.05s; }
-.card:nth-child(2) { animation-delay: 0.1s; }
-.card:nth-child(3) { animation-delay: 0.15s; }
-.card:nth-child(4) { animation-delay: 0.2s; }
-.card:nth-child(5) { animation-delay: 0.25s; }
-.card:nth-child(6) { animation-delay: 0.3s; }
-
-.search-wrap input {
-  height: 36px; /* <-- вот это регулирует высоту */
-  padding: 4px 14px; /* меньше отступы — тоже делает тоньше */
-  font-size: 14px;
-  border-radius: 12px;
-}
-@media (max-width: 768px) {
-  .search-wrap input {
-    height: 28px;        /* делаем ниже только на телефоне */
-    padding: 2px 12px;   /* чуть меньше отступы */
-    font-size: 13px;     /* и текст меньше */
-  }
-}
-
-/* === 📱 Кнопка корзины с кружком-счётчиком === */
-@media (max-width: 768px) {
-  #cartBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    font-size: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 140, 255, 0.15);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 15px rgba(0, 140, 255, 0.4);
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  #cartBtn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(0, 140, 255, 0.7);
-    background: rgba(0, 140, 255, 0.25);
-  }
-
-  /* 🔵 Маленький кружок со счётчиком */
-  .cart-badge {
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    background: #1c79ff;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 10px rgba(0, 140, 255, 0.6);
-    font-weight: bold;
-    animation: badgePop 0.4s ease;
-  }
-
-  @keyframes badgePop {
-    0% { transform: scale(0.6); opacity: 0.3; }
-    60% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); }
-  }
-}
-@media (max-width: 768px) {
-  .search-wrap {
-    width: 90%;
-    margin: 0 auto;
-  }
-  
-  .search-wrap input {
-    height: 32px;
-    padding: 2px 12px;
-    font-size: 13px;
-    border-radius: 10px;
-    max-width: 100%;
-  }
-}
-/* Убрали поисковую область и выпадашку сортировки, на всякий случай, если где-то остались */
-.search-wrap,
-#sortDropdown,
-.dropdown { 
-  display: none !important; 
-}
-
-/* Контролы только для админа: меньше отступов, при отсутствии кнопок не занимают место */
-.controls-admin-only {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  padding: 8px 16px 0; /* меньше воздуха сверху/снизу */
-}
-
-/* Если все админ-кнопки скрыты, секция не должна занимать место */
-.controls-admin-only:empty,
-.controls-admin-only > :where(#adminLoginBtn,#exportBtn,#logoutBtn)[style*="display: none"] + *:last-child:empty {
-  display: none;
-}
-
-/* Чуть уменьшим верхний паддинг у сетки, чтобы товар начинался ближе к шапке */
-.grid {
-  padding-top: 16px;
-}
-
-/* Шапка — компактнее, чтобы компенсировать отсутствие поиска */
-.header {
-  padding: 14px 22px;
+@media (max-width: 480px) {
+  .header { flex-direction: column; gap: 10px; text-align: center; }
+  .brand-name { font-size: 22px; }
+  .controls { justify-content: center; flex-wrap: wrap; }
+  .grid { gap: 25px; padding: 10px; }
+  .btn { font-size: 14px; padding: 10px 14px; }
+  .panel { width: 92%; max-height: 90vh; overflow-y: auto; }
 }
