@@ -7,33 +7,34 @@
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <!-- Хедер -->
   <header class="header">
-    <div class="brand">
-      <span class="logo">🍏</span>
-      <span class="brand-name">Sn4ik-Store</span>
-    </div>
+  <div class="brand">
+    <span class="logo">🍏</span>
+    <span class="brand-name">Sn4ik-Store</span>
+  </div>
 
-    <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
-    </div>
+  <!-- Поиск -->
+  <div class="search-wrap">
+    <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
+  </div>
 
-    <div class="header-right">
-      <div id="sortDropdown" class="dropdown">
-        <button id="sortBtn" class="btn sort-btn">Сортировка ▾</button>
-        <div id="sortMenu" class="dropdown-menu">
-          <button data-sort="default">Без сортировки</button>
-          <button data-sort="priceAsc">Цена ↑</button>
-          <button data-sort="priceDesc">Цена ↓</button>
-          <button data-sort="name">По названию</button>
-        </div>
+  <!-- Сортировка + Корзина -->
+  <div class="header-bottom">
+    <div id="sortDropdown" class="dropdown">
+      <button id="sortBtn" class="btn sort-btn">Сортировка ▾</button>
+      <div id="sortMenu" class="dropdown-menu">
+        <button data-sort="default">Без сортировки</button>
+        <button data-sort="priceAsc">Цена ↑</button>
+        <button data-sort="priceDesc">Цена ↓</button>
+        <button data-sort="name">По названию</button>
       </div>
-
-      <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
-        <span id="cartCount" class="cart-badge">0</span>
-      </button>
     </div>
-  </header>
+
+    <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
+      <span id="cartCount" class="cart-badge">0</span>
+    </button>
+  </div>
+</header>
 
   <!-- Товары -->
   <main id="productList" class="grid"></main>
