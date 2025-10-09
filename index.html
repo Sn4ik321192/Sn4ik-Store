@@ -7,26 +7,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Шапка -->
-<header class="header">
-  <div class="brand">
-    <span class="logo">🍏</span>
-    <span class="brand-name">Sn4ik-Store</span>
-  </div>
+  
 
-  <!-- поиск удалён -->
-
-  <button id="cartBtn" class="btn btn-glass" onclick="toggleCart()">
-    🧺 Корзина (<span id="cartCount">0</span>)
-  </button>
-</header>
-
-<!-- Панель управления (без сортировки и поиска) -->
-<section class="controls controls-admin-only">
-  <button id="adminLoginBtn" class="btn btn-glass admin-toggle" onclick="adminLogin()" style="display:none;">🔐 Войти как админ</button>
-  <button id="exportBtn" class="btn btn-glass" style="display:none;" onclick="exportProducts()">📤 Экспорт товаров</button>
-  <button id="logoutBtn" class="btn btn-glass" style="display:none;" onclick="logoutAdmin()">🚪 Выйти</button>
-</section>
 
   <!-- Список товаров -->
   <main id="productList" class="grid"></main>
