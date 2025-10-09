@@ -67,8 +67,8 @@ let products = [
       { "size": "2 ТБ", "price": 429990 }
     ],
     "colors": [
-      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/macbookprosilver.webp" },
-      { "name": "Чёрный", "color": "#111", "img": "img/macbookproblack.webp" }
+      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/macbookpro16m3.webp" },
+      { "name": "Чёрный", "color": "#111", "img": "img/macbookpro16m3.webp" }
     ]
   },
   {
@@ -141,6 +141,7 @@ let products = [
     ]
   }
 ];
+
 
 
 // --- Утилиты
