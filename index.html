@@ -8,40 +8,25 @@
 </head>
 <body>
   <!-- Шапка -->
-  <header class="header">
-    <div class="brand">
-      <span class="logo">🍏</span>
-      <span class="brand-name">Sn4ik-Store</span>
-    </div>
+<header class="header">
+  <div class="brand">
+    <span class="logo">🍏</span>
+    <span class="brand-name">Sn4ik-Store</span>
+  </div>
 
-    <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()"/>
-    </div>
+  <!-- поиск удалён -->
 
-   <button id="cartBtn" class="btn btn-glass" onclick="toggleCart()">
-  🛒
-  <span id="cartCount" class="cart-badge">0</span>
-</button>
+  <button id="cartBtn" class="btn btn-glass" onclick="toggleCart()">
+    🧺 Корзина (<span id="cartCount">0</span>)
+  </button>
+</header>
 
-  </header>
-  
-
-  <!-- Панель управления -->
-  <section class="controls">
-    <div id="sortDropdown" class="dropdown">
-      <button id="sortBtn" class="btn btn-pill">Сортировка ▾</button>
-      <div id="sortMenu" class="dropdown-menu">
-        <button data-sort="default">Без сортировки</button>
-        <button data-sort="priceAsc">Цена ↑</button>
-        <button data-sort="priceDesc">Цена ↓</button>
-        <button data-sort="name">По названию</button>
-      </div>
-    </div>
-
-    <button id="adminLoginBtn" class="btn btn-glass admin-toggle" onclick="adminLogin()" style="display:none;">🔐 Войти как админ</button>
-    <button id="exportBtn" class="btn btn-glass" style="display:none;" onclick="exportProducts()">📤 Экспорт товаров</button>
-    <button id="logoutBtn" class="btn btn-glass" style="display:none;" onclick="logoutAdmin()">🚪 Выйти</button>
-  </section>
+<!-- Панель управления (без сортировки и поиска) -->
+<section class="controls controls-admin-only">
+  <button id="adminLoginBtn" class="btn btn-glass admin-toggle" onclick="adminLogin()" style="display:none;">🔐 Войти как админ</button>
+  <button id="exportBtn" class="btn btn-glass" style="display:none;" onclick="exportProducts()">📤 Экспорт товаров</button>
+  <button id="logoutBtn" class="btn btn-glass" style="display:none;" onclick="logoutAdmin()">🚪 Выйти</button>
+</section>
 
   <!-- Список товаров -->
   <main id="productList" class="grid"></main>
