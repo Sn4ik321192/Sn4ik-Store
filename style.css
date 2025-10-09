@@ -582,45 +582,92 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
   box-shadow: 0 0 12px #cc2366;
 }
-/* === АДАПТИВНОЕ МЕНЮ НА МОБИЛЬНОМ === */
+
+
+/* === Финальная версия бургер-меню (видна всегда) === */
+.burger {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 9999; /* 👈 теперь поверх всех элементов */
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  font-size: 18px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+}
+
+.burger:hover {
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Контейнер меню */
+.top-nav {
+  position: fixed;
+  top: 60px;
+  left: 18px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(15,15,20,0.96);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(14px);
+  z-index: 9998;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+/* Когда активно */
+.top-nav.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Кнопки меню */
+.nav-btn {
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  width: 160px;
+}
+
+.nav-btn:hover {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* Мобильная адаптация */
 @media (max-width: 768px) {
+  .burger {
+    font-size: 20px;
+    padding: 6px 10px;
+  }
+
   .top-nav {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-
-  .top-nav .nav-btn {
-    width: auto;
-    min-width: 100px;
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  .search-wrap {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .search-wrap input {
-    width: 90%;
-    font-size: 15px;
-    padding: 10px;
-  }
-
-  .header-bottom {
-    flex-direction: column;
+    width: calc(100% - 36px);
+    left: 18px;
+    top: 60px;
     align-items: center;
-    gap: 8px;
   }
 
-  .catalog {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+  .nav-btn {
+    width: 90%;
+    text-align: center;
   }
 }
 
