@@ -4,6 +4,14 @@ const TELEGRAM_CHAT_ID = "6509764945";
 
 // --- Состояния
 let cart = [];
+let favorites = [];
+
+// === Сохранение состояния корзины и избранного ===
+function saveState() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
+
 let currentPage = 1;
 const perPage = 6;
 let sortMode = "default";
@@ -164,10 +172,22 @@ const $ = id => document.getElementById(id);
 // --- Фильтрация/сортировка
 function getFiltered() {
   let list = products.slice();
-  if (query) list = list.filter(p => p.name.toLowerCase().includes(query));
+
+  // фильтр по категории
+  if (activeCategory !== "all") {
+    list = list.filter(p => p.category === activeCategory);
+  }
+
+  // фильтр по поиску
+  if (query) {
+    list = list.filter(p => p.name.toLowerCase().includes(query));
+  }
+
+  // сортировка
   if (sortMode === "priceAsc") list.sort((a, b) => a.price - b.price);
   if (sortMode === "priceDesc") list.sort((a, b) => b.price - a.price);
   if (sortMode === "name") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+
   return list;
 }
 
@@ -191,12 +211,17 @@ function render() {
       const idx = products.indexOf(p);
       const card = document.createElement("div");
       card.className = "card";
-      card.innerHTML = `
-        <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
-        <h3>${p.name}</h3>
-        <p class="price">${fmt(p.price)} ₽</p>
-        <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
-      `;
+      const favActive = favorites.find(f => f.name === p.name) ? "active" : "";
+card.innerHTML = `
+  <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
+  <h3>${p.name}</h3>
+  <p class="price">${fmt(p.price)} ₽</p>
+  <div style="display:flex;justify-content:center;gap:10px;">
+    <button class="btn btn-primary" onclick="addToCart(${idx})">🧺 В корзину</button>
+    <button class="btn-fav ${favActive}" onclick="addToFavorites(${idx})">⭐</button>
+  </div>
+`;
+
       list.appendChild(card);
     });
 
@@ -210,6 +235,68 @@ function render() {
     renderPagination(totalPages);
   }, 200);
 }
+
+// === Избранное ===
+function toggleFavorites() {
+  const overlay = document.getElementById("favOverlay");
+  overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
+  renderFavorites();
+}
+
+function addToFavorites(i) {
+  const p = products[i];
+  const existing = favorites.find(f => f.name === p.name);
+
+  if (!existing) {
+    favorites.push(p);
+    showToast("💚 Товар добавлен в избранное!", "success");
+  } else {
+    favorites = favorites.filter(f => f.name !== p.name);
+    showToast("💔 Удалён из избранного", "info");
+  }
+
+  document.getElementById("favCount").textContent = favorites.length;
+  render(); // 🔥 обновляем карточки, чтобы цвет кнопки поменялся
+  saveState();
+}
+
+
+function renderFavorites() {
+  const box = document.getElementById("favItems");
+  box.innerHTML = "";
+
+  if (!favorites.length) {
+    box.innerHTML = "<p>⭐ Пока нет избранных товаров.</p>";
+    return;
+  }
+
+  favorites.forEach((p, i) => {
+    const productIndex = products.findIndex(item => item.name === p.name);
+    const row = document.createElement("div");
+    row.className = "cart-item";
+
+    row.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" onclick="openProduct(${productIndex})" style="cursor:pointer">
+      <div style="flex:1;cursor:pointer" onclick="openProduct(${productIndex})">
+        <div style="font-weight:600">${p.name}</div>
+        <div>${fmt(p.price)} ₽</div>
+      </div>
+      <button class="btn btn-danger" onclick="removeFavorite(${i})">✖</button>
+    `;
+
+    box.appendChild(row);
+  });
+}
+
+
+function removeFavorite(i) {
+  favorites.splice(i, 1);
+  document.getElementById("favCount").textContent = favorites.length;
+  renderFavorites();
+  render();
+  saveState();
+}
+
 
 // --- Пагинация
 function renderPagination(total) {
@@ -271,18 +358,21 @@ function addToCart(i) {
   const cartBtn = document.getElementById("cartBtn");
   cartBtn.classList.add("pulse");
   setTimeout(() => cartBtn.classList.remove("pulse"), 400);
+  saveState();
 }
 
 function removeFromCart(i) {
   cart.splice(i, 1);
   $("cartCount").textContent = cart.length;
   renderCart();
+  saveState();
 }
 
 function clearCart() {
   cart = [];
   $("cartCount").textContent = 0;
   renderCart();
+  saveState(); 
 }
 
 function renderCart() {
@@ -363,9 +453,42 @@ function openProduct(i) {
     closeModal();
     showToast("✅ Товар добавлен в корзину!", "success");
   };
+const favBtn = document.getElementById("modalAddToFav");
+const isFav = favorites.find(f => f.name === p.name);
+if (isFav) {
+  favBtn.classList.add("active");
+  favBtn.textContent = "⭐ В избранном";
+} else {
+  favBtn.classList.remove("active");
+  favBtn.textContent = "⭐ В избранное";
+}
 
   $("productModal").style.display = "flex";
 }
+
+
+function toggleModalFavorite() {
+  const i = modalState.index;
+  const p = products[i];
+  const favBtn = document.getElementById("modalAddToFav");
+  const existing = favorites.find(f => f.name === p.name);
+
+  if (!existing) {
+    favorites.push(p);
+    favBtn.classList.add("active");
+    favBtn.textContent = "⭐ В избранном";
+    showToast("💚 Добавлено в избранное!", "success");
+  } else {
+    favorites = favorites.filter(f => f.name !== p.name);
+    favBtn.classList.remove("active");
+    favBtn.textContent = "⭐ В избранное";
+    showToast("💔 Удалено из избранного", "info");
+  }
+
+  document.getElementById("favCount").textContent = favorites.length;
+  render();
+}
+
 
 function closeModal() { $("productModal").style.display = "none"; }
 
@@ -450,6 +573,15 @@ function toggleMenu() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // 🔹 Загружаем сохранённые данные
+  const savedCart = localStorage.getItem("cart");
+  const savedFav = localStorage.getItem("favorites");
+
+  if (savedCart) cart = JSON.parse(savedCart);
+  if (savedFav) favorites = JSON.parse(savedFav);
+
+  $("cartCount").textContent = cart.length;
+  $("favCount").textContent = favorites.length;
   render();
   showPage("shop");
 
@@ -473,4 +605,5 @@ document.addEventListener('DOMContentLoaded', () => {
     headerBottom.style.gap = "12px";
   }
 });
+
 
