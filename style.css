@@ -103,11 +103,19 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
 .mem-btn{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);cursor:pointer;color:#fff}
 .mem-btn.active{border-color:#00d084;box-shadow:0 0 0 2px rgba(0,208,132,.35) inset}
 
+
 /* Order form */
-.panel input,.panel textarea{width:100%;padding:10px 12px;margin:8px 0;border-radius:12px;border:1px solid var(--stroke);
-  background:var(--glass);color:#fff}
-.panel textarea{min-height:70px;resize:none}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.panel input,
+.panel textarea {
+  width:100%;
+  padding:10px 12px;
+  margin:8px 0;
+  border-radius:12px;
+  border:1px solid var(--stroke);
+  background:var(--glass);
+  color:#fff;
+  font-size:16px !important; /* 👈 добавь вот это */
+}
 
 /* Responsive */
 @media (max-width:1100px){.grid{grid-template-columns:repeat(2,340px)}}
