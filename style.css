@@ -582,4 +582,45 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
   box-shadow: 0 0 12px #cc2366;
 }
+/* === АДАПТИВНОЕ МЕНЮ НА МОБИЛЬНОМ === */
+@media (max-width: 768px) {
+  .top-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .top-nav .nav-btn {
+    width: auto;
+    min-width: 100px;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .search-wrap {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .search-wrap input {
+    width: 90%;
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .header-bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .catalog {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+}
 
