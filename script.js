@@ -68,76 +68,77 @@ let products = [
     ],
     "colors": [
       { "name": "Серебристый", "color": "#dcdcdc", "img": "img/macbookpro16m3.webp" },
-      { "name": "Чёрный", "color": "#111", "img": "img/macbookpro16m3.webp" }
+      { "name": "Чёрный", "color": "#111", "img": "img/macbookpro16m3black.png" }
     ]
   },
   {
     "name": "MacBook Air 15″ M3",
     "price": 259990,
-    "img": "img/macbookair15m3.webp",
+    "img": "img/apple-macbook-air-15-2025-mw1l3-midnight-xstore-md-no-bg-preview (carve.photos).png",
     "specs": ["Чип M3", "Дисплей 15.3″ Retina", "8 ГБ RAM", "256 ГБ SSD", "FaceTime HD"],
     "memory": [
       { "size": "256 ГБ", "price": 259990 },
       { "size": "512 ГБ", "price": 289990 }
     ],
     "colors": [
-      { "name": "Синий", "color": "#223355", "img": "img/macbookairblue.webp" },
-      { "name": "Золотой", "color": "#e8cfa8", "img": "img/macbookairgold.webp" }
+      { "name": "Синий", "color": "#223355", "img": "img/apple-macbook-air-15-2025-mw1l3-midnight-xstore-md-no-bg-preview (carve.photos).png" },
+      { "name": "Золотой", "color": "#e8cfa8", "img": "img/i-no-bg-preview (carve.photos).png" }
     ]
   },
   {
     "name": "MacBook Pro 14″ M2 Pro",
     "price": 299990,
-    "img": "img/macbookpro14m2.webp",
+    "img": "img/ed1ec4ca-cca0-4b29-843f-9b7f9139b5c3.webp",
     "specs": ["Чип M2 Pro", "Дисплей 14.2″ Retina XDR", "16 ГБ RAM", "512 ГБ SSD"],
     "memory": [
       { "size": "512 ГБ", "price": 299990 },
       { "size": "1 ТБ", "price": 339990 }
     ],
     "colors": [
-      { "name": "Серый космос", "color": "#333", "img": "img/macbookprogray.webp" }
+      { "name": "Серый космос", "color": "#333", "img": "img/ed1ec4ca-cca0-4b29-843f-9b7f9139b5c3.webp" }
     ]
   },
   {
     "name": "iPad Pro 13″ M4",
     "price": 189990,
-    "img": "img/ipadpro13m4.webp",
+    "img": "img/Apple-iPad-Pro-13-2024-MVX33NFA--1--no-bg-preview (carve.photos).png",
     "specs": ["Чип M4", "Дисплей 13″ OLED", "Face ID", "120 Гц", "Thunderbolt 4"],
     "memory": [
       { "size": "256 ГБ", "price": 189990 },
       { "size": "512 ГБ", "price": 209990 }
     ],
     "colors": [
-      { "name": "Серебристый", "color": "#ddd", "img": "img/ipadprosilver.webp" },
-      { "name": "Серый космос", "color": "#333", "img": "img/ipadprogray.webp" }
+      { "name": "Серебристый", "color": "#ddd", "img": "img/Apple-iPad-Pro-13-2024-MVX33NFA--1--no-bg-preview (carve.photos).png" },
+      { "name": "Серый космос", "color": "#333", "img": "img/apple-ipad-pro-13-2024-mvx43-xstore-md-56-no-bg-preview (carve.photos).png" }
     ]
   },
   {
     "name": "iPad Air 6 (M2)",
     "price": 129990,
-    "img": "img/ipadair6.webp",
+    "img": "img/1-no-bg-preview (carve.photos).png",
     "specs": ["Чип M2", "Дисплей 11″ Liquid Retina", "Touch ID", "Поддержка Apple Pencil Pro"],
     "memory": [
       { "size": "128 ГБ", "price": 129990 },
       { "size": "256 ГБ", "price": 149990 }
     ],
     "colors": [
-      { "name": "Синий", "color": "#1e40af", "img": "img/ipadairblue.webp" },
-      { "name": "Фиолетовый", "color": "#8b5cf6", "img": "img/ipadairpurple.webp" }
+      { "name": "Синий", "color": "#1e40af", "img": "img/1-no-bg-preview (carve.photos).png" },
+      { "name": "Фиолетовый", "color": "#b2afb8ff", "img": "img/space 1-450x450-no-bg-preview (carve.photos).png" }
     ]
   },
   {
     "name": "iPad 10 (2022)",
     "price": 89990,
-    "img": "img/ipad10.webp",
+    "img": "img/1-32-1-no-bg-preview (carve.photos).png",
     "specs": ["Чип A14 Bionic", "Дисплей 10.9″", "Touch ID", "USB-C"],
     "memory": [
       { "size": "64 ГБ", "price": 89990 },
       { "size": "256 ГБ", "price": 104990 }
     ],
     "colors": [
-      { "name": "Жёлтый", "color": "#facc15", "img": "img/ipadyellow.webp" },
-      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/ipadsilver.webp" }
+      
+      { "name": "Жёлтый", "color": "#facc15", "img": "img/ipad-10-10-9-2022-joltyy-600x600.png" },
+      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/1-32-1-no-bg-preview (carve.photos).png" }
     ]
   }
 ];
