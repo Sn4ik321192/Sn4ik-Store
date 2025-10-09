@@ -162,27 +162,46 @@ function getFiltered() {
 // --- Рендер товаров
 function render() {
   const list = $("productList");
-  list.innerHTML = "";
-  const items = getFiltered();
-  const totalPages = Math.max(1, Math.ceil(items.length / perPage));
-  if (currentPage > totalPages) currentPage = totalPages;
-  const start = (currentPage - 1) * perPage;
-  const pageItems = items.slice(start, start + perPage);
 
-  pageItems.forEach(p => {
-    const idx = products.indexOf(p);
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
-      <h3>${p.name}</h3>
-      <p class="price">${fmt(p.price)} ₽</p>
-      <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
-    `;
-    list.appendChild(card);
-  });
-  renderPagination(totalPages);
+  // Анимация выхода
+  list.classList.add("page-exit");
+  setTimeout(() => {
+    list.classList.remove("page-exit");
+
+    // Очищаем старые товары
+    list.innerHTML = "";
+    const items = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * perPage;
+    const pageItems = items.slice(start, start + perPage);
+
+    // Создаём карточки
+    pageItems.forEach(p => {
+      const idx = products.indexOf(p);
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
+        <h3>${p.name}</h3>
+        <p class="price">${fmt(p.price)} ₽</p>
+        <button class="btn btn-primary" onclick="addToCart(${idx})">Добавить</button>
+      `;
+      list.appendChild(card);
+    });
+
+    // Анимация входа
+    list.classList.add("page-enter");
+    requestAnimationFrame(() => {
+      list.classList.add("page-enter-active");
+      list.classList.remove("page-enter");
+      setTimeout(() => list.classList.remove("page-enter-active"), 500);
+    });
+
+    renderPagination(totalPages);
+  }, 200);
 }
+
 render();
 
 function renderPagination(total) {
@@ -234,12 +253,26 @@ function toggleCart() {
   o.style.display = o.style.display === "flex" ? "none" : "flex";
   renderCart();
 }
+// --- Добавление товара в корзину
+function addToCart(i) {
+  const p = products[i];
+  cart.push({ ...p });
+  $("cartCount").textContent = cart.length;
+  renderCart();
+
+  // ✨ Анимация корзины при добавлении
+  const cartBtn = document.getElementById("cartBtn");
+  cartBtn.classList.add("pulse");
+  setTimeout(() => cartBtn.classList.remove("pulse"), 400);
+}
+
 
 function addToCart(i) {
   const p = products[i];
   cart.push({...p});
   $("cartCount").textContent = cart.length;
   renderCart();
+  
 }
 
 function removeFromCart(i) {
