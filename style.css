@@ -8,13 +8,102 @@ html,body{height:100%;font-family:Poppins,system-ui,-apple-system,Segoe UI,Robot
   background:radial-gradient(1200px 600px at 20% -20%,#141725 0%,transparent 70%),var(--bg);overflow-x:hidden}
 
 /* Header */
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:14px 22px;position:sticky;top:0;z-index:10;background:rgba(20,20,28,.55);
-  backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
-.brand{display:flex;align-items:center;gap:10px}
-.logo{font-size:28px}
-.brand-name{font-weight:700;font-size:26px}
-.header-right{display:flex;align-items:center;gap:10px}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(20,20,28,0.55);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo { font-size: 26px; }
+.brand-name { font-weight: 700; font-size: 22px; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Search */
+.search-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 6px;
+  min-width: 130px; /* не даст поиску исчезнуть */
+}
+
+.search-wrap input {
+  width: 100%;
+  max-width: 300px; /* уменьшено, чтобы всё влезло */
+  height: 34px;
+  padding: 5px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  outline: none;
+  text-align: left;
+  font-size: 16px;
+}
+
+.search-wrap input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+/* Сортировка и корзина */
+.sort-btn,
+.btn,
+.btn-glass {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sort-btn:hover,
+.btn-glass:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.cart-btn {
+  position: relative;
+  min-width: 42px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #1c79ff;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
 
 /* Search */
 .search-wrap{
