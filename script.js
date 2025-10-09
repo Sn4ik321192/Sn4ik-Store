@@ -541,4 +541,26 @@ document.addEventListener("DOMContentLoaded", () => {
   showPage("shop");
 });
 
+// === Универсальное бургер-меню ===
+function toggleMenu() {
+  const nav = document.querySelector('.top-nav');
+  nav.classList.toggle('active');
+}
+
+// Автоматически закрывать при клике
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.querySelector('.top-nav');
+  const burger = document.querySelector('.burger');
+
+  document.querySelectorAll('.top-nav .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => nav.classList.remove('active'));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !burger.contains(e.target)) {
+      nav.classList.remove('active');
+    }
+  });
+});
+
 
