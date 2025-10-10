@@ -639,60 +639,32 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", isLight ? "light" : "dark");
   });
 });
-// === Отправка заказа через Telegram (GitHub Pages совместимо) ===
-async function sendOrder() {
-  const name = $("orderName").value.trim();
-  const phone = $("orderPhone").value.trim();
-  const comment = $("orderComment").value.trim();
+try {
+  const proxyUrl = "https://api.allorigins.win/raw?url="; // бесплатный CORS-прокси
+  const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
 
-  if (!name || !phone) {
-    showToast("⚠️ Введите имя и телефон!", "error");
-    return;
-  }
-
-  if (!cart.length) {
-    showToast("🛒 Корзина пуста!", "info");
-    return;
-  }
-
-  let text = `🛍 <b>Новый заказ с сайта Sn4ik-Store</b>\n\n`;
-  text += `<b>👤 Имя:</b> ${name}\n`;
-  text += `<b>📞 Телефон:</b> ${phone}\n`;
-  if (comment) text += `<b>💬 Комментарий:</b> ${comment}\n`;
-  text += `\n<b>🧺 Товары:</b>\n`;
-
-  cart.forEach((item, i) => {
-    text += `${i + 1}. ${item.displayName || item.name} — ${fmt(item.price)} ₽\n`;
+  const res = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: TELEGRAM_CHAT_ID,
+      text,
+      parse_mode: "HTML"
+    })
   });
 
-  const total = cart.reduce((sum, p) => sum + p.price, 0);
-  text += `\n<b>💰 Итого:</b> ${fmt(total)} ₽`;
-
-  try {
-    // 👇 вот здесь используется прокси-сервер, чтобы GitHub Pages смог отправить запрос
-    const res = await fetch(`https://cors-anywhere.herokuapp.com/https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML"
-      })
-    });
-
-    if (res.ok) {
-      showToast("✅ Заказ успешно отправлен!", "success");
-      $("orderOverlay").style.display = "none";
-      cart = [];
-      $("cartCount").textContent = 0;
-      renderCart();
-      saveState();
-    } else {
-      showToast("⚠️ Ошибка при отправке заказа!", "error");
-    }
-  } catch (err) {
-    showToast("🚫 Ошибка соединения с Telegram!", "error");
+  if (res.ok) {
+    showToast("✅ Заказ успешно отправлен!", "success");
+    $("orderOverlay").style.display = "none";
+    cart = [];
+    $("cartCount").textContent = 0;
+    renderCart();
+    saveState();
+  } else {
+    showToast("⚠️ Ошибка при отправке заказа!", "error");
   }
+} catch (err) {
+  showToast("🚫 Ошибка соединения с Telegram!", "error");
 }
 
   
