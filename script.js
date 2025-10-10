@@ -608,63 +608,83 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // === 🌗 Переключение темы (ночная ↔ дневная) ===
 document.addEventListener("DOMContentLoaded", () => {
-  // 1. Находим кнопку и корневой элемент
   const themeBtn = document.getElementById("themeToggle");
-  const root = document.documentElement; // это <html>
-
-  // 2. Проверяем, сохранена ли тема в localStorage
+  const root = document.documentElement;
   const savedTheme = localStorage.getItem("theme");
 
   if (savedTheme === "light") {
-    // Если ранее была выбрана светлая — включаем её
     root.classList.add("light-theme");
-    themeBtn.textContent = "🌞"; // показываем солнце
+    themeBtn.textContent = "🌞";
   } else {
-    // Если тёмная (по умолчанию)
     themeBtn.textContent = "🌙";
   }
 
-  // 3. Обработка клика по кнопке
   themeBtn.addEventListener("click", () => {
-    // Переключаем класс у <html>
     root.classList.toggle("light-theme");
-
-    // Проверяем, включена ли светлая тема
     const isLight = root.classList.contains("light-theme");
-
-    // Меняем иконку на кнопке
     themeBtn.textContent = isLight ? "🌞" : "🌙";
-
-    // Сохраняем выбор в localStorage
     localStorage.setItem("theme", isLight ? "light" : "dark");
   });
 });
-try {
-  const proxyUrl = "https://api.allorigins.win/raw?url="; // бесплатный CORS-прокси
-  const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
 
-  const res = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: TELEGRAM_CHAT_ID,
-      text,
-      parse_mode: "HTML"
-    })
-  });
 
-  if (res.ok) {
-    showToast("✅ Заказ успешно отправлен!", "success");
-    $("orderOverlay").style.display = "none";
-    cart = [];
-    $("cartCount").textContent = 0;
-    renderCart();
-    saveState();
-  } else {
-    showToast("⚠️ Ошибка при отправке заказа!", "error");
+// === 📦 Отправка заказа в Telegram ===
+async function sendOrder() {
+  const name = $("orderName").value.trim();
+  const phone = $("orderPhone").value.trim();
+  const comment = $("orderComment").value.trim();
+
+  if (!name || !phone) {
+    showToast("⚠️ Введите имя и телефон!", "error");
+    return;
   }
-} catch (err) {
-  showToast("🚫 Ошибка соединения с Telegram!", "error");
-}
 
+  if (!cart.length) {
+    showToast("🛒 Корзина пуста!", "info");
+    return;
+  }
+
+  const itemsText = cart
+    .map((p, i) => `${i + 1}. ${p.displayName || p.name} — ${fmt(p.price)} ₽`)
+    .join("\n");
+
+  const text = `
+🧾 <b>Новый заказ Sn4ik-Store</b>\n
+👤 Имя: ${name}
+📞 Телефон: ${phone}
+💬 Комментарий: ${comment || "—"}
+━━━━━━━━━━━━━━━
+${itemsText}
+━━━━━━━━━━━━━━━
+💰 Итого: ${$("totalPrice").textContent} ₽
+`;
+
+  try {
+    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+    const proxyUrl = "https://api.allorigins.win/raw?url="; // обходит CORS
+
+    const res = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML"
+      })
+    });
+
+    if (res.ok) {
+      showToast("✅ Заказ успешно отправлен!", "success");
+      $("orderOverlay").style.display = "none";
+      cart = [];
+      $("cartCount").textContent = 0;
+      renderCart();
+      saveState();
+    } else {
+      showToast("⚠️ Ошибка при отправке заказа!", "error");
+    }
+  } catch (err) {
+    showToast("🚫 Ошибка соединения с Telegram!", "error");
+  }
+}
   
