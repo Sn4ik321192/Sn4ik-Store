@@ -1,4 +1,5 @@
 // --- Настройки
+
 const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
 const TELEGRAM_CHAT_ID = "6509764945";
 
@@ -638,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", isLight ? "light" : "dark");
   });
 });
-// === Отправка заказа ===
+// === Отправка заказа через Telegram (GitHub Pages совместимо) ===
 async function sendOrder() {
   const name = $("orderName").value.trim();
   const phone = $("orderPhone").value.trim();
@@ -653,6 +654,46 @@ async function sendOrder() {
     showToast("🛒 Корзина пуста!", "info");
     return;
   }
+
+  let text = `🛍 <b>Новый заказ с сайта Sn4ik-Store</b>\n\n`;
+  text += `<b>👤 Имя:</b> ${name}\n`;
+  text += `<b>📞 Телефон:</b> ${phone}\n`;
+  if (comment) text += `<b>💬 Комментарий:</b> ${comment}\n`;
+  text += `\n<b>🧺 Товары:</b>\n`;
+
+  cart.forEach((item, i) => {
+    text += `${i + 1}. ${item.displayName || item.name} — ${fmt(item.price)} ₽\n`;
+  });
+
+  const total = cart.reduce((sum, p) => sum + p.price, 0);
+  text += `\n<b>💰 Итого:</b> ${fmt(total)} ₽`;
+
+  try {
+    // 👇 вот здесь используется прокси-сервер, чтобы GitHub Pages смог отправить запрос
+    const res = await fetch(`https://cors-anywhere.herokuapp.com/https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML"
+      })
+    });
+
+    if (res.ok) {
+      showToast("✅ Заказ успешно отправлен!", "success");
+      $("orderOverlay").style.display = "none";
+      cart = [];
+      $("cartCount").textContent = 0;
+      renderCart();
+      saveState();
+    } else {
+      showToast("⚠️ Ошибка при отправке заказа!", "error");
+    }
+  } catch (err) {
+    showToast("🚫 Ошибка соединения с Telegram!", "error");
+  }
+}
 
   // Формируем текст сообщения
   let text = `🛍 <b>Новый заказ с сайта Sn4ik-Store</b>\n\n`;
