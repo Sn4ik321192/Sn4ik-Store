@@ -661,17 +661,16 @@ ${itemsText}
 
   try {
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-    const proxyUrl = "https://api.allorigins.win/raw?url="; // обходит CORS
 
-    const res = await fetch(proxyUrl + encodeURIComponent(telegramUrl), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML"
-      })
-    });
+const res = await fetch(telegramUrl, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: TELEGRAM_CHAT_ID,
+    text,
+    parse_mode: "HTML"
+  })
+});
 
     if (res.ok) {
       showToast("✅ Заказ успешно отправлен!", "success");
