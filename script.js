@@ -695,43 +695,4 @@ async function sendOrder() {
   }
 }
 
-  // Формируем текст сообщения
-  let text = `🛍 <b>Новый заказ с сайта Sn4ik-Store</b>\n\n`;
-  text += `<b>👤 Имя:</b> ${name}\n`;
-  text += `<b>📞 Телефон:</b> ${phone}\n`;
-  if (comment) text += `<b>💬 Комментарий:</b> ${comment}\n`;
-  text += `\n<b>🧺 Товары:</b>\n`;
-
-  cart.forEach((item, i) => {
-    text += `${i + 1}. ${item.displayName || item.name} — ${fmt(item.price)} ₽\n`;
-  });
-
-  const total = cart.reduce((s, p) => s + p.price, 0);
-  text += `\n<b>💰 Итого:</b> ${fmt(total)} ₽`;
-
-  try {
-    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text,
-        parse_mode: "HTML"
-      })
-    });
-
-    if (res.ok) {
-      showToast("✅ Заказ успешно отправлен!", "success");
-      $("orderOverlay").style.display = "none";
-      cart = [];
-      $("cartCount").textContent = 0;
-      renderCart();
-      saveState();
-    } else {
-      showToast("⚠️ Ошибка при отправке заказа!", "error");
-    }
-  } catch (err) {
-    showToast("🚫 Ошибка соединения с Telegram!", "error");
-  }
-}
-
+  
