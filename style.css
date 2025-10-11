@@ -1178,11 +1178,6 @@ bottom: auto;
   color: #111;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-body {
-  position: relative;
-  overflow-x: hidden;
-  background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
-}
 
 /* === Фон с анимацией "звёздная пыль" === */
 body {
