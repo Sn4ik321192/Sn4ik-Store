@@ -183,7 +183,7 @@
   <div id="ordersList" class="orders-list"></div>
 </section>
 
-  <!-- Подключение скрипта -->
+    <!-- Подключение скрипта -->
   <script src="script.js"></script>
 
   <!-- 💡 Дополнение: автоцентрирование сортировки -->
@@ -193,6 +193,22 @@
       if (headerBottom) {
         headerBottom.style.justifyContent = "center"; // центрируем кнопки
         headerBottom.style.gap = "12px";
+      }
+    });
+  </script>
+
+  <!-- ✨ Анимация неоновых частиц (фон) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const container = document.querySelector(".particles");
+      const count = 40; // количество частиц
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("div");
+        p.classList.add("particle");
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.animationDelay = Math.random() * 10 + "s";
+        p.style.width = p.style.height = (Math.random() * 4 + 4) + "px"; // разный размер
+        container.appendChild(p);
       }
     });
   </script>
