@@ -23,6 +23,8 @@
       <button class="nav-btn" onclick="showPage('shop')">🏪 Магазин</button>
       <button class="nav-btn" onclick="showPage('about')">ℹ️ О сайте</button>
       <button class="nav-btn" onclick="showPage('me')">👤 О нас</button>
+        <button class="nav-btn" onclick="showPage('orders')">📜 История заказов</button>
+      
     </nav>
 
     <!-- 🔍 Поиск -->
@@ -172,6 +174,12 @@
       </a>
     </div>
   </section>
+
+<!-- 📜 Страница "История заказов" -->
+<section id="page-orders" class="page" style="display:none;">
+  <h2>📜 История заказов</h2>
+  <div id="ordersList" class="orders-list"></div>
+</section>
 
   <!-- Подключение скрипта -->
   <script src="script.js"></script>
