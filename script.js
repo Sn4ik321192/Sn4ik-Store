@@ -562,8 +562,8 @@ function showPage(page) {
 
     const currentPage = document.getElementById(`page-${page}`);
     if (currentPage) currentPage.style.display = "block";
+    if (page === "orders") renderOrders();
   }
-
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -606,6 +606,42 @@ document.addEventListener('DOMContentLoaded', () => {
     headerBottom.style.gap = "12px";
   }
 });
+
+// === 📜 История заказов ===
+let orderHistory = JSON.parse(localStorage.getItem("orderHistory") || "[]");
+
+function saveOrderHistory() {
+  localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+}
+
+function renderOrders() {
+  const box = document.getElementById("ordersList");
+  box.innerHTML = "";
+
+  if (!orderHistory.length) {
+    box.innerHTML = "<p>Пока нет оформленных заказов 🛍</p>";
+    return;
+  }
+
+  orderHistory
+    .slice()
+    .reverse()
+    .forEach((order, i) => {
+      const div = document.createElement("div");
+      div.className = "order-card";
+      const items = order.items.map(x => `• ${x}`).join("<br>");
+      div.innerHTML = `
+        <h3>Заказ №${i + 1}</h3>
+        <p><b>Дата:</b> ${order.date}</p>
+        <p><b>Имя:</b> ${order.name}</p>
+        <p><b>Телефон:</b> ${order.phone}</p>
+        <p><b>Товары:</b><br>${items}</p>
+        <p><b>Сумма:</b> ${order.total} ₽</p>
+      `;
+      box.appendChild(div);
+    });
+}
+
 // === 🌗 Переключение темы (ночная ↔ дневная) ===
 document.addEventListener("DOMContentLoaded", () => {
   const themeBtn = document.getElementById("themeToggle");
@@ -673,6 +709,17 @@ const res = await fetch(telegramUrl, {
 });
 
     if (res.ok) {
+            // Сохраняем заказ в историю
+      const orderData = {
+        date: new Date().toLocaleString(),
+        name,
+        phone,
+        comment,
+        items: cart.map(p => p.displayName || p.name),
+        total: $("totalPrice").textContent
+      };
+      orderHistory.push(orderData);
+      saveOrderHistory();
       showToast("✅ Заказ успешно отправлен!", "success");
       $("orderOverlay").style.display = "none";
       cart = [];
