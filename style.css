@@ -1184,19 +1184,40 @@ body {
   background: radial-gradient(1200px 600px at 20% -20%, #141725 0%, transparent 70%), var(--bg);
 }
 
+/* === Фон с анимацией "звёздная пыль" === */
+body {
+  position: relative;
+  overflow-x: hidden;
+  background: radial-gradient(1000px circle at 50% 50%, #0b0c12, #07080d);
+  color: var(--text);
+}
+
+/* Слой звёзд */
 .particles {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px);
-  background-size: 4px 4px;
-  opacity: 0.06;
-  animation: moveParticles 60s linear infinite;
-  z-index: 0; /* чтобы фон был под всем */
+  z-index: 0;
+  background: 
+    radial-gradient(circle, rgba(0,255,180,0.15) 0%, transparent 70%) 20% 30% / 1200px 1200px no-repeat,
+    radial-gradient(circle, rgba(0,120,255,0.12) 0%, transparent 70%) 80% 70% / 1200px 1200px no-repeat,
+    url("https://i.imgur.com/7rZP4no.png");
+  background-size: cover, cover, contain;
+  mix-blend-mode: screen;
+  animation: moveStars 120s linear infinite, glowShift 12s ease-in-out infinite alternate;
+  opacity: 0.8;
+  filter: brightness(1.2);
 }
 
-@keyframes moveParticles {
-  from { background-position: 0 0; }
-  to { background-position: 1000px 1000px; }
+@keyframes moveStars {
+  0%   { background-position: 0 0, 100% 100%, 0 0; }
+  50%  { background-position: 100% 0, 0 100%, 20% 40%; }
+  100% { background-position: 0 0, 100% 100%, 0 0; }
+}
+
+@keyframes glowShift {
+  0%   { opacity: 0.7; filter: blur(0px) brightness(1.1); }
+  50%  { opacity: 0.9; filter: blur(1px) brightness(1.3); }
+  100% { opacity: 0.8; filter: blur(0.5px) brightness(1.2); }
 }
