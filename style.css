@@ -1179,7 +1179,7 @@ bottom: auto;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* === Фон с анимацией "звёздная пыль" === */
+/* === Неоновая пыльца Sn4ik-Store === */
 body {
   position: relative;
   overflow-x: hidden;
@@ -1187,32 +1187,49 @@ body {
   color: var(--text);
 }
 
-/* Слой звёзд */
 .particles {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  inset: 0;
+  overflow: hidden;
   pointer-events: none;
   z-index: 0;
-  background: 
-    radial-gradient(circle, rgba(0,255,180,0.15) 0%, transparent 70%) 20% 30% / 1200px 1200px no-repeat,
-    radial-gradient(circle, rgba(0,120,255,0.12) 0%, transparent 70%) 80% 70% / 1200px 1200px no-repeat,
-    url("https://i.ibb.co/NZKjp7R/stars-bg.png")
-  background-size: cover, cover, contain;
-  mix-blend-mode: screen;
-  animation: moveStars 120s linear infinite, glowShift 12s ease-in-out infinite alternate;
-  opacity: 0.8;
-  filter: brightness(1.2);
 }
 
-@keyframes moveStars {
-  0%   { background-position: 0 0, 100% 100%, 0 0; }
-  50%  { background-position: 100% 0, 0 100%, 20% 40%; }
-  100% { background-position: 0 0, 100% 100%, 0 0; }
+/* Одна частица */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,180,1) 0%, rgba(0,120,255,0.8) 80%);
+  box-shadow: 0 0 12px rgba(0,200,255,0.6), 0 0 20px rgba(0,255,180,0.4);
+  opacity: 0.7;
+  animation: float linear infinite, glow 3s ease-in-out infinite alternate;
 }
 
-@keyframes glowShift {
-  0%   { opacity: 0.7; filter: blur(0px) brightness(1.1); }
-  50%  { opacity: 0.9; filter: blur(1px) brightness(1.3); }
-  100% { opacity: 0.8; filter: blur(0.5px) brightness(1.2); }
+/* Движение вверх с лёгким дрейфом */
+@keyframes float {
+  0% {
+    transform: translateY(100vh) translateX(0) scale(0.8);
+    opacity: 0;
+  }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% {
+    transform: translateY(-10vh) translateX(var(--moveX)) scale(1);
+    opacity: 0;
+  }
 }
+
+/* Перелив неонового свечения */
+@keyframes glow {
+  from { filter: brightness(1) blur(0px); }
+  to   { filter: brightness(1.5) blur(1px); }
+}
+
+/* Разная скорость и направление для естественности */
+.particle:nth-child(odd) { animation-duration: 22s, 3s; --moveX: 30px; }
+.particle:nth-child(even) { animation-duration: 28s, 4s; --moveX: -25px; }
+.particle:nth-child(3n) { animation-duration: 34s, 3.5s; --moveX: 60px; }
+.particle:nth-child(5n) { animation-duration: 40s, 4.5s; --moveX: -45px; }
+.particle:nth-child(7n) { animation-duration: 50s, 5s; --moveX: 20px; }
