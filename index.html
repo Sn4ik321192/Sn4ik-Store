@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Sn4ik-Store</title>
   <link rel="stylesheet" href="style.css"/>
+
+
 </head>
 <body>
   <div class="particles"></div>
@@ -25,8 +27,10 @@
       <button class="nav-btn" onclick="showPage('shop')">🏪 Магазин</button>
       <button class="nav-btn" onclick="showPage('about')">ℹ️ О сайте</button>
       <button class="nav-btn" onclick="showPage('me')">👤 О нас</button>
-        <button class="nav-btn" onclick="showPage('orders')">📜 История заказов</button>
-      
+      <button class="nav-btn" onclick="showPage('orders')">📜 История заказов</button>
+      <button class="nav-btn" onclick="showPage('reviews')">💬 Отзывы</button>
+      <button class="nav-btn" onclick="showPage('account')">👤 Аккаунт</button>
+
     </nav>
 
     <!-- 🔍 Поиск -->
@@ -212,5 +216,50 @@
       }
     });
   </script>
+
+<!-- 💬 Страница отзывов -->
+<section id="page-reviews" class="page" style="display:none;">
+  <h2>💬 Отзывы покупателей</h2>
+  <div id="reviewsList" class="reviews-list"></div>
+
+  <h3 style="margin-top:30px;">📝 Оставить отзыв</h3>
+  <input id="reviewName" placeholder="Ваше имя">
+  <textarea id="reviewText" placeholder="Ваш отзыв..."></textarea>
+  <button class="btn btn-success" onclick="addReview()">Отправить отзыв</button>
+</section>
+
+<!-- 👤 Страница аккаунта -->
+<section id="page-account" class="page" style="display:none;">
+  <h2>👤 Личный кабинет</h2>
+
+  <!-- Форма входа -->
+  <div id="loginBox">
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPass" type="password" placeholder="Пароль">
+    <button class="btn btn-success" onclick="loginUser()">Войти</button>
+    <p style="margin-top:10px;">Нет аккаунта? <a href="#" onclick="toggleAuth('register')">Создать</a></p>
+  </div>
+
+  <!-- Форма регистрации -->
+  <div id="registerBox" style="display:none;">
+    <input id="regName" type="text" placeholder="Ваше имя">
+    <input id="regEmail" type="email" placeholder="Email">
+    <input id="regPass" type="password" placeholder="Пароль">
+    <button class="btn btn-success" onclick="registerUser()">Зарегистрироваться</button>
+    <p style="margin-top:10px;">Уже есть аккаунт? <a href="#" onclick="toggleAuth('login')">Войти</a></p>
+  </div>
+
+  <!-- Приветствие после входа -->
+  <div id="userPanel" style="display:none; text-align:center;">
+  <h3>Привет, <span id="userName"></span> 👋</h3>
+  <p>Рады видеть вас снова в Sn4ik-Store!</p>
+
+  <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
+    <button class="btn btn-danger" onclick="logoutUser()">🚪 Выйти</button>
+    <button class="btn btn-danger" style="background:#d14;" onclick="deleteAccount()">🗑 Удалить аккаунт</button>
+  </div>
+</div>
+
+
 </body>
 </html>
