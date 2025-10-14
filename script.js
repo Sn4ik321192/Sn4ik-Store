@@ -7,6 +7,11 @@ const TELEGRAM_CHAT_ID = "6509764945";
 let cart = [];
 let favorites = [];
 
+// === 👤 АККАУНТЫ ===
+let users = JSON.parse(localStorage.getItem("users") || "[]");
+let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+
+
 // === Сохранение состояния корзины и избранного ===
 function saveState() {
   localStorage.setItem("cart", JSON.stringify(cart));
@@ -666,9 +671,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // === 📦 Отправка заказа в Telegram ===
 async function sendOrder() {
+  
   const name = $("orderName").value.trim();
   const phone = $("orderPhone").value.trim();
   const comment = $("orderComment").value.trim();
+
+  // === Проверка авторизации перед оформлением заказа ===
+if (!currentUser) {
+  showToast("🔒 Войдите в аккаунт, чтобы оформить заказ!", "error");
+  showPage("account");
+  return; // прерываем выполнение, заказ не отправится
+}
+
 
   if (!name || !phone) {
     showToast("⚠️ Введите имя и телефон!", "error");
@@ -733,4 +747,152 @@ const res = await fetch(telegramUrl, {
     showToast("🚫 Ошибка соединения с Telegram!", "error");
   }
 }
-  
+  // === 💬 ОТЗЫВЫ ===
+let reviews = JSON.parse(localStorage.getItem("reviews") || "[]");
+
+function renderReviews() {
+  const box = document.getElementById("reviewsList");
+  box.innerHTML = "";
+
+  if (!reviews.length) {
+    box.innerHTML = "<p>Пока нет отзывов. Будьте первым, кто поделится впечатлением! 🌟</p>";
+    return;
+  }
+
+  reviews.slice().reverse().forEach(r => {
+    const card = document.createElement("div");
+    card.className = "review-card";
+    card.innerHTML = `
+      <p><b>${r.name}</b> <span style="opacity:0.7;">(${r.date})</span></p>
+      <p>${r.text}</p>
+    `;
+    box.appendChild(card);
+  });
+}
+
+function addReview() {
+  const name = document.getElementById("reviewName").value.trim();
+  const text = document.getElementById("reviewText").value.trim();
+
+  if (!name || !text) {
+    showToast("⚠️ Заполните все поля!", "error");
+    return;
+  }
+
+  const newReview = {
+    name,
+    text,
+    date: new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })
+  };
+
+  reviews.push(newReview);
+  localStorage.setItem("reviews", JSON.stringify(reviews));
+  document.getElementById("reviewName").value = "";
+  document.getElementById("reviewText").value = "";
+  showToast("✅ Спасибо за отзыв!", "success");
+  renderReviews();
+}
+
+document.addEventListener("DOMContentLoaded", renderReviews);
+
+function toggleAuth(mode) {
+  $("loginBox").style.display = mode === "login" ? "block" : "none";
+  $("registerBox").style.display = mode === "register" ? "block" : "none";
+}
+
+function registerUser() {
+  users = JSON.parse(localStorage.getItem("users") || "[]");
+
+  const name = $("regName").value.trim();
+  const email = $("regEmail").value.trim().toLowerCase();
+  const pass = $("regPass").value.trim();
+
+  if (!name || !email || !pass) {
+    showToast("⚠️ Заполните все поля!", "error");
+    return;
+  }
+
+  const exists = users.some(u => u.email === email);
+  if (exists) {
+    showToast("❌ Такой email уже зарегистрирован!", "error");
+    return;
+  }
+
+  const newUser = { name, email, pass };
+  users.push(newUser);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  showToast("✅ Аккаунт успешно создан!", "success");
+  toggleAuth("login");
+}
+
+
+function loginUser() {
+  const email = $("loginEmail").value.trim();
+  const pass = $("loginPass").value.trim();
+  const user = users.find(u => u.email === email && u.pass === pass);
+
+  if (!user) return showToast("❌ Неверный email или пароль!", "error");
+
+  currentUser = user;
+  localStorage.setItem("currentUser", JSON.stringify(user));
+  renderAccount();
+  showToast(`👋 Добро пожаловать, ${user.name}!`, "success");
+}
+
+function logoutUser() {
+  currentUser = null;
+  localStorage.removeItem("currentUser");
+  renderAccount();
+  showToast("🚪 Вы вышли из аккаунта", "info");
+}
+
+function renderAccount() {
+  if (currentUser) {
+    $("loginBox").style.display = "none";
+    $("registerBox").style.display = "none";
+    $("userPanel").style.display = "block";
+    $("userName").textContent = currentUser.name;
+  } else {
+    $("loginBox").style.display = "block";
+    $("registerBox").style.display = "none";
+    $("userPanel").style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", renderAccount);
+
+function deleteAccount() {
+  if (!currentUser) {
+    showToast("⚠️ Вы не вошли в аккаунт!", "error");
+    return;
+  }
+
+  const confirmDelete = confirm(
+    `Вы уверены, что хотите удалить аккаунт ${currentUser.email}? Это действие нельзя отменить!`
+  );
+  if (!confirmDelete) return;
+
+  // Читаем текущие данные
+  users = JSON.parse(localStorage.getItem("users") || "[]");
+
+  // Удаляем пользователя
+  users = users.filter(u => u.email !== currentUser.email);
+
+  // Сохраняем обновлённый список
+  localStorage.setItem("users", JSON.stringify(users));
+
+  // Полностью очищаем авторизацию
+  localStorage.removeItem("currentUser");
+  currentUser = null;
+
+  showToast("🗑 Аккаунт удалён!", "success");
+
+  // Обновляем интерфейс
+  renderAccount();
+  toggleAuth("register");
+
+  // Принудительная перезагрузка для очистки кэша
+  setTimeout(() => location.reload(), 800);
+}
+
