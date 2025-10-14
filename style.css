@@ -1233,3 +1233,154 @@ body {
 .particle:nth-child(3n) { animation-duration: 34s, 3.5s; --moveX: 60px; }
 .particle:nth-child(5n) { animation-duration: 40s, 4.5s; --moveX: -45px; }
 .particle:nth-child(7n) { animation-duration: 50s, 5s; --moveX: 20px; }
+
+/* === 💬 Отзывы === */
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.review-card {
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 16px;
+  line-height: 1.6;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.light-theme .review-card {
+  background: #e5e6e8;
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+}
+/* === 💬 Оформление формы отзывов в стиле Sn4ik-Store === */
+#page-reviews input,
+#page-reviews textarea {
+  width: 100%;
+  max-width: 600px;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: var(--glass);
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+#page-reviews input:focus,
+#page-reviews textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  background: rgba(255,255,255,0.12);
+}
+
+#page-reviews textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Кнопка “Отправить отзыв” */
+#page-reviews .btn-success {
+  display: block;
+  margin: 14px auto;
+  font-size: 16px;
+  border-radius: 14px;
+  padding: 10px 18px;
+  background: linear-gradient(175deg, #00d084, #00a76c);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(0,208,132,0.35);
+  transition: all 0.25s ease;
+}
+#page-reviews .btn-success:hover {
+  background: linear-gradient(175deg, #00e598, #00b67b);
+  box-shadow: 0 6px 14px rgba(0,208,132,0.45);
+}
+
+/* Карточки отзывов */
+.review-card {
+  background: var(--card);
+  border: 1px solid var(--stroke);
+  border-radius: 16px;
+  padding: 16px;
+  color: var(--text);
+  line-height: 1.6;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease;
+}
+.review-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(28,121,255,0.25);
+}
+
+/* Светлая тема */
+.light-theme #page-reviews input,
+.light-theme #page-reviews textarea {
+  background: #e7e7e7;
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+}
+.light-theme #page-reviews input:focus,
+.light-theme #page-reviews textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(28,121,255,0.35);
+}
+.light-theme .review-card {
+  background: #e5e6e8;
+  border: 1px solid rgba(0,0,0,0.2);
+  color: #111;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+/* === 👤 Аккаунт === */
+#page-account input {
+  width: 100%;
+  max-width: 400px;
+  display: block;
+  margin: 10px auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: var(--glass);
+  color: var(--text);
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+#page-account input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+#page-account a {
+  color: var(--accent);
+  text-decoration: none;
+}
+#page-account a:hover {
+  text-decoration: underline;
+}
+.btn-danger {
+  background: #ff3b30;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-danger:hover {
+  background: #ff5f50;
+  transform: scale(1.05);
+}
