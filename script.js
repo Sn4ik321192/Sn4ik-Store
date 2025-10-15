@@ -11,11 +11,22 @@ let favorites = [];
 let users = JSON.parse(localStorage.getItem("users") || "[]");
 let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 
+// === 👑 Система ролей ===
 
-// === Сохранение состояния корзины и избранного ===
-function saveState() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-  localStorage.setItem("favorites", JSON.stringify(favorites));
+// Главный администратор (только он может назначать других)
+const MAIN_ADMIN_EMAIL = "sn4ik231@gmail.com"; // 💡 сюда вставь свою почту
+
+// Проверка роли
+function isAdmin() {
+  return (
+    currentUser &&
+    (currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL)
+  );
+}
+
+// Проверка на главного админа
+function isMainAdmin() {
+  return currentUser && currentUser.email === MAIN_ADMIN_EMAIL;
 }
 
 let currentPage = 1;
@@ -29,150 +40,69 @@ let activeCategory = "all";
 // --- Данные (по умолчанию)
 let products = [
   {
-  "name": "iPhone 16 Pro Max",
-  "category": "iphone",
-  "price": 199990,
-  "img": "img/iphone16problack.webp",
-  "specs": ["Чип A18 Pro", "Дисплей 6.9″ 120 Гц", "Титан", "Камера 48 МП", "Батарея 5000 мАч"],
+  "name": "AirPods Pro 2 (LUX)",
+  "category": "airpods",
+  "price": 600,
+  "img": "img/airpods-pro2-lux.png.png",
+  "specs": [
+    "Активное шумоподавление (ANC)",
+    "Прозрачный режим",
+    "Bluetooth 5.3",
+    "До 6 часов автономной работы",
+    "Беспроводной кейс"
+  ],
   "memory": [
-    { "size": "256 ГБ", "price": 199990 },
-    { "size": "512 ГБ", "price": 229990 },
-    { "size": "1 ТБ", "price": 259990 }
+    { "size": "Базовая комплектация", "price": 600 }
   ],
   "colors": [
-    { "name": "Черный титан", "color": "#212329", "img": "img/iphone16problack.webp" },
-    { "name": "Натуральный титан", "color": "#b6b1a9", "img":"img/iphone16pronatural.png" },
-    { "name": "Белый титан", "color": "#f4f4f4", "img": "img/iphone16prowhiе.png" }
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro2-lux.png.png" },
   ]
 },
-  {
-    "name": "iPhone 16 Pro",
-    "category": "iphone",
-    "price": 154990,
-    "img": "img/iphone16problack.webp",
-    "specs": ["Чип A18 Pro", "Дисплей 6.3″ 120 Гц", "Титан", "Камера 48 МП", "Батарея 4500 мАч"],
-    "memory": [
-      { "size": "128 ГБ", "price": 154990 },
-      { "size": "256 ГБ", "price": 169990 },
-      { "size": "512 ГБ", "price": 199990 }
-    ],
-    "colors": [
-      { "name": "Черный титан", "color": "#212329", "img": "img/iphone16problack.webp" },
-    { "name": "Натуральный титан", "color": "#b6b1a9", "img":"img/iphone16pronatural.png" },
-    { "name": "Белый титан", "color": "#f4f4f4", "img": "img/iphone16prowhiе.png" }
-    ]
-  },
-  {
-    "name": "iPhone 16",
-    "category": "iphone",
-    "price": 119990,
-    "img": "img/iphone16gren.png",
-    "specs": ["Чип A18", "Дисплей 6.1″ 90 Гц", "Алюминий", "Камера 48 МП", "Батарея 4800 мАч"],
-    "memory": [
-      { "size": "128 ГБ", "price": 119990 },
-      { "size": "256 ГБ", "price": 134990 }
-    ],
-    "colors": [
-      { "name": "Черный", "color": "#000", "img": "img/iphone16gren.png" },
-      { "name": "Синий", "color": "#1e3a8a", "img": "img/iphone16blue.png" }
-    ]
-  },
-  {
-    "name": "MacBook Pro 16″ M3 Max",
-    "category": "macbook",
-    "price": 389990,
-    "img": "img/macbookpro16m3.webp",
-    "specs": ["Чип M3 Max", "Дисплей 16.2″ Liquid Retina XDR", "32 ГБ RAM", "1 ТБ SSD", "Touch ID"],
-    "memory": [
-      { "size": "1 ТБ", "price": 389990 },
-      { "size": "2 ТБ", "price": 429990 }
-    ],
-    "colors": [
-      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/macbookpro16m3.webp" },
-      { "name": "Чёрный", "color": "#111", "img": "img/macbookpro16m3black.png" }
-    ]
-  },
-  {
-    "name": "MacBook Air 15″ M3",
-    "category": "macbook",
-    "price": 259990,
-    "img": "img/apple-macbook-air-15-2025-mw1l3-midnight-xstore-md-no-bg-preview (carve.photos).png",
-    "specs": ["Чип M3", "Дисплей 15.3″ Retina", "8 ГБ RAM", "256 ГБ SSD", "FaceTime HD"],
-    "memory": [
-      { "size": "256 ГБ", "price": 259990 },
-      { "size": "512 ГБ", "price": 289990 }
-    ],
-    "colors": [
-      { "name": "Синий", "color": "#223355", "img": "img/apple-macbook-air-15-2025-mw1l3-midnight-xstore-md-no-bg-preview (carve.photos).png" },
-      { "name": "Золотой", "color": "#e8cfa8", "img": "img/i-no-bg-preview (carve.photos).png" }
-    ]
-  },
-  {
-    "name": "MacBook Pro 14″ M2 Pro",
-    "category": "macbook",
-    "price": 299990,
-    "img": "img/ed1ec4ca-cca0-4b29-843f-9b7f9139b5c3.webp",
-    "specs": ["Чип M2 Pro", "Дисплей 14.2″ Retina XDR", "16 ГБ RAM", "512 ГБ SSD"],
-    "memory": [
-      { "size": "512 ГБ", "price": 299990 },
-      { "size": "1 ТБ", "price": 339990 }
-    ],
-    "colors": [
-      { "name": "Серый космос", "color": "#333", "img": "img/ed1ec4ca-cca0-4b29-843f-9b7f9139b5c3.webp" }
-    ]
-  },
-  {
-    "name": "iPad Pro 13″ M4",
-    "category": "ipad",
-    "price": 189990,
-    "img": "img/Apple-iPad-Pro-13-2024-MVX33NFA--1--no-bg-preview (carve.photos).png",
-    "specs": ["Чип M4", "Дисплей 13″ OLED", "Face ID", "120 Гц", "Thunderbolt 4"],
-    "memory": [
-      { "size": "256 ГБ", "price": 189990 },
-      { "size": "512 ГБ", "price": 209990 }
-    ],
-    "colors": [
-      { "name": "Серебристый", "color": "#ddd", "img": "img/Apple-iPad-Pro-13-2024-MVX33NFA--1--no-bg-preview (carve.photos).png" },
-      { "name": "Серый космос", "color": "#333", "img": "img/apple-ipad-pro-13-2024-mvx43-xstore-md-56-no-bg-preview (carve.photos).png" }
-    ]
-  },
-  {
-    "name": "iPad Air 6 (M2)",
-    "category": "ipad",
-    "price": 129990,
-    "img": "img/1-no-bg-preview (carve.photos).png",
-    "specs": ["Чип M2", "Дисплей 11″ Liquid Retina", "Touch ID", "Поддержка Apple Pencil Pro"],
-    "memory": [
-      { "size": "128 ГБ", "price": 129990 },
-      { "size": "256 ГБ", "price": 149990 }
-    ],
-    "colors": [
-      { "name": "Синий", "color": "#1e40af", "img": "img/1-no-bg-preview (carve.photos).png" },
-      { "name": "Фиолетовый", "color": "#b2afb8ff", "img": "img/space 1-450x450-no-bg-preview (carve.photos).png" }
-    ]
-  },
-  {
-    "name": "iPad 10 (2022)",
-    "category": "ipad",
-    "price": 89990,
-    "img": "img/1-32-1-no-bg-preview (carve.photos).png",
-    "specs": ["Чип A14 Bionic", "Дисплей 10.9″", "Touch ID", "USB-C"],
-    "memory": [
-      { "size": "64 ГБ", "price": 89990 },
-      { "size": "256 ГБ", "price": 104990 }
-    ],
-    "colors": [
-      
-      { "name": "Жёлтый", "color": "#facc15", "img": "img/ipad-10-10-9-2022-joltyy-600x600.png" },
-      { "name": "Серебристый", "color": "#dcdcdc", "img": "img/1-32-1-no-bg-preview (carve.photos).png" }
-    ]
-  }
+{
+  "name": "AirPods Pro 2 (Premium)",
+  "category": "airpods",
+  "price": 700,
+  "img": "img/airpods-pro2-lux.png.png",
+  "specs": [
+    "Активное шумоподавление (ANC)",
+    "Динамический звук",
+    "Кейс с динамиком и креплением",
+    "Поддержка Find My",
+    "До 6 часов прослушивания"
+  ],
+  "memory": [
+    { "size": "Базовая комплектация", "price": 700 }
+  ],
+  "colors": [
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro2-lux.png.png" },
+  ]
+},
+{
+  "name": "AirPods 3",
+  "category": "airpods",
+  "price": 650,
+  "img": "img/airpods-pro3.png.png",
+  "specs": [
+    "Динамический драйвер Apple",
+    "Поддержка пространственного звука",
+    "До 6 часов прослушивания",
+    "Влагозащита IPX4",
+    "Беспроводной кейс MagSafe"
+  ],
+  "memory": [
+    { "size": "Базовая комплектация", "price": 650 }
+  ],
+  "colors": [
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro3.png.png" }
+  ]
+}
 ];
 
 
 
 // --- Утилиты
-const fmt = n => n.toLocaleString("ru-RU");
+const fmt = n => n.toLocaleString("ru-RU") ;
+
 const $ = id => document.getElementById(id);
 
 // --- Фильтрация/сортировка
@@ -221,7 +151,7 @@ function render() {
 card.innerHTML = `
   <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
   <h3>${p.name}</h3>
-  <p class="price">${fmt(p.price)} ₽</p>
+  <p class="price">${fmt(p.price)} MDL</p>
   <div style="display:flex;justify-content:center;gap:10px;">
     <button class="btn btn-primary" onclick="addToCart(${idx})">🧺 В корзину</button>
     <button class="btn-fav ${favActive}" onclick="addToFavorites(${idx})">⭐</button>
@@ -285,7 +215,7 @@ function renderFavorites() {
       <img src="${p.img}" alt="${p.name}" onclick="openProduct(${productIndex})" style="cursor:pointer">
       <div style="flex:1;cursor:pointer" onclick="openProduct(${productIndex})">
         <div style="font-weight:600">${p.name}</div>
-        <div>${fmt(p.price)} ₽</div>
+        <div>${fmt(p.price)} MDL</div>
       </div>
       <button class="btn btn-danger" onclick="removeFavorite(${i})">✖</button>
     `;
@@ -393,7 +323,7 @@ function renderCart() {
       <img src="${p.img}" alt="">
       <div style="flex:1">
         <div style="font-weight:600">${p.displayName || p.name}</div>
-        <div>${fmt(p.price)} ₽</div>
+        <div>${fmt(p.price)} MDL</div>
       </div>
       <button class="btn btn-danger" onclick="removeFromCart(${i})">✖</button>
     `;
@@ -411,7 +341,7 @@ function openProduct(i) {
 
   $("modalTitle").textContent = p.name;
   $("modalSpecs").innerHTML = p.specs.map(s => `<li>• ${s}</li>`).join("");
-  $("modalPrice").textContent = fmt(p.price) + " ₽";
+  $("modalPrice").textContent = fmt(p.price) + " MDL";
   $("modalImg").src = p.img;
 
   const colorBox = $("colorOptions");
@@ -443,7 +373,7 @@ function openProduct(i) {
       memBox.querySelectorAll(".mem-btn").forEach(x => x.classList.remove("active"));
       b.classList.add("active");
       modalState.memIdx = mi;
-      $("modalPrice").textContent = fmt(memory[mi].price) + " ₽";
+      $("modalPrice").textContent = fmt(memory[mi].price) + " MDL";
     };
     memBox.appendChild(b);
   });
@@ -564,11 +494,16 @@ function showPage(page) {
     if (catalog) catalog.style.display = "none";
     if (headerBottom) headerBottom.style.display = "none";
     if (searchWrap) searchWrap.style.display = "none";
-
-    const currentPage = document.getElementById(`page-${page}`);
-    if (currentPage) currentPage.style.display = "block";
-    if (page === "orders") renderOrders();
   }
+
+  // 🔹 Показываем нужную страницу
+  const currentPage = document.getElementById(`page-${page}`);
+  if (currentPage) currentPage.style.display = "block";
+
+  // 🔹 Специальные случаи
+  if (page === "orders") renderOrders();
+  if (page === "profile") renderProfile();
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -641,7 +576,7 @@ function renderOrders() {
         <p><b>Имя:</b> ${order.name}</p>
         <p><b>Телефон:</b> ${order.phone}</p>
         <p><b>Товары:</b><br>${items}</p>
-        <p><b>Сумма:</b> ${order.total} ₽</p>
+        <p><b>Сумма:</b> ${order.total} MDL</p>
       `;
       box.appendChild(div);
     });
@@ -676,11 +611,16 @@ async function sendOrder() {
   const phone = $("orderPhone").value.trim();
   const comment = $("orderComment").value.trim();
 
+
   // === Проверка авторизации перед оформлением заказа ===
 if (!currentUser) {
+  // Закрываем корзину и окно оформления, если они открыты
+  $("cartOverlay").style.display = "none";
+  $("orderOverlay").style.display = "none";
+  
   showToast("🔒 Войдите в аккаунт, чтобы оформить заказ!", "error");
-  showPage("account");
-  return; // прерываем выполнение, заказ не отправится
+  showPage("account"); // переключаем на страницу входа
+  return; // прерываем выполнение
 }
 
 
@@ -695,7 +635,7 @@ if (!currentUser) {
   }
 
   const itemsText = cart
-    .map((p, i) => `${i + 1}. ${p.displayName || p.name} — ${fmt(p.price)} ₽`)
+    .map((p, i) => `${i + 1}. ${p.displayName || p.name} — ${fmt(p.price)} MDL`)
     .join("\n");
 
   const text = `
@@ -706,7 +646,7 @@ if (!currentUser) {
 ━━━━━━━━━━━━━━━
 ${itemsText}
 ━━━━━━━━━━━━━━━
-💰 Итого: ${$("totalPrice").textContent} ₽
+💰 Итого: ${$("totalPrice").textContent} MDL
 `;
 
   try {
@@ -818,7 +758,8 @@ function registerUser() {
     return;
   }
 
-  const newUser = { name, email, pass };
+  // 🔹 Все новые пользователи — клиенты
+  const newUser = { name, email, pass, role: "client" };
   users.push(newUser);
   localStorage.setItem("users", JSON.stringify(users));
 
@@ -827,25 +768,40 @@ function registerUser() {
 }
 
 
+
 function loginUser() {
-  const email = $("loginEmail").value.trim();
+  const email = $("loginEmail").value.trim().toLowerCase();
   const pass = $("loginPass").value.trim();
   const user = users.find(u => u.email === email && u.pass === pass);
 
   if (!user) return showToast("❌ Неверный email или пароль!", "error");
 
+  // Если вошёл главный админ — назначаем его ролью "admin"
+  if (email === MAIN_ADMIN_EMAIL) user.role = "admin";
+
   currentUser = user;
   localStorage.setItem("currentUser", JSON.stringify(user));
+
   renderAccount();
-  showToast(`👋 Добро пожаловать, ${user.name}!`, "success");
+  showToast(`👋 Добро пожаловать, ${user.name}! (${user.role === "admin" ? "Администратор" : "Клиент"})`, "success");
 }
+
+
 
 function logoutUser() {
   currentUser = null;
   localStorage.removeItem("currentUser");
+
+  // Сбрасываем картинку, чтобы при входе другого юзера не осталась старая
+  const avatar = $("userAvatar");
+  if (avatar) {
+    avatar.src = `https://dummyimage.com/200x200/1c79ff/ffffff&text=?`;
+  }
+
   renderAccount();
   showToast("🚪 Вы вышли из аккаунта", "info");
 }
+
 
 function renderAccount() {
   if (currentUser) {
@@ -853,12 +809,24 @@ function renderAccount() {
     $("registerBox").style.display = "none";
     $("userPanel").style.display = "block";
     $("userName").textContent = currentUser.name;
+
+    // добавляем роль под именем
+    let roleInfo = document.getElementById("userRole");
+    if (!roleInfo) {
+      const info = document.createElement("p");
+      info.id = "userRole";
+      info.innerHTML = `<b>Статус:</b> ${currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL ? "Администратор" : "Клиент"}`;
+      $("userPanel").insertBefore(info, $("userPanel").children[2]);
+    } else {
+      roleInfo.innerHTML = `<b>Статус:</b> ${currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL ? "Администратор" : "Клиент"}`;
+    }
   } else {
     $("loginBox").style.display = "block";
     $("registerBox").style.display = "none";
     $("userPanel").style.display = "none";
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", renderAccount);
 
@@ -896,3 +864,125 @@ function deleteAccount() {
   setTimeout(() => location.reload(), 800);
 }
 
+// === 🧍 АВАТАР + РЕДАКТИРОВАНИЕ ПРОФИЛЯ ===
+
+function loadAvatar() {
+  const avatar = $("userAvatar");
+  if (!currentUser || !avatar) return;
+
+  const avatarKey = `avatar_${currentUser.email}`;
+  const saved = localStorage.getItem(avatarKey);
+
+  if (saved) {
+    avatar.src = saved;
+  } else if (currentUser.name) {
+    const letter = currentUser.name.charAt(0).toUpperCase();
+    avatar.src = `https://dummyimage.com/200x200/1c79ff/ffffff&text=${letter}`;
+  } else {
+    avatar.src = `https://dummyimage.com/200x200/1c79ff/ffffff&text=?`;
+  }
+}
+
+
+function changeAvatar(e) {
+  const file = e.target.files[0];
+  if (!file || !currentUser) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const avatarKey = `avatar_${currentUser.email}`;
+    localStorage.setItem(avatarKey, ev.target.result);
+    $("userAvatar").src = ev.target.result;
+    showToast("✅ Фото обновлено!");
+  };
+  reader.readAsDataURL(file);
+}
+
+
+
+// показать / скрыть форму редактирования
+function toggleEdit() {
+  const box = $("editProfileBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+// отмена
+function cancelEdit() {
+  $("editProfileBox").style.display = "none";
+}
+
+// сохранить изменения
+function saveProfile() {
+  const newName = $("editName").value.trim();
+  const newEmail = $("editEmail").value.trim();
+
+  if (!newName && !newEmail) {
+    showToast("⚠️ Введите новое имя или email!", "error");
+    return;
+  }
+
+  // Проверка email
+  if (newEmail) {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(newEmail)) {
+      showToast("❌ Неверный формат email!", "error");
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const exists = users.some(
+      u => u.email === newEmail && u.email !== currentUser.email
+    );
+    if (exists) {
+      showToast("⚠️ Этот email уже используется!", "error");
+      return;
+    }
+  }
+
+  // Загружаем список пользователей
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let updatedUser = { ...currentUser };
+
+  if (newName) updatedUser.name = newName;
+  if (newEmail) updatedUser.email = newEmail;
+
+  // Обновляем пользователя в списке
+  users = users.map(u =>
+    u.email === currentUser.email ? updatedUser : u
+  );
+  localStorage.setItem("users", JSON.stringify(users));
+
+  // Обновляем текущего
+  currentUser = updatedUser;
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+  $("userName").textContent = currentUser.name;
+  $("editProfileBox").style.display = "none";
+  loadAvatar();
+  showToast("✅ Профиль успешно обновлён!");
+}
+
+
+
+// при загрузке страницы
+document.addEventListener("DOMContentLoaded", loadAvatar);
+
+// === 🔐 Назначение администратора (только для главного админа) ===
+function makeAdmin(targetEmail) {
+  if (!isMainAdmin()) {
+    showToast("🚫 Только главный администратор может назначать админов!", "error");
+    return;
+  }
+
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  const user = users.find(u => u.email === targetEmail);
+
+  if (!user) {
+    showToast("❌ Пользователь с таким email не найден!", "error");
+    return;
+  }
+
+  user.role = "admin";
+  localStorage.setItem("users", JSON.stringify(users));
+  showToast(`✅ ${user.name} теперь администратор!`);
+}
