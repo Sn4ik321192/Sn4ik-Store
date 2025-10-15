@@ -1,267 +1,822 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Sn4ik-Store</title>
-  <link rel="stylesheet" href="style.css"/>
+// --- Настройки
+
+const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
+const TELEGRAM_CHAT_ID = "6509764945";
+
+// --- Состояния
+let cart = [];
+let favorites = [];
+
+// === 👤 АККАУНТЫ ===
+let users = JSON.parse(localStorage.getItem("users") || "[]");
+let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 
 
-</head>
-<body>
-  <div class="particles"></div>
-  <header class="header">
+// === Сохранение состояния корзины и избранного ===
+function saveState() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
 
-    <!-- Бренд -->
-    <div class="brand" onclick="goHome()" title="На главную">
-      <span class="logo">🍏</span>
-      <span class="brand-name">Sn4ik-Store</span>
+let currentPage = 1;
+const perPage = 6;
+let sortMode = "default";
+
+let query = "";
+
+let activeCategory = "all";
+
+// --- Данные (по умолчанию)
+let products = [
+  {
+  "name": "AirPods Pro 2 (LUX)",
+  "category": "airpods",
+  "price": 600,
+  "img": "img/airpods-pro2-lux.png.png",
+  "specs": [
+    "Активное шумоподавление (ANC)",
+    "Прозрачный режим",
+    "Bluetooth 5.3",
+    "До 6 часов автономной работы",
+    "Беспроводной кейс"
+  ],
+  "memory": [
+    { "size": "Базовая комплектация", "price": 600 }
+  ],
+  "colors": [
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro2-lux.png.png" },
+  ]
+},
+{
+  "name": "AirPods Pro 2 (Premium)",
+  "category": "airpods",
+  "price": 700,
+  "img": "img/airpods-pro2-lux.png.png",
+  "specs": [
+    "Активное шумоподавление (ANC)",
+    "Динамический звук",
+    "Кейс с динамиком и креплением",
+    "Поддержка Find My",
+    "До 6 часов прослушивания"
+  ],
+  "memory": [
+    { "size": "Базовая комплектация", "price": 700 }
+  ],
+  "colors": [
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro2-lux.png.png" },
+  ]
+},
+{
+  "name": "AirPods 3",
+  "category": "airpods",
+  "price": 650,
+  "img": "img/airpods-pro3.png.png",
+  "specs": [
+    "Динамический драйвер Apple",
+    "Поддержка пространственного звука",
+    "До 6 часов прослушивания",
+    "Влагозащита IPX4",
+    "Беспроводной кейс MagSafe"
+  ],
+  "memory": [
+    { "size": "Базовая комплектация", "price": 650 }
+  ],
+  "colors": [
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro3.png.png" }
+  ]
+}
+];
+
+
+
+// --- Утилиты
+const fmt = n => n.toLocaleString("ru-RU") ;
+
+const $ = id => document.getElementById(id);
+
+// --- Фильтрация/сортировка
+function getFiltered() {
+  let list = products.slice();
+
+  // фильтр по категории
+  if (activeCategory !== "all") {
+    list = list.filter(p => p.category === activeCategory);
+  }
+
+  // фильтр по поиску
+  if (query) {
+    list = list.filter(p => p.name.toLowerCase().includes(query));
+  }
+
+  // сортировка
+  if (sortMode === "priceAsc") list.sort((a, b) => a.price - b.price);
+  if (sortMode === "priceDesc") list.sort((a, b) => b.price - a.price);
+  if (sortMode === "name") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+
+  return list;
+}
+
+// --- Рендер товаров
+function render() {
+  const list = $("productList");
+
+  list.classList.add("page-exit");
+  setTimeout(() => {
+    list.classList.remove("page-exit");
+    list.innerHTML = "";
+
+    const items = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(items.length / perPage));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * perPage;
+    const pageItems = items.slice(start, start + perPage);
+
+    pageItems.forEach(p => {
+      const idx = products.indexOf(p);
+      const card = document.createElement("div");
+      card.className = "card";
+      const favActive = favorites.find(f => f.name === p.name) ? "active" : "";
+card.innerHTML = `
+  <img src="${p.img}" alt="${p.name}" onclick="openProduct(${idx})">
+  <h3>${p.name}</h3>
+  <p class="price">${fmt(p.price)} MDL</p>
+  <div style="display:flex;justify-content:center;gap:10px;">
+    <button class="btn btn-primary" onclick="addToCart(${idx})">🧺 В корзину</button>
+    <button class="btn-fav ${favActive}" onclick="addToFavorites(${idx})">⭐</button>
+  </div>
+`;
+
+      list.appendChild(card);
+    });
+
+    list.classList.add("page-enter");
+    requestAnimationFrame(() => {
+      list.classList.add("page-enter-active");
+      list.classList.remove("page-enter");
+      setTimeout(() => list.classList.remove("page-enter-active"), 500);
+    });
+
+    renderPagination(totalPages);
+  }, 200);
+}
+
+// === Избранное ===
+function toggleFavorites() {
+  const overlay = document.getElementById("favOverlay");
+  overlay.style.display = overlay.style.display === "flex" ? "none" : "flex";
+  renderFavorites();
+}
+
+function addToFavorites(i) {
+  const p = products[i];
+  const existing = favorites.find(f => f.name === p.name);
+
+  if (!existing) {
+    favorites.push(p);
+    showToast("💚 Товар добавлен в избранное!", "success");
+  } else {
+    favorites = favorites.filter(f => f.name !== p.name);
+    showToast("💔 Удалён из избранного", "info");
+  }
+
+  document.getElementById("favCount").textContent = favorites.length;
+  render(); // 🔥 обновляем карточки, чтобы цвет кнопки поменялся
+  saveState();
+}
+
+
+function renderFavorites() {
+  const box = document.getElementById("favItems");
+  box.innerHTML = "";
+
+  if (!favorites.length) {
+    box.innerHTML = "<p>⭐ Пока нет избранных товаров.</p>";
+    return;
+  }
+
+  favorites.forEach((p, i) => {
+    const productIndex = products.findIndex(item => item.name === p.name);
+    const row = document.createElement("div");
+    row.className = "cart-item";
+
+    row.innerHTML = `
+      <img src="${p.img}" alt="${p.name}" onclick="openProduct(${productIndex})" style="cursor:pointer">
+      <div style="flex:1;cursor:pointer" onclick="openProduct(${productIndex})">
+        <div style="font-weight:600">${p.name}</div>
+        <div>${fmt(p.price)} MDL</div>
+      </div>
+      <button class="btn btn-danger" onclick="removeFavorite(${i})">✖</button>
+    `;
+
+    box.appendChild(row);
+  });
+}
+
+
+function removeFavorite(i) {
+  favorites.splice(i, 1);
+  document.getElementById("favCount").textContent = favorites.length;
+  renderFavorites();
+  render();
+  saveState();
+}
+
+
+// --- Пагинация
+function renderPagination(total) {
+  const box = $("pagination");
+  box.innerHTML = "";
+  for (let i = 1; i <= total; i++) {
+    const b = document.createElement("button");
+    b.className = "page-btn" + (i === currentPage ? " active" : "");
+    b.textContent = i;
+    b.onclick = () => { currentPage = i; render(); };
+    box.appendChild(b);
+  }
+}
+
+// --- Поиск
+function filterProducts() {
+  query = $("searchInput").value.trim().toLowerCase();
+  currentPage = 1;
+  render();
+}
+
+// --- Сортировка
+(function initSort() {
+  const dd = $("sortDropdown");
+  const btn = $("sortBtn");
+  const menu = $("sortMenu");
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    dd.classList.toggle("open");
+  });
+  menu.querySelectorAll("button").forEach(b => {
+    b.addEventListener("click", () => {
+      sortMode = b.dataset.sort;
+      btn.textContent =
+        sortMode === "priceAsc" ? "Цена ↑" :
+        sortMode === "priceDesc" ? "Цена ↓" :
+        sortMode === "name" ? "По названию" :
+        "Сортировка ▾";
+      dd.classList.remove("open");
+      render();
+    });
+  });
+  document.addEventListener("click", () => dd.classList.remove("open"));
+})();
+
+// --- Корзина
+function toggleCart() {
+  const o = $("cartOverlay");
+  o.style.display = o.style.display === "flex" ? "none" : "flex";
+  renderCart();
+}
+
+function addToCart(i) {
+  const p = products[i];
+  cart.push({ ...p });
+  $("cartCount").textContent = cart.length;
+  renderCart();
+
+  const cartBtn = document.getElementById("cartBtn");
+  cartBtn.classList.add("pulse");
+  setTimeout(() => cartBtn.classList.remove("pulse"), 400);
+  saveState();
+}
+
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  $("cartCount").textContent = cart.length;
+  renderCart();
+  saveState();
+}
+
+function clearCart() {
+  cart = [];
+  $("cartCount").textContent = 0;
+  renderCart();
+  saveState(); 
+}
+
+function renderCart() {
+  const box = $("cartItems");
+  box.innerHTML = "";
+  let total = 0;
+  cart.forEach((p, i) => {
+    total += p.price;
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <img src="${p.img}" alt="">
+      <div style="flex:1">
+        <div style="font-weight:600">${p.displayName || p.name}</div>
+        <div>${fmt(p.price)} MDL</div>
+      </div>
+      <button class="btn btn-danger" onclick="removeFromCart(${i})">✖</button>
+    `;
+    box.appendChild(row);
+  });
+  $("totalPrice").textContent = fmt(total);
+}
+
+// --- Модалка товара
+let modalState = { index: null, colorIdx: 0, memIdx: 0 };
+
+function openProduct(i) {
+  modalState = { index: i, colorIdx: 0, memIdx: 0 };
+  const p = products[i];
+
+  $("modalTitle").textContent = p.name;
+  $("modalSpecs").innerHTML = p.specs.map(s => `<li>• ${s}</li>`).join("");
+  $("modalPrice").textContent = fmt(p.price) + " MDL";
+  $("modalImg").src = p.img;
+
+  const colorBox = $("colorOptions");
+  colorBox.innerHTML = "";
+  if (p.colors?.length) {
+    p.colors.forEach((c, ci) => {
+      const chip = document.createElement("div");
+      chip.className = "color-chip" + (ci === 0 ? " active" : "");
+      chip.style.backgroundColor = c.color;
+      chip.title = c.name;
+      chip.onclick = () => {
+        colorBox.querySelectorAll(".color-chip").forEach(x => x.classList.remove("active"));
+        chip.classList.add("active");
+        modalState.colorIdx = ci;
+        $("modalImg").src = c.img || p.img;
+      };
+      colorBox.appendChild(chip);
+    });
+  }
+
+  const memBox = $("memoryOptions");
+  memBox.innerHTML = "";
+  const memory = p.memory?.length ? p.memory : [{ size: "Базовый", price: p.price }];
+  memory.forEach((m, mi) => {
+    const b = document.createElement("button");
+    b.className = "mem-btn" + (mi === 0 ? " active" : "");
+    b.textContent = m.size;
+    b.onclick = () => {
+      memBox.querySelectorAll(".mem-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active");
+      modalState.memIdx = mi;
+      $("modalPrice").textContent = fmt(memory[mi].price) + " MDL";
+    };
+    memBox.appendChild(b);
+  });
+
+  $("modalAddToCart").onclick = () => {
+    const c = p.colors?.[modalState.colorIdx];
+    const m = memory[modalState.memIdx];
+    const price = m.price ?? p.price;
+    const name = `${p.name}${c ? ` (${c.name}` : ""}${m ? `${c ? ", " : " ("}${m.size}` : ""}${(c || m) ? ")" : ""}`;
+    cart.push({ ...p, price, displayName: name, img: c?.img || p.img });
+    $("cartCount").textContent = cart.length;
+    renderCart();
+    closeModal();
+    showToast("✅ Товар добавлен в корзину!", "success");
+  };
+const favBtn = document.getElementById("modalAddToFav");
+const isFav = favorites.find(f => f.name === p.name);
+if (isFav) {
+  favBtn.classList.add("active");
+  favBtn.textContent = "⭐ В избранном";
+} else {
+  favBtn.classList.remove("active");
+  favBtn.textContent = "⭐ В избранное";
+}
+
+  $("productModal").style.display = "flex";
+}
+
+
+function toggleModalFavorite() {
+  const i = modalState.index;
+  const p = products[i];
+  const favBtn = document.getElementById("modalAddToFav");
+  const existing = favorites.find(f => f.name === p.name);
+
+  if (!existing) {
+    favorites.push(p);
+    favBtn.classList.add("active");
+    favBtn.textContent = "⭐ В избранном";
+    showToast("💚 Добавлено в избранное!", "success");
+  } else {
+    favorites = favorites.filter(f => f.name !== p.name);
+    favBtn.classList.remove("active");
+    favBtn.textContent = "⭐ В избранное";
+    showToast("💔 Удалено из избранного", "info");
+  }
+
+  document.getElementById("favCount").textContent = favorites.length;
+  render();
+}
+
+
+function closeModal() { $("productModal").style.display = "none"; }
+
+// --- Оформление заказа
+function placeOrder() {
+  if (!cart.length) return showToast("🛒 Корзина пуста!", "info");
+  $("orderOverlay").style.display = "flex";
+}
+function closeOrder() { $("orderOverlay").style.display = "none"; }
+function overlayClick(e) { if (e.target.classList.contains("overlay")) e.target.style.display = "none"; }
+
+// --- Уведомления
+function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "toastOut 0.4s ease forwards";
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
+}
+
+// === Категории ===
+document.querySelectorAll(".cat-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeCategory = btn.dataset.cat;
+    currentPage = 1;
+    render();
+  });
+});
+
+// === Домой ===
+function goHome() {
+  document.querySelectorAll('.overlay').forEach(el => el.style.display = 'none');
+  query = "";
+  sortMode = "default";
+  activeCategory = "all"; 
+  $("searchInput").value = "";
+  currentPage = 1;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  showToast("🏠 Возврат на главную страницу", "info");
+}
+
+// === Переключение страниц (исправлено) ===
+function showPage(page) {
+  const main = document.querySelector("main");
+  const catalog = document.querySelector(".catalog");
+  const headerBottom = document.querySelector(".header-bottom");
+  const searchWrap = document.querySelector(".search-wrap");
+
+  // Скрываем все страницы
+  document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+
+  if (page === "shop") {
+    if (main) main.style.display = "block";
+    if (catalog) catalog.style.display = "flex";
+    if (headerBottom) headerBottom.style.display = "flex";
+    if (searchWrap) searchWrap.style.display = "flex";
+  } else {
+    if (main) main.style.display = "none";
+    if (catalog) catalog.style.display = "none";
+    if (headerBottom) headerBottom.style.display = "none";
+    if (searchWrap) searchWrap.style.display = "none";
+
+    const currentPage = document.getElementById(`page-${page}`);
+    if (currentPage) currentPage.style.display = "block";
+    if (page === "orders") renderOrders();
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// === Бургер-меню ===
+function toggleMenu() {
+  const nav = document.querySelector('.top-nav');
+  nav.classList.toggle('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 🔹 Загружаем сохранённые данные
+  const savedCart = localStorage.getItem("cart");
+  const savedFav = localStorage.getItem("favorites");
+
+  if (savedCart) cart = JSON.parse(savedCart);
+  if (savedFav) favorites = JSON.parse(savedFav);
+
+  $("cartCount").textContent = cart.length;
+  $("favCount").textContent = favorites.length;
+  render();
+  showPage("shop");
+
+  const nav = document.querySelector('.top-nav');
+  const burger = document.querySelector('.burger');
+
+  document.querySelectorAll('.top-nav .nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => nav.classList.remove('active'));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !burger.contains(e.target)) {
+      nav.classList.remove('active');
+    }
+  });
+
+  // Центрируем сортировку и корзину
+  const headerBottom = document.querySelector(".header-bottom");
+  if (headerBottom) {
+    headerBottom.style.justifyContent = "center";
+    headerBottom.style.gap = "12px";
+  }
+});
+
+// === 📜 История заказов ===
+let orderHistory = JSON.parse(localStorage.getItem("orderHistory") || "[]");
+
+function saveOrderHistory() {
+  localStorage.setItem("orderHistory", JSON.stringify(orderHistory));
+}
+
+function renderOrders() {
+  const box = document.getElementById("ordersList");
+  box.innerHTML = "";
+
+  if (!orderHistory.length) {
+    box.innerHTML = "<p>Пока нет оформленных заказов 🛍</p>";
+    return;
+  }
+
+  orderHistory
+    .slice()
+    .reverse()
+    .forEach((order, i) => {
+      const div = document.createElement("div");
+      div.className = "order-card";
+      const items = order.items.map(x => `• ${x}`).join("<br>");
+      div.innerHTML = `
+        <h3>Заказ №${i + 1}</h3>
+        <p><b>Дата:</b> ${order.date}</p>
+        <p><b>Имя:</b> ${order.name}</p>
+        <p><b>Телефон:</b> ${order.phone}</p>
+        <p><b>Товары:</b><br>${items}</p>
+        <p><b>Сумма:</b> ${order.total} MDL</p>
+      `;
+      box.appendChild(div);
+    });
+}
+
+// === 🌗 Переключение темы (ночная ↔ дневная) ===
+document.addEventListener("DOMContentLoaded", () => {
+  const themeBtn = document.getElementById("themeToggle");
+  const root = document.documentElement;
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    root.classList.add("light-theme");
+    themeBtn.textContent = "🌞";
+  } else {
+    themeBtn.textContent = "🌙";
+  }
+
+  themeBtn.addEventListener("click", () => {
+    root.classList.toggle("light-theme");
+    const isLight = root.classList.contains("light-theme");
+    themeBtn.textContent = isLight ? "🌞" : "🌙";
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+  });
+});
+
+
+// === 📦 Отправка заказа в Telegram ===
+async function sendOrder() {
   
-    </div>
-
-    <!-- 🟢 КНОПКА-БУРГЕР -->
-    <button class="burger" onclick="toggleMenu()">☰</button>
-
-    <!-- Навигация -->
-    <nav class="top-nav">
-      <button class="nav-btn" onclick="showPage('shop')">🏪 Магазин</button>
-      <button class="nav-btn" onclick="showPage('about')">ℹ️ О сайте</button>
-      <button class="nav-btn" onclick="showPage('me')">👤 О нас</button>
-      <button class="nav-btn" onclick="showPage('orders')">📜 История заказов</button>
-      <button class="nav-btn" onclick="showPage('reviews')">💬 Отзывы</button>
-      <button class="nav-btn" onclick="showPage('account')">👤 Аккаунт</button>
-
-    </nav>
-
-    <!-- 🔍 Поиск -->
-    <div class="search-wrap">
-      <input id="searchInput" type="text" placeholder="Поиск..." oninput="filterProducts()" />
-    </div>
-
-    <!-- 🔽 Сортировка + Корзина -->
-    <div class="header-bottom">
-      <div id="sortDropdown" class="dropdown">
-        <button id="sortBtn" class="btn sort-btn">Сортировка ▾</button>
-        <div id="sortMenu" class="dropdown-menu">
-          <button data-sort="default">Без сортировки</button>
-          <button data-sort="priceAsc">Цена ↑</button>
-          <button data-sort="priceDesc">Цена ↓</button>
-          <button data-sort="name">По названию</button>
-        </div>
-      </div>
+  const name = $("orderName").value.trim();
+  const phone = $("orderPhone").value.trim();
+  const comment = $("orderComment").value.trim();
 
 
-  <!-- ⭐ Избранное -->
-  <button id="favBtn" class="btn fav-btn" onclick="toggleFavorites()">⭐
-    <span id="favCount" class="cart-badge">0</span>
-  </button>
-
-  <!-- 🧺 Корзина -->
-  <button id="cartBtn" class="btn cart-btn" onclick="toggleCart()">🧺
-    <span id="cartCount" class="cart-badge">0</span>
-  </button>
-
-</div>
-
-
-  </header>
-
-<!-- Плавающая кнопка смены темы -->
-<button id="themeToggle" class="theme-fab" title="Переключить тему">🌗</button>
-
-  <!-- Каталог -->
-  <nav class="catalog">
-    <button class="cat-btn active" data-cat="all">Все</button>
-    <button class="cat-btn" data-cat="iphone">📱 iPhone</button>
-    <button class="cat-btn" data-cat="macbook">💻 MacBook</button>
-    <button class="cat-btn" data-cat="ipad">📟 iPad</button>
-      <button class="cat-btn" data-cat="airpods">🎧 AirPods</button>
-
-  </nav>
-
-  <!-- Основная часть -->
-  <main>
-    <div id="productList" class="grid"></div>
-    <div id="pagination" class="pagination"></div>
-  </main>
-
-  <!-- Корзина -->
-  <div id="cartOverlay" class="overlay" onclick="overlayClick(event)">
-    <div class="panel cart-panel" onclick="event.stopPropagation()">
-      <h3>Корзина</h3>
-      <div id="cartItems" class="cart-items"></div>
-      <div class="cart-total">
-        <p>Итого: <span id="totalPrice">0</span> ₽</p>
-      </div>
-      <div class="row">
-        <button class="btn btn-danger" onclick="clearCart()">🗑 Очистить</button>
-        <button class="btn btn-success" onclick="placeOrder()">💳 Оформить</button>
-        <button class="btn btn-glass" onclick="toggleCart()">✖ Закрыть</button>
-      </div>
-    </div>
-  </div>
-
-<!-- ⭐ Избранное -->
-<div id="favOverlay" class="overlay" onclick="overlayClick(event)">
-  <div class="panel cart-panel" onclick="event.stopPropagation()">
-    <h3>Избранное</h3>
-    <div id="favItems" class="cart-items"></div>
-    <div class="row">
-      <button class="btn btn-danger" onclick="favorites=[];renderFavorites();document.getElementById('favCount').textContent=0;">🗑 Очистить</button>
-      <button class="btn btn-glass" onclick="toggleFavorites()">✖ Закрыть</button>
-    </div>
-  </div>
-</div>
+  // === Проверка авторизации перед оформлением заказа ===
+if (!currentUser) {
+  // Закрываем корзину и окно оформления, если они открыты
+  $("cartOverlay").style.display = "none";
+  $("orderOverlay").style.display = "none";
+  
+  showToast("🔒 Войдите в аккаунт, чтобы оформить заказ!", "error");
+  showPage("account"); // переключаем на страницу входа
+  return; // прерываем выполнение
+}
 
 
-  <!-- Оформление заказа -->
-  <div id="orderOverlay" class="overlay" onclick="overlayClick(event)">
-    <div class="panel order-panel" onclick="event.stopPropagation()">
-      <h3>Оформление заказа</h3>
-      <input id="orderName" placeholder="Ваше имя"/>
-      <input id="orderPhone" placeholder="Телефон" type="tel"/>
-      <textarea id="orderComment" placeholder="Комментарий (необязательно)"></textarea>
-      <div class="row">
-        <button class="btn btn-success" onclick="sendOrder()">Отправить</button>
-        <button class="btn btn-danger" onclick="closeOrder()">Отмена</button>
-      </div>
-    </div>
-  </div>
+  if (!name || !phone) {
+    showToast("⚠️ Введите имя и телефон!", "error");
+    return;
+  }
 
-  <!-- Модалка товара -->
-  <div id="productModal" class="overlay" onclick="overlayClick(event)" style="display:none;">
-    <div class="panel info-panel" onclick="event.stopPropagation()">
-      <img id="modalImg" src="" alt="Фото товара"/>
-      <h2 id="modalTitle"></h2>
-      <p id="modalPrice" class="price"></p>
-      <ul id="modalSpecs"></ul>
+  if (!cart.length) {
+    showToast("🛒 Корзина пуста!", "info");
+    return;
+  }
 
-      <div class="option-row">
-        <label>Цвет:</label>
-        <div id="colorOptions" class="color-options"></div>
-      </div>
+  const itemsText = cart
+    .map((p, i) => `${i + 1}. ${p.displayName || p.name} — ${fmt(p.price)} MDL`)
+    .join("\n");
 
-      <div class="option-row">
-        <label>Память:</label>
-        <div id="memoryOptions" class="memory-options"></div>
-      </div>
+  const text = `
+🧾 <b>Новый заказ Sn4ik-Store</b>\n
+👤 Имя: ${name}
+📞 Телефон: ${phone}
+💬 Комментарий: ${comment || "—"}
+━━━━━━━━━━━━━━━
+${itemsText}
+━━━━━━━━━━━━━━━
+💰 Итого: ${$("totalPrice").textContent} MDL
+`;
 
-      <div class="row">
-  <button class="btn btn-primary" id="modalAddToCart">🧺 В корзину</button>
-  <button class="btn-fav" id="modalAddToFav" onclick="toggleModalFavorite()">⭐ В избранное</button>
-  <button class="btn btn-glass" onclick="closeModal()">✖ Закрыть</button>
-</div>
+  try {
+    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
 
-    </div>
-  </div>
+const res = await fetch(telegramUrl, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: TELEGRAM_CHAT_ID,
+    text,
+    parse_mode: "HTML"
+  })
+});
 
-  <!-- Уведомления -->
-  <div id="toastContainer"></div>
+    if (res.ok) {
+            // Сохраняем заказ в историю
+      const orderData = {
+        date: new Date().toLocaleString(),
+        name,
+        phone,
+        comment,
+        items: cart.map(p => p.displayName || p.name),
+        total: $("totalPrice").textContent
+      };
+      orderHistory.push(orderData);
+      saveOrderHistory();
+      showToast("✅ Заказ успешно отправлен!", "success");
+      $("orderOverlay").style.display = "none";
+      cart = [];
+      $("cartCount").textContent = 0;
+      renderCart();
+      saveState();
+    } else {
+      showToast("⚠️ Ошибка при отправке заказа!", "error");
+    }
+  } catch (err) {
+    showToast("🚫 Ошибка соединения с Telegram!", "error");
+  }
+}
+  // === 💬 ОТЗЫВЫ ===
+let reviews = JSON.parse(localStorage.getItem("reviews") || "[]");
 
-  <!-- 📄 Страница "О сайте" -->
-  <section id="page-about" class="page" style="display:none;">
-    <h2>ℹ️ О сайте</h2>
-    <p>Sn4ik-Store — современный онлайн-магазин техники Apple. Мы создаём уникальный опыт покупки, объединяя дизайн, удобство и инновации.</p>
-    <p>На сайте представлена только оригинальная техника: iPhone, MacBook, iPad и аксессуары. Все товары проходят проверку качества.</p>
-  </section>
+function renderReviews() {
+  const box = document.getElementById("reviewsList");
+  box.innerHTML = "";
 
-  <!-- 📄 Страница "О нас" -->
-  <section id="page-me" class="page" style="display:none;">
-    <h2>👤 О нас</h2>
-    <p>Привет! Мы — команда <b>Sn4ik-Store</b>. Любим технику Apple и делаем всё, чтобы покупки у нас были максимально удобными и безопасными.</p>
-    <p>Связаться с нами можно через соцсети — мы всегда открыты для общения 😊</p>
+  if (!reviews.length) {
+    box.innerHTML = "<p>Пока нет отзывов. Будьте первым, кто поделится впечатлением! 🌟</p>";
+    return;
+  }
 
-    <div class="social-links">
-      <a href="https://t.me/sn4ik23" target="_blank" class="social-btn tg">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-        Telegram
-      </a>
-      <a href="https://www.instagram.com/sn4i.k" target="_blank" class="social-btn ig">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
-        Instagram
-      </a>
-    </div>
-  </section>
+  reviews.slice().reverse().forEach(r => {
+    const card = document.createElement("div");
+    card.className = "review-card";
+    card.innerHTML = `
+      <p><b>${r.name}</b> <span style="opacity:0.7;">(${r.date})</span></p>
+      <p>${r.text}</p>
+    `;
+    box.appendChild(card);
+  });
+}
 
-<!-- 📜 Страница "История заказов" -->
-<section id="page-orders" class="page" style="display:none;">
-  <h2>📜 История заказов</h2>
-  <div id="ordersList" class="orders-list"></div>
-</section>
+function addReview() {
+  const name = document.getElementById("reviewName").value.trim();
+  const text = document.getElementById("reviewText").value.trim();
 
-    <!-- Подключение скрипта -->
-  <script src="script.js"></script>
+  if (!name || !text) {
+    showToast("⚠️ Заполните все поля!", "error");
+    return;
+  }
 
-  <!-- 💡 Дополнение: автоцентрирование сортировки -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const headerBottom = document.querySelector(".header-bottom");
-      if (headerBottom) {
-        headerBottom.style.justifyContent = "center"; // центрируем кнопки
-        headerBottom.style.gap = "12px";
-      }
-    });
-  </script>
+  const newReview = {
+    name,
+    text,
+    date: new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })
+  };
 
-  <!-- ✨ Анимация неоновых частиц (фон) -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const container = document.querySelector(".particles");
-      const count = 40; // количество частиц
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement("div");
-        p.classList.add("particle");
-        p.style.left = Math.random() * 100 + "vw";
-        p.style.animationDelay = Math.random() * 10 + "s";
-        p.style.width = p.style.height = (Math.random() * 4 + 4) + "px"; // разный размер
-        container.appendChild(p);
-      }
-    });
-  </script>
+  reviews.push(newReview);
+  localStorage.setItem("reviews", JSON.stringify(reviews));
+  document.getElementById("reviewName").value = "";
+  document.getElementById("reviewText").value = "";
+  showToast("✅ Спасибо за отзыв!", "success");
+  renderReviews();
+}
 
-<!-- 💬 Страница отзывов -->
-<section id="page-reviews" class="page" style="display:none;">
-  <h2>💬 Отзывы покупателей</h2>
-  <div id="reviewsList" class="reviews-list"></div>
+document.addEventListener("DOMContentLoaded", renderReviews);
 
-  <h3 style="margin-top:30px;">📝 Оставить отзыв</h3>
-  <input id="reviewName" placeholder="Ваше имя">
-  <textarea id="reviewText" placeholder="Ваш отзыв..."></textarea>
-  <button class="btn btn-success" onclick="addReview()">Отправить отзыв</button>
-</section>
+function toggleAuth(mode) {
+  $("loginBox").style.display = mode === "login" ? "block" : "none";
+  $("registerBox").style.display = mode === "register" ? "block" : "none";
+}
 
-<!-- 👤 Страница аккаунта -->
-<section id="page-account" class="page" style="display:none;">
-  <h2>👤 Личный кабинет</h2>
+function registerUser() {
+  users = JSON.parse(localStorage.getItem("users") || "[]");
 
-  <!-- Форма входа -->
-  <div id="loginBox">
-    <input id="loginEmail" type="email" placeholder="Email">
-    <input id="loginPass" type="password" placeholder="Пароль">
-    <button class="btn btn-success" onclick="loginUser()">Войти</button>
-    <p style="margin-top:10px;">Нет аккаунта? <a href="#" onclick="toggleAuth('register')">Создать</a></p>
-  </div>
+  const name = $("regName").value.trim();
+  const email = $("regEmail").value.trim().toLowerCase();
+  const pass = $("regPass").value.trim();
 
-  <!-- Форма регистрации -->
-  <div id="registerBox" style="display:none;">
-    <input id="regName" type="text" placeholder="Ваше имя">
-    <input id="regEmail" type="email" placeholder="Email">
-    <input id="regPass" type="password" placeholder="Пароль">
-    <button class="btn btn-success" onclick="registerUser()">Зарегистрироваться</button>
-    <p style="margin-top:10px;">Уже есть аккаунт? <a href="#" onclick="toggleAuth('login')">Войти</a></p>
-  </div>
+  if (!name || !email || !pass) {
+    showToast("⚠️ Заполните все поля!", "error");
+    return;
+  }
 
-  <!-- Приветствие после входа -->
-  <div id="userPanel" style="display:none; text-align:center;">
-  <h3>Привет, <span id="userName"></span> 👋</h3>
-  <p>Рады видеть вас снова в Sn4ik-Store!</p>
+  const exists = users.some(u => u.email === email);
+  if (exists) {
+    showToast("❌ Такой email уже зарегистрирован!", "error");
+    return;
+  }
 
-  <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
-    <button class="btn btn-danger" onclick="logoutUser()">🚪 Выйти</button>
-    <button class="btn btn-danger" style="background:#d14;" onclick="deleteAccount()">🗑 Удалить аккаунт</button>
-  </div>
-</div>
+  const newUser = { name, email, pass };
+  users.push(newUser);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  showToast("✅ Аккаунт успешно создан!", "success");
+  toggleAuth("login");
+}
 
 
-</body>
-</html>
+function loginUser() {
+  const email = $("loginEmail").value.trim();
+  const pass = $("loginPass").value.trim();
+  const user = users.find(u => u.email === email && u.pass === pass);
+
+  if (!user) return showToast("❌ Неверный email или пароль!", "error");
+
+  currentUser = user;
+  localStorage.setItem("currentUser", JSON.stringify(user));
+  renderAccount();
+  showToast(`👋 Добро пожаловать, ${user.name}!`, "success");
+}
+
+function logoutUser() {
+  currentUser = null;
+  localStorage.removeItem("currentUser");
+  renderAccount();
+  showToast("🚪 Вы вышли из аккаунта", "info");
+}
+
+function renderAccount() {
+  if (currentUser) {
+    $("loginBox").style.display = "none";
+    $("registerBox").style.display = "none";
+    $("userPanel").style.display = "block";
+    $("userName").textContent = currentUser.name;
+  } else {
+    $("loginBox").style.display = "block";
+    $("registerBox").style.display = "none";
+    $("userPanel").style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", renderAccount);
+
+function deleteAccount() {
+  if (!currentUser) {
+    showToast("⚠️ Вы не вошли в аккаунт!", "error");
+    return;
+  }
+
+  const confirmDelete = confirm(
+    `Вы уверены, что хотите удалить аккаунт ${currentUser.email}? Это действие нельзя отменить!`
+  );
+  if (!confirmDelete) return;
+
+  // Читаем текущие данные
+  users = JSON.parse(localStorage.getItem("users") || "[]");
+
+  // Удаляем пользователя
+  users = users.filter(u => u.email !== currentUser.email);
+
+  // Сохраняем обновлённый список
+  localStorage.setItem("users", JSON.stringify(users));
+
+  // Полностью очищаем авторизацию
+  localStorage.removeItem("currentUser");
+  currentUser = null;
+
+  showToast("🗑 Аккаунт удалён!", "success");
+
+  // Обновляем интерфейс
+  renderAccount();
+  toggleAuth("register");
+
+  // Принудительная перезагрузка для очистки кэша
+  setTimeout(() => location.reload(), 800);
+}
+
