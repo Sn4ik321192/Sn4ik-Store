@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>PMR.MD-Store</title>
+  <title>PrimeDevices.pmr</title>
   <link rel="stylesheet" href="style.css"/>
 
 
@@ -15,7 +15,7 @@
     <!-- Бренд -->
     <div class="brand" onclick="goHome()" title="На главную">
       <span class="logo">🍏</span>
-      <span class="brand-name">PMR.MD-Store</span>
+      <span class="brand-name">PrimeDevices.pmr</span>
   
     </div>
 
@@ -162,28 +162,31 @@
 
   <!-- 📄 Страница "О сайте" -->
   <section id="page-about" class="page" style="display:none;">
-    <h2>ℹ️ О сайте</h2>
-    <p>PMR.MD-Store — современный онлайн-магазин техники Apple. Мы создаём уникальный опыт покупки, объединяя дизайн, удобство и инновации.</p>
-    <p>На сайте представлена только оригинальная техника: iPhone, MacBook, iPad и аксессуары. Все товары проходят проверку качества.</p>
-  </section>
+  <h2>ℹ️ О сайте</h2>
+  <p><b>PrimeDevices.pmr</b> — современный онлайн-магазин техники Apple в Приднестровье. 
+  Мы объединяем стиль, удобство и надёжность, предлагая оригинальные устройства Apple: iPhone, MacBook, iPad и аксессуары.</p>
+  <p>Вся продукция проходит проверку качества и доступна по самым выгодным ценам региона 🇲🇩</p>
+</section>
+
 
   <!-- 📄 Страница "О нас" -->
   <section id="page-me" class="page" style="display:none;">
-    <h2>👤 О нас</h2>
-    <p>Привет! Мы — команда <b>PMR.MD-Store</b>. Любим технику Apple и делаем всё, чтобы покупки у нас были максимально удобными и безопасными.</p>
-    <p>Связаться с нами можно через соцсети — мы всегда открыты для общения 😊</p>
+  <h2>👤 О нас</h2>
+  <p>Привет! Мы — команда <b>PrimeDevices.pmr</b>. Мы любим технику Apple и делаем покупки максимально удобными, быстрыми и безопасными.</p>
+  <p>Связаться с нами можно через соцсети:</p>
 
-    <div class="social-links">
-      <a href="https://t.me/sn4ik23" target="_blank" class="social-btn tg">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-        Telegram
-      </a>
-      <a href="https://www.instagram.com/sn4i.k" target="_blank" class="social-btn ig">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
-        Instagram
-      </a>
-    </div>
-  </section>
+  <div class="social-links">
+    <a href="https://t.me/sn4ik23" target="_blank" class="social-btn tg">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
+      Telegram
+    </a>
+    <a href="https://www.instagram.com/sn4i.k" target="_blank" class="social-btn ig">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram">
+      Instagram
+    </a>
+  </div>
+</section>
+
 
 <!-- 📜 Страница "История заказов" -->
 <section id="page-orders" class="page" style="display:none;">
@@ -222,20 +225,33 @@
   </script>
 
 <!-- 💬 Страница отзывов -->
+ 
 <section id="page-reviews" class="page" style="display:none;">
   <h2>💬 Отзывы покупателей</h2>
   <div id="reviewsList" class="reviews-list"></div>
 
-  <h3 style="margin-top:30px;">📝 Оставить отзыв</h3>
-  <input id="reviewName" placeholder="Ваше имя">
-  <textarea id="reviewText" placeholder="Ваш отзыв..."></textarea>
+  <h3 style="margin-top:30px;">💬 Оставить отзыв</h3>
+
+<div class="review-form">
+  <input id="reviewName" placeholder="Ваше имя" class="input-field">
+  <textarea id="reviewText" placeholder="Ваш отзыв..." class="input-field"></textarea>
+
+  <!-- 📷 Кнопка добавления фото -->
+  <label for="reviewPhoto" class="btn btn-glass" style="display:inline-block; margin-top:10px; cursor:pointer;">
+    📸 Добавить фото
+  </label>
+  <input id="reviewPhoto" type="file" accept="image/*" capture="environment" onchange="previewReviewPhoto(event)" style="display:none;">
+
+  <div id="reviewPreview" style="margin-top:15px; text-align:center;"></div>
+
   <button class="btn btn-success" onclick="addReview()">Отправить отзыв</button>
+</div>
+
 </section>
 
 <!-- 👤 Страница аккаунта -->
 <section id="page-account" class="page" style="display:none;">
   <h2>👤 Личный кабинет</h2>
-
 
   <!-- Форма входа -->
   <div id="loginBox">
@@ -254,37 +270,33 @@
     <p style="margin-top:10px;">Уже есть аккаунт? <a href="#" onclick="toggleAuth('login')">Войти</a></p>
   </div>
 
+  <!-- Панель пользователя -->
   <div id="userPanel" style="display:none; text-align:center;">
+    <div id="avatarContainer" style="margin-bottom:15px;">
+      <img id="userAvatar" src="" alt="Аватар"
+           style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);">
+      <input type="file" id="avatarUpload" accept="image/*" style="display:none" onchange="changeAvatar(event)">
+    </div>
 
-  <!-- 🧍 Аватар -->
-  <div id="avatarContainer" style="margin-bottom:15px;">
-    <img id="userAvatar" src="" alt="Аватар"
-         style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);">
-    <input type="file" id="avatarUpload" accept="image/*" style="display:none" onchange="changeAvatar(event)">
+    <h3>Привет, <span id="userName"></span> 👋</h3>
+
+    <div style="margin-top:20px;">
+      <button class="btn btn-success" onclick="toggleEdit()">✏️ Изменить имя / фото</button>
+    </div>
+
+    <div id="editProfileBox" style="display:none;margin-top:15px;">
+      <input id="editName" placeholder="Новое имя">
+      <button class="btn btn-glass" onclick="document.getElementById('avatarUpload').click()">📷 Сменить фото</button>
+      <button class="btn btn-success" onclick="saveProfile()">💾 Сохранить</button>
+      <button class="btn btn-danger" onclick="cancelEdit()">❌ Отмена</button>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
+      <button class="btn btn-danger" onclick="logoutUser()">🚪 Выйти</button>
+      <button class="btn btn-danger" style="background:#d14;" onclick="deleteAccount()">🗑 Удалить аккаунт</button>
+    </div>
   </div>
-
-  <!-- 👤 Информация -->
-  <h3>Привет, <span id="userName"></span> 👋</h3>
-
-  <!-- ✏️ Редактирование -->
-  <div style="margin-top:20px;">
-    <button class="btn btn-success" onclick="toggleEdit()">✏️ Редактировать профиль</button>
-  </div>
-
-  <div id="editProfileBox" style="display:none;margin-top:15px;">
-    <input id="editName" placeholder="Новое имя">
-    <input id="editEmail" type="email" placeholder="Новый Email">
-    <button class="btn btn-glass" onclick="document.getElementById('avatarUpload').click()">📷 Сменить фото</button>
-    <button class="btn btn-success" onclick="saveProfile()">💾 Сохранить</button>
-    <button class="btn btn-danger" onclick="cancelEdit()">❌ Отмена</button>
-  </div>
-
-  <!-- 🔻 Действия -->
-  <div style="display:flex;justify-content:center;gap:10px;margin-top:15px;">
-    <button class="btn btn-danger" onclick="logoutUser()">🚪 Выйти</button>
-    <button class="btn btn-danger" style="background:#d14;" onclick="deleteAccount()">🗑 Удалить аккаунт</button>
-  </div>
-</div>
+</section>
 
 
 </body>
