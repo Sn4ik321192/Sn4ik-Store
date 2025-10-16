@@ -73,7 +73,7 @@ let products = [
   "name": "AirPods 3",
   "category": "airpods",
   "price": 650,
-  "img": "img/airpods-pro3.png.png",
+  "img": "img/airpods-3.png (2).png",
   "specs": [
     "Динамический драйвер Apple",
     "Поддержка пространственного звука",
@@ -85,7 +85,7 @@ let products = [
     { "size": "Базовая комплектация", "price": 650 }
   ],
   "colors": [
-    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-pro3.png.png" }
+    { "name": "Белый", "color": "#ffffff", "img": "img/airpods-3.png (2).png" }
   ]
 }
 ];
