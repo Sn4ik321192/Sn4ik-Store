@@ -1,7 +1,7 @@
 // --- Настройки
 
 const TELEGRAM_TOKEN = "8060002374:AAGZ1B6fQutNTMMS22wOkgCH_defGVS8KVE";
-const TELEGRAM_CHAT_ID = "6509764945";
+const TELEGRAM_CHAT_ID = "-4885330608";
 
 // --- Состояния
 let cart = [];
