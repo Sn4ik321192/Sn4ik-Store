@@ -598,23 +598,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // === 📦 Отправка заказа в Telegram ===
 async function sendOrder() {
-  
   const name = $("orderName").value.trim();
   const phone = $("orderPhone").value.trim();
   const comment = $("orderComment").value.trim();
 
-
-  // === Проверка авторизации перед оформлением заказа ===
-if (!currentUser) {
-  // Закрываем корзину и окно оформления, если они открыты
-  $("cartOverlay").style.display = "none";
-  $("orderOverlay").style.display = "none";
-  
-  showToast("🔒 Войдите в аккаунт, чтобы оформить заказ!", "error");
-  showPage("account"); // переключаем на страницу входа
-  return; // прерываем выполнение
-}
-
+  if (!currentUser) {
+    $("cartOverlay").style.display = "none";
+    $("orderOverlay").style.display = "none";
+    showToast("🔒 Войдите в аккаунт, чтобы оформить заказ!", "error");
+    showPage("account");
+    return;
+  }
 
   if (!name || !phone) {
     showToast("⚠️ Введите имя и телефон!", "error");
@@ -631,7 +625,7 @@ if (!currentUser) {
     .join("\n");
 
   const text = `
-🧾 <b>Новый заказ Sn4ik-Store</b>\n
+🧾 <b>Новый заказ PrimeDevices.pmr</b>\n
 👤 Имя: ${name}
 📞 Телефон: ${phone}
 💬 Комментарий: ${comment || "—"}
@@ -643,19 +637,19 @@ ${itemsText}
 
   try {
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+    const res = await fetch(telegramUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text,
+        parse_mode: "HTML"
+      })
+    });
 
-const res = await fetch(telegramUrl, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: TELEGRAM_CHAT_ID,
-    text,
-    parse_mode: "HTML"
-  })
-});
+    const data = await res.json();
 
-    if (res.ok) {
-            // Сохраняем заказ в историю
+    if (res.ok && data.ok) {
       const orderData = {
         date: new Date().toLocaleString(),
         name,
@@ -666,6 +660,7 @@ const res = await fetch(telegramUrl, {
       };
       orderHistory.push(orderData);
       saveOrderHistory();
+
       showToast("✅ Заказ успешно отправлен!", "success");
       $("orderOverlay").style.display = "none";
       cart = [];
@@ -673,15 +668,15 @@ const res = await fetch(telegramUrl, {
       renderCart();
       saveState();
     } else {
+      console.error("Ошибка Telegram:", data);
       showToast("⚠️ Ошибка при отправке заказа!", "error");
     }
   } catch (err) {
-    showToast("🚫 Ошибка соединения с Telegram!", "error");
+    console.error("Ошибка сети:", err);
+    
   }
 }
-  // === 💬 ОТЗЫВЫ ===
-let reviews = JSON.parse(localStorage.getItem("reviews") || "[]");
-let tempReviewPhoto = null;
+
 
 
 
