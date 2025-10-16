@@ -11,23 +11,15 @@ let favorites = [];
 let users = JSON.parse(localStorage.getItem("users") || "[]");
 let currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
 
-// === 👑 Система ролей ===
+// === Восстанавливаем вход при перезагрузке страницы ===
+document.addEventListener("DOMContentLoaded", () => {
+  const savedUser = localStorage.getItem("currentUser");
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+  }
+  renderAccount(); // обновляем интерфейс после восстановления
+});
 
-// Главный администратор (только он может назначать других)
-const MAIN_ADMIN_EMAIL = "sn4ik231@gmail.com"; // 💡 сюда вставь свою почту
-
-// Проверка роли
-function isAdmin() {
-  return (
-    currentUser &&
-    (currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL)
-  );
-}
-
-// Проверка на главного админа
-function isMainAdmin() {
-  return currentUser && currentUser.email === MAIN_ADMIN_EMAIL;
-}
 
 let currentPage = 1;
 const perPage = 6;
@@ -689,9 +681,72 @@ const res = await fetch(telegramUrl, {
 }
   // === 💬 ОТЗЫВЫ ===
 let reviews = JSON.parse(localStorage.getItem("reviews") || "[]");
+let tempReviewPhoto = null;
 
+
+
+// 📸 Предпросмотр фото
+function previewReviewPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    tempReviewPhoto = ev.target.result;
+    $("reviewPreview").innerHTML = `
+      <img src="${tempReviewPhoto}" alt="Фото отзыва" 
+           style="max-width:150px; border-radius:10px; margin-top:8px; border:2px solid var(--accent);">
+    `;
+  };
+  reader.readAsDataURL(file);
+}
+
+// 📝 Добавление нового отзыва
+function addReview() {
+  const name = $("reviewName").value.trim();
+  const text = $("reviewText").value.trim();
+
+  if (!name || !text) {
+    showToast("⚠️ Заполните имя и текст!", "error");
+    return;
+  }
+
+  // проверка на вход
+  if (!currentUser) {
+    showToast("🔒 Войдите в аккаунт, чтобы оставить отзыв!", "error");
+    showPage("account");
+    return;
+  }
+
+  const newReview = {
+    name,
+    text,
+    email: currentUser.email,
+    date: new Date().toLocaleDateString("ru-RU", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric"
+    }),
+    photo: tempReviewPhoto || null
+  };
+
+  reviews.push(newReview);
+  localStorage.setItem("reviews", JSON.stringify(reviews));
+
+  $("reviewName").value = "";
+  $("reviewText").value = "";
+  $("reviewPhoto").value = "";
+  $("reviewPreview").innerHTML = "";
+  tempReviewPhoto = null;
+
+  showToast("✅ Спасибо за отзыв!", "success");
+  renderReviews();
+}
+
+
+// 📋 Отображение отзывов
 function renderReviews() {
-  const box = document.getElementById("reviewsList");
+  const box = $("reviewsList");
   box.innerHTML = "";
 
   if (!reviews.length) {
@@ -699,42 +754,48 @@ function renderReviews() {
     return;
   }
 
-  reviews.slice().reverse().forEach(r => {
+  reviews.forEach((r, i) => {
     const card = document.createElement("div");
     card.className = "review-card";
+
+    const canDelete = currentUser && currentUser.email === r.email;
+    const deleteBtn = canDelete
+      ? `<button class="btn btn-danger" style="margin-top:10px;" onclick="deleteReview(${i})">🗑 Удалить</button>`
+      : "";
+
     card.innerHTML = `
       <p><b>${r.name}</b> <span style="opacity:0.7;">(${r.date})</span></p>
       <p>${r.text}</p>
+      ${r.photo ? `<img src="${r.photo}" alt="Фото отзыва"
+        style="max-width:150px; border-radius:10px; margin-top:8px; border:2px solid var(--accent);">` : ""}
+      ${deleteBtn}
     `;
-    box.appendChild(card);
+    box.prepend(card); // вставляем сверху, чтобы свежие были первыми
   });
 }
 
-function addReview() {
-  const name = document.getElementById("reviewName").value.trim();
-  const text = document.getElementById("reviewText").value.trim();
+function deleteReview(index) {
+  if (!currentUser) return showToast("⚠️ Вы не вошли в аккаунт!", "error");
 
-  if (!name || !text) {
-    showToast("⚠️ Заполните все поля!", "error");
+  const review = reviews[index];
+  if (review.email !== currentUser.email) {
+    showToast("🚫 Можно удалить только свой отзыв!", "error");
     return;
   }
 
-  const newReview = {
-    name,
-    text,
-    date: new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })
-  };
+  if (!confirm("Удалить этот отзыв?")) return;
 
-  reviews.push(newReview);
+  reviews.splice(index, 1);
   localStorage.setItem("reviews", JSON.stringify(reviews));
-  document.getElementById("reviewName").value = "";
-  document.getElementById("reviewText").value = "";
-  showToast("✅ Спасибо за отзыв!", "success");
+  showToast("🗑 Отзыв удалён!", "success");
   renderReviews();
 }
 
+// ⏳ Загружаем отзывы при открытии страницы
 document.addEventListener("DOMContentLoaded", renderReviews);
 
+
+// === 🔐 Авторизация / Регистрация ===
 function toggleAuth(mode) {
   $("loginBox").style.display = mode === "login" ? "block" : "none";
   $("registerBox").style.display = mode === "register" ? "block" : "none";
@@ -747,27 +808,17 @@ function registerUser() {
   const email = $("regEmail").value.trim().toLowerCase();
   const pass = $("regPass").value.trim();
 
-  if (!name || !email || !pass) {
-    showToast("⚠️ Заполните все поля!", "error");
-    return;
-  }
+  if (!name || !email || !pass) return showToast("⚠️ Заполните все поля!", "error");
 
   const exists = users.some(u => u.email === email);
-  if (exists) {
-    showToast("❌ Такой email уже зарегистрирован!", "error");
-    return;
-  }
+  if (exists) return showToast("❌ Такой email уже зарегистрирован!", "error");
 
-  // 🔹 Все новые пользователи — клиенты
-  const newUser = { name, email, pass, role: "client" };
+  const newUser = { name, email, pass };
   users.push(newUser);
   localStorage.setItem("users", JSON.stringify(users));
-
   showToast("✅ Аккаунт успешно создан!", "success");
   toggleAuth("login");
 }
-
-
 
 function loginUser() {
   const email = $("loginEmail").value.trim().toLowerCase();
@@ -776,50 +827,27 @@ function loginUser() {
 
   if (!user) return showToast("❌ Неверный email или пароль!", "error");
 
-  // Если вошёл главный админ — назначаем его ролью "admin"
-  if (email === MAIN_ADMIN_EMAIL) user.role = "admin";
-
   currentUser = user;
   localStorage.setItem("currentUser", JSON.stringify(user));
-
   renderAccount();
-  showToast(`👋 Добро пожаловать, ${user.name}! (${user.role === "admin" ? "Администратор" : "Клиент"})`, "success");
+  showToast(`👋 Добро пожаловать, ${user.name}!`, "success");
 }
-
-
 
 function logoutUser() {
   currentUser = null;
   localStorage.removeItem("currentUser");
-
-  // Сбрасываем картинку, чтобы при входе другого юзера не осталась старая
-  const avatar = $("userAvatar");
-  if (avatar) {
-    avatar.src = `https://dummyimage.com/200x200/1c79ff/ffffff&text=?`;
-  }
-
   renderAccount();
   showToast("🚪 Вы вышли из аккаунта", "info");
 }
 
-
+// === 👤 Интерфейс профиля ===
 function renderAccount() {
   if (currentUser) {
     $("loginBox").style.display = "none";
     $("registerBox").style.display = "none";
     $("userPanel").style.display = "block";
     $("userName").textContent = currentUser.name;
-
-    // добавляем роль под именем
-    let roleInfo = document.getElementById("userRole");
-    if (!roleInfo) {
-      const info = document.createElement("p");
-      info.id = "userRole";
-      info.innerHTML = `<b>Статус:</b> ${currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL ? "Администратор" : "Клиент"}`;
-      $("userPanel").insertBefore(info, $("userPanel").children[2]);
-    } else {
-      roleInfo.innerHTML = `<b>Статус:</b> ${currentUser.role === "admin" || currentUser.email === MAIN_ADMIN_EMAIL ? "Администратор" : "Клиент"}`;
-    }
+    loadAvatar();
   } else {
     $("loginBox").style.display = "block";
     $("registerBox").style.display = "none";
@@ -827,42 +855,69 @@ function renderAccount() {
   }
 }
 
+// === 🧍 Аватар ===
+function loadAvatar() {
+  if (!currentUser) return;
+  const avatarKey = `avatar_${currentUser.email}`;
+  const saved = localStorage.getItem(avatarKey);
+  $("userAvatar").src = saved || `https://dummyimage.com/200x200/1c79ff/ffffff&text=${currentUser.name.charAt(0).toUpperCase()}`;
+}
 
-document.addEventListener("DOMContentLoaded", renderAccount);
+function changeAvatar(e) {
+  const file = e.target.files[0];
+  if (!file || !currentUser) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const avatarKey = `avatar_${currentUser.email}`;
+    localStorage.setItem(avatarKey, ev.target.result);
+    $("userAvatar").src = ev.target.result;
+    showToast("✅ Фото обновлено!");
+  };
+  reader.readAsDataURL(file);
+}
 
-function deleteAccount() {
-  if (!currentUser) {
-    showToast("⚠️ Вы не вошли в аккаунт!", "error");
-    return;
-  }
+// === ✏️ Редактирование имени ===
+function toggleEdit() {
+  tempAvatar = null;
+  const box = $("editProfileBox");
+  box.style.display = box.style.display === "none" ? "block" : "none";
+}
 
-  const confirmDelete = confirm(
-    `Вы уверены, что хотите удалить аккаунт ${currentUser.email}? Это действие нельзя отменить!`
-  );
-  if (!confirmDelete) return;
+function cancelEdit() {
+  $("editProfileBox").style.display = "none";
+}
+function saveProfile() {
+  const newName = $("editName").value.trim();
+  if (!newName) return showToast("⚠️ Введите новое имя!", "error");
 
-  // Читаем текущие данные
-  users = JSON.parse(localStorage.getItem("users") || "[]");
-
-  // Удаляем пользователя
-  users = users.filter(u => u.email !== currentUser.email);
-
-  // Сохраняем обновлённый список
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  users = users.map(u => (u.email === currentUser.email ? { ...u, name: newName } : u));
   localStorage.setItem("users", JSON.stringify(users));
 
-  // Полностью очищаем авторизацию
+  currentUser.name = newName;
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  $("userName").textContent = newName;
+  $("editProfileBox").style.display = "none";
+  showToast("✅ Имя успешно обновлено!");
+}
+
+// === 🗑 Удаление аккаунта ===
+function deleteAccount() {
+  if (!currentUser) return showToast("⚠️ Вы не вошли!", "error");
+  if (!confirm(`Удалить аккаунт ${currentUser.email}?`)) return;
+
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  users = users.filter(u => u.email !== currentUser.email);
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.removeItem(`avatar_${currentUser.email}`);
   localStorage.removeItem("currentUser");
   currentUser = null;
 
-  showToast("🗑 Аккаунт удалён!", "success");
-
-  // Обновляем интерфейс
+  showToast("🗑 Аккаунт удалён!");
   renderAccount();
   toggleAuth("register");
-
-  // Принудительная перезагрузка для очистки кэша
-  setTimeout(() => location.reload(), 800);
 }
+
 
 // === 🧍 АВАТАР + РЕДАКТИРОВАНИЕ ПРОФИЛЯ ===
 
@@ -884,19 +939,21 @@ function loadAvatar() {
 }
 
 
+let tempAvatar = null; // временное фото
+
 function changeAvatar(e) {
   const file = e.target.files[0];
-  if (!file || !currentUser) return;
+  if (!file) return;
 
   const reader = new FileReader();
   reader.onload = ev => {
-    const avatarKey = `avatar_${currentUser.email}`;
-    localStorage.setItem(avatarKey, ev.target.result);
-    $("userAvatar").src = ev.target.result;
-    showToast("✅ Фото обновлено!");
+    tempAvatar = ev.target.result; // сохраняем временно
+    $("userAvatar").src = tempAvatar; // показываем пользователю
+    showToast("📷 Фото выбрано, нажмите «Сохранить» для подтверждения", "info");
   };
   reader.readAsDataURL(file);
 }
+
 
 
 
@@ -911,56 +968,41 @@ function cancelEdit() {
   $("editProfileBox").style.display = "none";
 }
 
-// сохранить изменения
 function saveProfile() {
   const newName = $("editName").value.trim();
-  const newEmail = $("editEmail").value.trim();
 
-  if (!newName && !newEmail) {
-    showToast("⚠️ Введите новое имя или email!", "error");
+  if (!newName && !tempAvatar) {
+    showToast("⚠️ Ничего не изменено!", "error");
     return;
   }
 
-  // Проверка email
-  if (newEmail) {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(newEmail)) {
-      showToast("❌ Неверный формат email!", "error");
-      return;
-    }
-
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const exists = users.some(
-      u => u.email === newEmail && u.email !== currentUser.email
-    );
-    if (exists) {
-      showToast("⚠️ Этот email уже используется!", "error");
-      return;
-    }
-  }
-
-  // Загружаем список пользователей
   let users = JSON.parse(localStorage.getItem("users") || "[]");
-  let updatedUser = { ...currentUser };
-
-  if (newName) updatedUser.name = newName;
-  if (newEmail) updatedUser.email = newEmail;
-
-  // Обновляем пользователя в списке
-  users = users.map(u =>
-    u.email === currentUser.email ? updatedUser : u
-  );
+  users = users.map(u => {
+    if (u.email === currentUser.email) {
+      return { ...u, name: newName || u.name };
+    }
+    return u;
+  });
   localStorage.setItem("users", JSON.stringify(users));
 
-  // Обновляем текущего
-  currentUser = updatedUser;
-  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  if (newName) {
+    currentUser.name = newName;
+    $("userName").textContent = newName;
+  }
 
-  $("userName").textContent = currentUser.name;
+  // ✅ Сохраняем фото только при нажатии "Сохранить"
+  if (tempAvatar) {
+    const avatarKey = `avatar_${currentUser.email}`;
+    localStorage.setItem(avatarKey, tempAvatar);
+    $("userAvatar").src = tempAvatar;
+    tempAvatar = null; // очищаем временное фото
+  }
+
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
   $("editProfileBox").style.display = "none";
-  loadAvatar();
-  showToast("✅ Профиль успешно обновлён!");
+  showToast("✅ Изменения сохранены!");
 }
+
 
 
 
